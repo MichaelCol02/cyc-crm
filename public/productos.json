@@ -1,0 +1,902 @@
+[
+  {
+    "id": "7915680628935",
+    "nombre": "Pincho de Lomo Fino",
+    "categoria": "Carne de res",
+    "precio": 30746,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/pincho-de-lomo-fino",
+    "handle": "pincho-de-lomo-fino"
+  },
+  {
+    "id": "8669618569415",
+    "nombre": "Combo Pa' Picar",
+    "categoria": "Combos y Packs",
+    "precio": 71730,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/combo-pa-picar",
+    "handle": "combo-pa-picar"
+  },
+  {
+    "id": "8617502302407",
+    "nombre": "Colas por 1 Kilogramo",
+    "categoria": "Carne de res",
+    "precio": 18950,
+    "tags": "estofar, guisar, sudar",
+    "url": "https://carnesycarnes.com/products/colas-por-1-kilogramo",
+    "handle": "colas-por-1-kilogramo"
+  },
+  {
+    "id": "8617373286599",
+    "nombre": "Combo Pack Familiar",
+    "categoria": "Carne de res",
+    "precio": 105000,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/combo-pack-familiar",
+    "handle": "combo-pack-familiar"
+  },
+  {
+    "id": "8250177257671",
+    "nombre": "Pechuga de Pavo Completa",
+    "categoria": "Pavo",
+    "precio": 82500,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/pechuga-de-pavo",
+    "handle": "pechuga-de-pavo"
+  },
+  {
+    "id": "7906930098375",
+    "nombre": "Lomo Fino Pv",
+    "categoria": "Carne de res",
+    "precio": 130374,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/lomo-fino-premium",
+    "handle": "lomo-fino-premium"
+  },
+  {
+    "id": "7932185870535",
+    "nombre": "Duo Pack Familiar",
+    "categoria": "Carne de res",
+    "precio": 31000,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/duo-pack-familiar",
+    "handle": "duo-pack-familiar"
+  },
+  {
+    "id": "7906414493895",
+    "nombre": "Chata o Churrasco Premium x 3LBS",
+    "categoria": "Carne de res",
+    "precio": 95706,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/chata-o-churrasco",
+    "handle": "chata-o-churrasco"
+  },
+  {
+    "id": "7906457092295",
+    "nombre": "Punta de Anca x 3 LIBRAS",
+    "categoria": "Carne de res",
+    "precio": 103242,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/punta-de-anca",
+    "handle": "punta-de-anca"
+  },
+  {
+    "id": "7906379628743",
+    "nombre": "Punta de anca porcionada 250-300gr x 2 und",
+    "categoria": "Carne de res",
+    "precio": 38182,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/punta-de-anca-porcionada",
+    "handle": "punta-de-anca-porcionada"
+  },
+  {
+    "id": "7906424553671",
+    "nombre": "Rib eye Hueso Corto",
+    "categoria": "Carne de res",
+    "precio": 33770,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/rib-eye-hueso-corto",
+    "handle": "rib-eye-hueso-corto"
+  },
+  {
+    "id": "7906449522887",
+    "nombre": "Rib eye hueso largo",
+    "categoria": "Carne de res",
+    "precio": 32233,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/rib-eye-hueso-largo",
+    "handle": "rib-eye-hueso-largo"
+  },
+  {
+    "id": "7906455486663",
+    "nombre": "T-Bone",
+    "categoria": "Carne de res",
+    "precio": 37870,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/t-bone",
+    "handle": "t-bone"
+  },
+  {
+    "id": "7907360735431",
+    "nombre": "Entrecort Premium",
+    "categoria": "Carne de res",
+    "precio": 28509,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/entrecort-premium",
+    "handle": "entrecort-premium"
+  },
+  {
+    "id": "7915890573511",
+    "nombre": "Chata porcionada 300-350gr x 2 porciones",
+    "categoria": "Carne de res",
+    "precio": 33661,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/chata-o-churrasco-porcionado",
+    "handle": "chata-o-churrasco-porcionado"
+  },
+  {
+    "id": "7915722965191",
+    "nombre": "Medallones Lomo Fino",
+    "categoria": "Carne de res",
+    "precio": 47226,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/medallones-lomo-fino",
+    "handle": "medallones-lomo-fino"
+  },
+  {
+    "id": "7915663655111",
+    "nombre": "Lomo Ancho Pv",
+    "categoria": "Carne de res",
+    "precio": 24869,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/lomo-ancho-premium",
+    "handle": "lomo-ancho-premium"
+  },
+  {
+    "id": "7915833458887",
+    "nombre": "Carne para asar/freir",
+    "categoria": "Carne de res",
+    "precio": 22357,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/asar-premium",
+    "handle": "asar-premium"
+  },
+  {
+    "id": "7915836178631",
+    "nombre": "Bife Parrillero",
+    "categoria": "Carne de res",
+    "precio": 27108,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/bife-parillero",
+    "handle": "bife-parillero"
+  },
+  {
+    "id": "7907343466695",
+    "nombre": "Carabella de res",
+    "categoria": "Carne de res",
+    "precio": 22550,
+    "tags": "asar, freir, guisar",
+    "url": "https://carnesycarnes.com/products/bola-premium",
+    "handle": "bola-premium"
+  },
+  {
+    "id": "7907133751495",
+    "nombre": "Cadera de Res",
+    "categoria": "Carne de res",
+    "precio": 24115,
+    "tags": "asar, freir, guisar",
+    "url": "https://carnesycarnes.com/products/cadera-premium",
+    "handle": "cadera-premium"
+  },
+  {
+    "id": "7907142369479",
+    "nombre": "Cecina de Res",
+    "categoria": "Carne de res",
+    "precio": 24115,
+    "tags": "asar, freir, guisar",
+    "url": "https://carnesycarnes.com/products/cecina-premium",
+    "handle": "cecina-premium"
+  },
+  {
+    "id": "7906901196999",
+    "nombre": "Capon Muchacho",
+    "categoria": "Carne de res",
+    "precio": 21603,
+    "tags": "asar, freir, guisar",
+    "url": "https://carnesycarnes.com/products/capon-a-granel",
+    "handle": "capon-a-granel"
+  },
+  {
+    "id": "7907464675527",
+    "nombre": "Bota de res",
+    "categoria": "Carne de res",
+    "precio": 22357,
+    "tags": "asar, freir, guisar",
+    "url": "https://carnesycarnes.com/products/herradero-a-granel",
+    "handle": "herradero-a-granel"
+  },
+  {
+    "id": "7916935512263",
+    "nombre": "Maiz Super Dulce 500g",
+    "categoria": "Congelado",
+    "precio": 3700,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/maiz-super-dulce-500-g",
+    "handle": "maiz-super-dulce-500-g"
+  },
+  {
+    "id": "8390940819655",
+    "nombre": "Chuleta de Pierna de Cerdo",
+    "categoria": "Cerdo",
+    "precio": 10950,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/chuleta-de-pierna-de-cerdo",
+    "handle": "chuleta-de-pierna-de-cerdo"
+  },
+  {
+    "id": "7915654545607",
+    "nombre": "Goulash de Res",
+    "categoria": "Carne de res",
+    "precio": 24939,
+    "tags": "asar, estofar, freir",
+    "url": "https://carnesycarnes.com/products/goulash-especial-de-res-l-m",
+    "handle": "goulash-especial-de-res-l-m"
+  },
+  {
+    "id": "7915650416839",
+    "nombre": "Fajitas de Res",
+    "categoria": "Carne de res",
+    "precio": 24939,
+    "tags": "asar, estofar, freir",
+    "url": "https://carnesycarnes.com/products/fajitas-especial-de-res",
+    "handle": "fajitas-especial-de-res"
+  },
+  {
+    "id": "7915704844487",
+    "nombre": "Carne desmechada",
+    "categoria": "Carne de res",
+    "precio": 22015,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/carne-desmechada",
+    "handle": "carne-desmechada"
+  },
+  {
+    "id": "7907351953607",
+    "nombre": "Carne para desmechar",
+    "categoria": "Carne de res",
+    "precio": 19422,
+    "tags": "estofar, sudar",
+    "url": "https://carnesycarnes.com/products/aleta-premium",
+    "handle": "aleta-premium"
+  },
+  {
+    "id": "7915716772039",
+    "nombre": "Murillo de Pierna PV",
+    "categoria": "Carne de res",
+    "precio": 17884,
+    "tags": "estofar, sudar",
+    "url": "https://carnesycarnes.com/products/murillo-premium",
+    "handle": "murillo-premium"
+  },
+  {
+    "id": "7906918138055",
+    "nombre": "Sobrebarriga",
+    "categoria": "Carne de res",
+    "precio": 60588,
+    "tags": "estofar, sudar",
+    "url": "https://carnesycarnes.com/products/sobrebarriga",
+    "handle": "sobrebarriga"
+  },
+  {
+    "id": "7916676939975",
+    "nombre": "Cogote",
+    "categoria": "Carne de res",
+    "precio": 18397,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/cogote-premium",
+    "handle": "cogote-premium"
+  },
+  {
+    "id": "7916868665543",
+    "nombre": "Costilla de Res",
+    "categoria": "Carne de res",
+    "precio": 13272,
+    "tags": "asar, estofar",
+    "url": "https://carnesycarnes.com/products/costilla-de-res-por-libra",
+    "handle": "costilla-de-res-por-libra"
+  },
+  {
+    "id": "7907469656263",
+    "nombre": "Molida de Res x 450g",
+    "categoria": "Carne de res",
+    "precio": 12812,
+    "tags": "boloñesa, hamburguesa",
+    "url": "https://carnesycarnes.com/products/molida-de-res",
+    "handle": "molida-de-res"
+  },
+  {
+    "id": "7907471786183",
+    "nombre": "Molida especial x600 grs",
+    "categoria": "Carne de res",
+    "precio": 25422,
+    "tags": "asar, boloñesa, hamburguesa, pastas",
+    "url": "https://carnesycarnes.com/products/molida-especial-por-600-grs",
+    "handle": "molida-especial-por-600-grs"
+  },
+  {
+    "id": "7907470639303",
+    "nombre": "Carne Molida 98/2",
+    "categoria": "Carne de res",
+    "precio": 23521,
+    "tags": "boloñesa, hamburguesa, pastas",
+    "url": "https://carnesycarnes.com/products/carne-molida-98-2-l-m",
+    "handle": "carne-molida-98-2-l-m"
+  },
+  {
+    "id": "7907467919559",
+    "nombre": "Tira de asado",
+    "categoria": "Carne de res",
+    "precio": 22389,
+    "tags": "asar",
+    "url": "https://carnesycarnes.com/products/tira-de-asado",
+    "handle": "tira-de-asado"
+  },
+  {
+    "id": "8145768579271",
+    "nombre": "Tira de asado especial",
+    "categoria": "Carne de res",
+    "precio": 48068,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/tira-de-asado-especial-copia",
+    "handle": "tira-de-asado-especial-copia"
+  },
+  {
+    "id": "7915713331399",
+    "nombre": "Brochetas mixtas x3 Unid",
+    "categoria": "Carne de res",
+    "precio": 33500,
+    "tags": "asar, freir, parrilla",
+    "url": "https://carnesycarnes.com/products/brochetas-mixtas-x3-unid",
+    "handle": "brochetas-mixtas-x3-unid"
+  },
+  {
+    "id": "7913633087687",
+    "nombre": "Lomo de cerdo porcionado",
+    "categoria": "Cerdo",
+    "precio": 12950,
+    "tags": "asar, freir",
+    "url": "https://carnesycarnes.com/products/lomo-de-cerdo-porcionado",
+    "handle": "lomo-de-cerdo-porcionado"
+  },
+  {
+    "id": "7916698960071",
+    "nombre": "Lomo de Cerdo",
+    "categoria": "Cerdo",
+    "precio": 25450,
+    "tags": "asar, freir",
+    "url": "https://carnesycarnes.com/products/lomo-de-cerdo",
+    "handle": "lomo-de-cerdo"
+  },
+  {
+    "id": "7916720193735",
+    "nombre": "Costillas de Cerdo",
+    "categoria": "Cerdo",
+    "precio": 14900,
+    "tags": "asar",
+    "url": "https://carnesycarnes.com/products/costillas-de-cerdo",
+    "handle": "costillas-de-cerdo"
+  },
+  {
+    "id": "7913543049415",
+    "nombre": "Tocino de Cerdo",
+    "categoria": "Cerdo",
+    "precio": 8950,
+    "tags": "asar, freir",
+    "url": "https://carnesycarnes.com/products/tocino-de-cerdo",
+    "handle": "tocino-de-cerdo"
+  },
+  {
+    "id": "8390935773383",
+    "nombre": "Tocineta de cerdo",
+    "categoria": "Cerdo",
+    "precio": 11250,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/tocineta-de-cerdo",
+    "handle": "tocineta-de-cerdo"
+  },
+  {
+    "id": "8390937477319",
+    "nombre": "Costilla de cerdo ahumada",
+    "categoria": "Cerdo",
+    "precio": 22450,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/costilla-de-cerdo-ahumada",
+    "handle": "costilla-de-cerdo-ahumada"
+  },
+  {
+    "id": "8390943441095",
+    "nombre": "Chicharroncito",
+    "categoria": "Cerdo",
+    "precio": 9950,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/chicharroncito",
+    "handle": "chicharroncito"
+  },
+  {
+    "id": "8390938099911",
+    "nombre": "Bondiola de Cerdo",
+    "categoria": "Cerdo",
+    "precio": 17500,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/bondiola-de-cerdo",
+    "handle": "bondiola-de-cerdo"
+  },
+  {
+    "id": "8390939443399",
+    "nombre": "Pernil de Cerdo",
+    "categoria": "Cerdo",
+    "precio": 10250,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/pernil-de-cerdo",
+    "handle": "pernil-de-cerdo"
+  },
+  {
+    "id": "7912989991111",
+    "nombre": "Pollo Entero x1",
+    "categoria": "Pollo",
+    "precio": 17500,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/pollo-entero-x1",
+    "handle": "pollo-entero-x1"
+  },
+  {
+    "id": "7912991793351",
+    "nombre": "Pechuga de Pollo",
+    "categoria": "Pollo",
+    "precio": 11900,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/pechuga-de-pollo",
+    "handle": "pechuga-de-pollo"
+  },
+  {
+    "id": "7912998871239",
+    "nombre": "Contramuslo de Pollo x1kg",
+    "categoria": "Pollo",
+    "precio": 11350,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/contramuslo-de-pollo-x1-kg",
+    "handle": "contramuslo-de-pollo-x1-kg"
+  },
+  {
+    "id": "7912994349255",
+    "nombre": "Alas de Pollo x1kg",
+    "categoria": "Pollo",
+    "precio": 8700,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/alas-de-pollo",
+    "handle": "alas-de-pollo"
+  },
+  {
+    "id": "7913003819207",
+    "nombre": "Menudencias x 1kg",
+    "categoria": "Pollo",
+    "precio": 4200,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/menudencias-x-1-kg",
+    "handle": "menudencias-x-1-kg"
+  },
+  {
+    "id": "7913012240583",
+    "nombre": "Muslo de Pollo x1kg",
+    "categoria": "Pollo",
+    "precio": 8900,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/muslo-de-pollo",
+    "handle": "muslo-de-pollo"
+  },
+  {
+    "id": "7913622929607",
+    "nombre": "Pechuga Claripack",
+    "categoria": "Pollo",
+    "precio": 62800,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/pechuga-claripack",
+    "handle": "pechuga-claripack"
+  },
+  {
+    "id": "8390920798407",
+    "nombre": "Rabadilla de Pollo x 1kg",
+    "categoria": "Pollo",
+    "precio": 8400,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/rabadilla-de-pollo-x-1kg",
+    "handle": "rabadilla-de-pollo-x-1kg"
+  },
+  {
+    "id": "8390931054791",
+    "nombre": "Filete de Pechuga x 500g",
+    "categoria": "Pollo",
+    "precio": 9400,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/filete-de-pechuga-x-500g",
+    "handle": "filete-de-pechuga-x-500g"
+  },
+  {
+    "id": "8390933217479",
+    "nombre": "Apanado de Pollo x 1Kg",
+    "categoria": "Pollo",
+    "precio": 16850,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/apanado-de-pollo-x-1kg",
+    "handle": "apanado-de-pollo-x-1kg"
+  },
+  {
+    "id": "8390934102215",
+    "nombre": "Nuggets de Pollo x 1Kg",
+    "categoria": "Pollo",
+    "precio": 17250,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/nuggets-de-pollo-x-1kg",
+    "handle": "nuggets-de-pollo-x-1kg"
+  },
+  {
+    "id": "7914410541255",
+    "nombre": "Salchicha Premium x 5 uds",
+    "categoria": "Charcuteria",
+    "precio": 8000,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/salchicha-premium-x-5-uds",
+    "handle": "salchicha-premium-x-5-uds"
+  },
+  {
+    "id": "7914419585223",
+    "nombre": "Chorizo Premium x 5 uds",
+    "categoria": "Charcuteria",
+    "precio": 8400,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/chorizo-premium-x-5-uds",
+    "handle": "chorizo-premium-x-5-uds"
+  },
+  {
+    "id": "7914424336583",
+    "nombre": "Hamburguesa Premium x 5 uds",
+    "categoria": "Charcuteria",
+    "precio": 8800,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/hamburguesa-premium-x-5-uds",
+    "handle": "hamburguesa-premium-x-5-uds"
+  },
+  {
+    "id": "7914430988487",
+    "nombre": "Longaniza x 5 uds",
+    "categoria": "Charcuteria",
+    "precio": 7700,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/longaniza-premium-x-5-uds",
+    "handle": "longaniza-premium-x-5-uds"
+  },
+  {
+    "id": "7914437575879",
+    "nombre": "Morcilla x 5 uds",
+    "categoria": "Charcuteria",
+    "precio": 7500,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/morcilla-premium-x-5-uds",
+    "handle": "morcilla-premium-x-5-uds"
+  },
+  {
+    "id": "7916819808455",
+    "nombre": "Jamon de Cerdo",
+    "categoria": "Charcuteria",
+    "precio": 6350,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/jamon-de-cerdo",
+    "handle": "jamon-de-cerdo"
+  },
+  {
+    "id": "7916753191111",
+    "nombre": "Salchichon Cervecero",
+    "categoria": "Charcuteria",
+    "precio": 5450,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/salchichon-cervecero",
+    "handle": "salchichon-cervecero"
+  },
+  {
+    "id": "8390916636871",
+    "nombre": "Carne Oreada",
+    "categoria": "Carne de res",
+    "precio": 24750,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/carne-oreada",
+    "handle": "carne-oreada"
+  },
+  {
+    "id": "7913652420807",
+    "nombre": "Filete de Salmon x 180g",
+    "categoria": "Mar",
+    "precio": 16450,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/filete-de-salmon-x-180g",
+    "handle": "filete-de-salmon-x-180g"
+  },
+  {
+    "id": "7914391601351",
+    "nombre": "Camaron 36/40 500g",
+    "categoria": "Mar",
+    "precio": 28600,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/camaron-36-40-500g",
+    "handle": "camaron-36-40-500g"
+  },
+  {
+    "id": "7916943737031",
+    "nombre": "Filete de Tilapia x 1Kg",
+    "categoria": "Mar",
+    "precio": 23200,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/filete-de-tilapia-x-1-kg",
+    "handle": "filete-de-tilapia-x-1-kg"
+  },
+  {
+    "id": "7914389897415",
+    "nombre": "Filete de Trucha x 500g",
+    "categoria": "Mar",
+    "precio": 25300,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/filete-de-trucha-x-500g",
+    "handle": "filete-de-trucha-x-500g"
+  },
+  {
+    "id": "7917070221511",
+    "nombre": "Cazuela de Mariscos x 500g",
+    "categoria": "Mar",
+    "precio": 15100,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/cazuela-de-mariscos-x-500g",
+    "handle": "cazuela-de-mariscos-x-500g"
+  },
+  {
+    "id": "7914393305287",
+    "nombre": "Calamares Precocidos x 400g",
+    "categoria": "Mar",
+    "precio": 15100,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/calamares-precocidos-x-400g",
+    "handle": "calamares-precocidos-x-400g"
+  },
+  {
+    "id": "7914394419399",
+    "nombre": "Pulpo Precocido x 400g",
+    "categoria": "Mar",
+    "precio": 26300,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/pulpo-precocido-x-400g",
+    "handle": "pulpo-precocido-x-400g"
+  },
+  {
+    "id": "7914441965767",
+    "nombre": "Chimichurri",
+    "categoria": "Complementarios",
+    "precio": 5000,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/chimichurri",
+    "handle": "chimichurri"
+  },
+  {
+    "id": "7914444046535",
+    "nombre": "Guacamole",
+    "categoria": "Complementarios",
+    "precio": 5000,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/guacamole",
+    "handle": "guacamole"
+  },
+  {
+    "id": "7914447061191",
+    "nombre": "Salsa BBQ",
+    "categoria": "Complementarios",
+    "precio": 7200,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/salsa-bbq",
+    "handle": "salsa-bbq"
+  },
+  {
+    "id": "7914450108615",
+    "nombre": "Mermelada de Cebolla",
+    "categoria": "Complementarios",
+    "precio": 6800,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/mermelada-de-cebolla",
+    "handle": "mermelada-de-cebolla"
+  },
+  {
+    "id": "7914452205767",
+    "nombre": "Romero Fresco",
+    "categoria": "Complementarios",
+    "precio": 3400,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/romero-fresco",
+    "handle": "romero-fresco"
+  },
+  {
+    "id": "7914453549255",
+    "nombre": "Carbon 2.5 Kilos",
+    "categoria": "Complementarios",
+    "precio": 14400,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/carbon-2-5-kilos",
+    "handle": "carbon-2-5-kilos"
+  },
+  {
+    "id": "7914454925511",
+    "nombre": "Sal Parrillera",
+    "categoria": "Complementarios",
+    "precio": 5200,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/sal-parrillera",
+    "handle": "sal-parrillera"
+  },
+  {
+    "id": "7914432790727",
+    "nombre": "Arepa Santandereana x 5 uds",
+    "categoria": "Complementarios",
+    "precio": 8000,
+    "tags": "arepa, arepa amarilla, santander",
+    "url": "https://carnesycarnes.com/products/arepa-santandereana-por-5-uds",
+    "handle": "arepa-santandereana-por-5-uds"
+  },
+  {
+    "id": "7913141371079",
+    "nombre": "Lengua",
+    "categoria": "Visceras",
+    "precio": 14450,
+    "tags": "estofar, sudar",
+    "url": "https://carnesycarnes.com/products/lengua",
+    "handle": "lengua"
+  },
+  {
+    "id": "7913144385735",
+    "nombre": "Higado",
+    "categoria": "Visceras",
+    "precio": 6380,
+    "tags": "freir",
+    "url": "https://carnesycarnes.com/products/higado",
+    "handle": "higado"
+  },
+  {
+    "id": "7913146318023",
+    "nombre": "Pajarilla",
+    "categoria": "Visceras",
+    "precio": 3850,
+    "tags": "freir",
+    "url": "https://carnesycarnes.com/products/pajarilla",
+    "handle": "pajarilla"
+  },
+  {
+    "id": "7914456105159",
+    "nombre": "Cebollitas Ocaneras",
+    "categoria": "Complementarios",
+    "precio": 10800,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/cebollitas-ocaneras",
+    "handle": "cebollitas-ocaneras"
+  },
+  {
+    "id": "7916727568583",
+    "nombre": "Verduras para parrilla 500g",
+    "categoria": "Congelado",
+    "precio": 6200,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/verduras-para-parrilla-500g",
+    "handle": "verduras-para-parrilla-500g"
+  },
+  {
+    "id": "7906918564039",
+    "nombre": "Paletero de Res",
+    "categoria": "Carne de res",
+    "precio": 18756,
+    "tags": "estofar, sudar",
+    "url": "https://carnesycarnes.com/products/paletero-a-granel",
+    "handle": "paletero-a-granel"
+  },
+  {
+    "id": "7913139536071",
+    "nombre": "Chunchulla",
+    "categoria": "Visceras",
+    "precio": 11250,
+    "tags": "asar",
+    "url": "https://carnesycarnes.com/products/chunchulla",
+    "handle": "chunchulla"
+  },
+  {
+    "id": "8145736925383",
+    "nombre": "Box Familiar",
+    "categoria": "Carne de res",
+    "precio": 231900,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/box-familiar",
+    "handle": "box-familiar"
+  },
+  {
+    "id": "7914457546951",
+    "nombre": "Pimienta negra molida 35g",
+    "categoria": "Complementarios",
+    "precio": 4800,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/pimienta-negra-molida-35g",
+    "handle": "pimienta-negra-molida-35g"
+  },
+  {
+    "id": "7914458628295",
+    "nombre": "Paprika ahumada 35g",
+    "categoria": "Complementarios",
+    "precio": 4800,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/paprika-ahumada-35g",
+    "handle": "paprika-ahumada-35g"
+  },
+  {
+    "id": "7914459676871",
+    "nombre": "Comino 25g",
+    "categoria": "Complementarios",
+    "precio": 4800,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/comino-25g",
+    "handle": "comino-25g"
+  },
+  {
+    "id": "7914461708487",
+    "nombre": "Ajo granulado 50g",
+    "categoria": "Complementarios",
+    "precio": 4800,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/ajo-granulado-50g",
+    "handle": "ajo-granulado-50g"
+  },
+  {
+    "id": "7915833327815",
+    "nombre": "Carne para guisar",
+    "categoria": "Carne de res",
+    "precio": 19422,
+    "tags": "estofar, guisar, sudar",
+    "url": "https://carnesycarnes.com/products/guiso-a-granel",
+    "handle": "guiso-a-granel"
+  },
+  {
+    "id": "8390946553031",
+    "nombre": "Pavo Entero Natural",
+    "categoria": "Pavo",
+    "precio": 81500,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/pavo-entero-natural",
+    "handle": "pavo-entero-natural"
+  },
+  {
+    "id": "8464855515335",
+    "nombre": "Salsa de Aji",
+    "categoria": "Complementarios",
+    "precio": 7200,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/salsa-de-aji",
+    "handle": "salsa-de-aji"
+  },
+  {
+    "id": "8464852893895",
+    "nombre": "Salsa de Pimienta",
+    "categoria": "Complementarios",
+    "precio": 8200,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/salsa-de-pimienta",
+    "handle": "salsa-de-pimienta"
+  },
+  {
+    "id": "8464857546951",
+    "nombre": "Hogao",
+    "categoria": "Complementarios",
+    "precio": 7200,
+    "tags": "",
+    "url": "https://carnesycarnes.com/products/hogao",
+    "handle": "hogao"
+  }
+]

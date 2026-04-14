@@ -1,0 +1,2148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CYC Carnes — CRM</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#D32F2F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CYC CRM">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<style>
+:root{
+  --bg:#0E0E0E;--w:#1A1A1A;--w2:#242424;--br:#2A2A2A;--br2:#333;
+  --ink:#EEEEEE;--gr:#666;--g:#D32F2F;--gp:rgba(211,47,47,.1);
+  --or:#F97316;--bl:#3B82F6;--rd:#EF4444;--pu:#8B5CF6;
+  --wa:#25D366;--gold:#F59E0B;
+  --ink2:#AAA;--br3:#3A3A3A;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);height:100dvh;display:flex;flex-direction:column;overflow:hidden;font-size:13px;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+
+/* ── TOPBAR ── */
+#topbar{display:flex;align-items:center;gap:2px;background:#111;border-bottom:1px solid var(--br);padding:0 8px;height:48px;flex-shrink:0;overflow-x:auto;overflow-y:hidden;}
+.tb-brand{font-weight:900;font-size:15px;color:var(--g);letter-spacing:-0.5px;white-space:nowrap;padding:0 10px;flex-shrink:0;}
+.tb-brand span{color:var(--ink);font-weight:400;}
+.tb-tab{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;color:var(--gr);transition:all .15s;flex-shrink:0;border:none;background:none;}
+.tb-tab:hover{color:var(--ink);background:var(--w);}
+.tb-tab.on{color:var(--g);background:var(--gp);}
+.tb-kpi{display:flex;gap:10px;padding:0 10px;margin-left:auto;align-items:center;flex-shrink:0;}
+.kv{text-align:center;}
+.kv-n{font-size:15px;font-weight:800;line-height:1;}
+.kv-l{font-size:9px;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;}
+#syncDot{width:8px;height:8px;border-radius:50%;background:#555;transition:background .4s;flex-shrink:0;}
+
+/* ── LAYOUT ── */
+#app{display:flex;flex:1;overflow:hidden;}
+.page{display:none;flex:1;overflow:hidden;}
+.page.on{display:flex;}
+#pg-stats,#pg-masiva,#pg-agenda,#pg-bot,#pg-config{flex-direction:column;overflow-y:auto;padding:16px;}
+
+/* ── SIDEBAR (clientes) ── */
+#sidebar{width:280px;min-width:280px;border-right:1px solid var(--br);display:flex;flex-direction:column;overflow:hidden;}
+#search-bar{padding:10px;border-bottom:1px solid var(--br);display:flex;gap:6px;flex-shrink:0;}
+#search-inp{flex:1;background:var(--w);border:1.5px solid var(--br2);border-radius:8px;padding:7px 10px;color:var(--ink);font-size:12px;outline:none;font-family:inherit;}
+#search-inp:focus{border-color:var(--g);}
+#filter-bar{padding:8px 10px;border-bottom:1px solid var(--br);display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0;}
+.fb{padding:4px 10px;border-radius:100px;font-size:10px;font-weight:800;cursor:pointer;border:1.5px solid var(--br2);color:var(--gr);transition:all .12s;letter-spacing:.3px;}
+.fb:hover{border-color:var(--g);color:var(--g);}
+.fb.on{background:var(--g);color:#fff;border-color:var(--g);}
+#client-list{flex:1;overflow-y:auto;padding:6px;}
+
+/* ── CLIENT ITEM ── */
+.ci{padding:10px 12px;border-radius:10px;cursor:pointer;margin-bottom:3px;border:1.5px solid transparent;transition:all .12s;display:flex;flex-direction:column;gap:3px;}
+.ci:hover{background:var(--w);}
+.ci.on{background:var(--w);border-color:var(--g);}
+.ci-name{font-weight:700;font-size:13px;display:flex;align-items:center;gap:5px;}
+.ci-sub{font-size:11px;color:var(--gr);display:flex;align-items:center;gap:6px;}
+.ci-chips{display:flex;gap:3px;flex-wrap:wrap;margin-top:2px;}
+.chip{padding:2px 7px;border-radius:100px;font-size:9px;font-weight:800;letter-spacing:.3px;}
+.chip-nuevo{background:#1A2A1A;color:#4CAF50;}
+.chip-contactado{background:#1A1A2A;color:#64B5F6;}
+.chip-pedido_activo{background:#2A1A00;color:#FFB300;}
+.chip-regular{background:#1E1A2A;color:#AB47BC;}
+.chip-frecuente{background:#002A1A;color:#26A69A;}
+.chip-vip{background:#2A1800;color:#FF8F00;}
+.chip-inactivo{background:#2A1A1A;color:#EF5350;}
+
+/* ── SCORE BADGE ── */
+.score-badge{padding:2px 7px;border-radius:100px;font-size:9px;font-weight:800;}
+.score-frio{background:#1A1A1A;color:#555;}
+.score-tibio{background:#2A1800;color:#F97316;}
+.score-caliente{background:#1A2800;color:#4CAF50;}
+.score-vip{background:#2A1500;color:#FF8F00;}
+
+/* ── DETAIL PANEL ── */
+#detail{flex:1;overflow-y:auto;padding:16px;display:none;}
+#detail.on{display:block;}
+.sec{background:var(--w);border:1px solid var(--br);border-radius:12px;padding:14px;margin-bottom:12px;}
+.sec-l{font-weight:800;font-size:12px;color:var(--gr);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.d-name{font-size:20px;font-weight:900;margin-bottom:4px;}
+.d-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;align-items:center;}
+.d-meta{font-size:12px;color:var(--gr);display:flex;gap:12px;flex-wrap:wrap;}
+.pl-btns{display:flex;flex-wrap:wrap;gap:6px;}
+.pl-btn{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--br2);color:var(--gr);background:transparent;font-family:inherit;transition:all .12s;}
+.pl-btn:hover{border-color:var(--g);}
+.pl-btn.on{border-color:var(--g);background:var(--gp);color:var(--g);}
+.tag-list{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+.tag-chip{background:var(--w2);border:1px solid var(--br2);border-radius:100px;padding:3px 9px;font-size:11px;display:flex;align-items:center;gap:4px;}
+.tag-del{cursor:pointer;color:var(--gr);font-size:10px;}
+.tag-del:hover{color:var(--rd);}
+.tag-sugs{display:flex;flex-wrap:wrap;gap:5px;}
+.note-item{padding:8px 10px;background:var(--bg);border-radius:8px;margin-bottom:6px;}
+.note-txt{font-size:12px;line-height:1.5;white-space:pre-wrap;}
+.note-meta{font-size:10px;color:var(--gr);margin-top:3px;}
+textarea{width:100%;background:var(--w2);border:1.5px solid var(--br2);border-radius:8px;padding:9px;color:var(--ink);font-size:12px;resize:vertical;min-height:70px;outline:none;font-family:inherit;}
+textarea:focus{border-color:var(--g);}
+input[type=text],input[type=date],input[type=number],select{background:var(--w2);border:1.5px solid var(--br2);border-radius:8px;padding:7px 10px;color:var(--ink);font-size:12px;outline:none;font-family:inherit;width:100%;}
+input:focus,select:focus{border-color:var(--g);}
+.btn-save{padding:7px 14px;background:var(--g);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .12s;}
+.btn-save:hover{opacity:.85;}
+.btn-wa{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;background:var(--wa);color:#fff;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;transition:all .12s;border:none;}
+.btn-wa:hover{opacity:.85;}
+.carnes-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.carnes-lbl{font-size:10px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.seg-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:8px;margin-bottom:5px;}
+.seg-txt{font-size:12px;}
+.seg-date{font-size:10px;color:var(--gr);}
+.seg-del{background:none;border:none;color:var(--gr);cursor:pointer;font-size:14px;padding:0 4px;}
+.seg-del:hover{color:var(--rd);}
+.seg-vencido{color:var(--rd);}
+
+/* ── STATS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;}
+.kpi-card{background:var(--w);border:1px solid var(--br);border-radius:12px;padding:14px;}
+.kpi-n{font-size:26px;font-weight:900;line-height:1;}
+.kpi-l{font-size:11px;color:var(--gr);margin-top:3px;}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.bar-lbl{font-size:11px;width:90px;text-align:right;color:var(--ink2);flex-shrink:0;}
+.bar-bg{flex:1;height:8px;background:var(--br2);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;background:var(--g);transition:width .4s;}
+.bar-val{font-size:11px;font-weight:700;min-width:28px;}
+
+/* ── MASIVA ── */
+.masiva-box{background:var(--w);border:1px solid var(--br);border-radius:12px;padding:16px;margin-bottom:14px;}
+.masiva-title{font-weight:800;font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.masiva-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gr);margin-bottom:6px;}
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.tpl-card{border:2px solid var(--br2);border-radius:10px;padding:12px;cursor:pointer;transition:border-color .15s;}
+.tpl-card:hover{border-color:var(--g);}
+.tpl-card.sel{border-color:var(--g);background:var(--gp);}
+.tpl-name{font-size:12px;font-weight:800;margin-bottom:4px;}
+.tpl-prev{font-size:11px;color:var(--gr);line-height:1.4;}
+.filter-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+.m-chip{padding:5px 11px;border:1.5px solid var(--br2);border-radius:100px;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;}
+.m-chip:hover{border-color:var(--g);}
+.m-chip.sel{background:var(--g);color:#fff;border-color:var(--g);}
+.prog-bar{height:8px;background:var(--br2);border-radius:4px;overflow:hidden;margin:8px 0;}
+.prog-fill{height:100%;border-radius:4px;background:var(--g);transition:width .3s;}
+.m-log{max-height:160px;overflow-y:auto;font-size:11px;font-family:monospace;background:#111;color:#AAA;border-radius:8px;padding:10px;margin-top:8px;}
+.log-ok{color:#4CAF50;}
+.log-err{color:#EF4444;}
+.btn-send{width:100%;padding:13px;background:var(--wa);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:4px;}
+.btn-send:disabled{opacity:.4;cursor:default;}
+.btn-stop{width:100%;padding:9px;background:#B71C1C;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px;display:none;}
+.wa-status{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg);border-radius:10px;margin-bottom:12px;}
+.wa-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.wa-conectado{background:#4CAF50;}
+.wa-qr{background:#F97316;}
+.wa-desconectado{background:#555;}
+
+/* ── AGENDA ── */
+.pag-kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.pag-kpi{flex:1;min-width:110px;background:var(--w);border:1px solid var(--br);border-radius:12px;padding:12px;display:flex;gap:10px;align-items:center;}
+.pag-kpi-n{font-size:24px;font-weight:900;color:var(--g);line-height:1;}
+.pag-kpi-l{font-size:10px;color:var(--gr);}
+.pag-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.pag-nav-btn{padding:6px 12px;background:var(--w);border:1px solid var(--br);border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;color:var(--ink);font-family:inherit;}
+.pag-nav-btn:hover{border-color:var(--g);}
+.pag-month{font-size:16px;font-weight:900;}
+.pag-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:12px;}
+.pag-hd{font-size:9px;font-weight:800;text-align:center;padding:5px 0;color:var(--gr);text-transform:uppercase;}
+.pag-cell{min-height:52px;background:var(--w);border:1px solid var(--br);border-radius:7px;padding:5px;cursor:pointer;transition:all .12s;position:relative;}
+.pag-cell:hover{border-color:var(--g);}
+.pag-cell.empty{background:transparent;border-color:transparent;cursor:default;}
+.pag-cell.today{border-color:var(--g);background:var(--gp);}
+.pag-cell.sel{border-color:var(--g);background:var(--gp);box-shadow:0 0 0 2px rgba(211,47,47,.2);}
+.pag-num{font-size:10px;font-weight:700;color:var(--gr);}
+.pag-cell.today .pag-num{color:var(--g);font-weight:900;}
+.pag-dots{display:flex;flex-wrap:wrap;gap:2px;margin-top:3px;}
+.pag-dot{width:6px;height:6px;border-radius:50%;}
+.pag-detail{background:var(--w);border:1px solid var(--br);border-radius:12px;padding:14px;}
+.pag-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--br);}
+.pag-row:last-child{border-bottom:none;}
+.pag-btn{padding:5px 10px;border:1.5px solid var(--br2);border-radius:7px;font-size:11px;cursor:pointer;color:var(--ink2);background:transparent;font-family:inherit;}
+.pag-btn:hover{border-color:var(--g);color:var(--g);}
+
+/* ── BOT IA ── */
+.bot-canal{background:var(--w2);border-radius:8px;padding:12px;display:flex;gap:10px;align-items:flex-start;}
+.bot-msg-in{background:var(--w);border-radius:10px 10px 10px 2px;padding:8px 12px;max-width:75%;font-size:12px;line-height:1.5;}
+.bot-msg-out{background:var(--gp);border:1px solid var(--g);border-radius:10px 10px 2px 10px;padding:8px 12px;max-width:75%;font-size:12px;line-height:1.5;margin-left:auto;}
+.bot-chat-area{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;padding:10px;background:var(--bg);border-radius:10px;}
+
+/* ── CONFIG ── */
+.cfg-row{display:grid;grid-template-columns:1fr 2fr;gap:10px;align-items:center;margin-bottom:10px;}
+.cfg-lbl{font-size:12px;font-weight:700;color:var(--ink2);}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#222;color:#EEE;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;pointer-events:none;transition:opacity .3s;border:1px solid #333;}
+#toast.show{opacity:1;}
+
+/* ── LOGIN ── */
+#login{position:fixed;inset:0;background:#0A0A0A;display:flex;align-items:center;justify-content:center;z-index:100;flex-direction:column;gap:16px;}
+.login-box{background:#111;border:1px solid #222;border-radius:16px;padding:32px;text-align:center;min-width:280px;}
+.login-title{font-size:22px;font-weight:900;color:var(--g);margin-bottom:4px;}
+.login-sub{font-size:12px;color:var(--gr);margin-bottom:20px;}
+.pin-inputs{display:flex;gap:8px;justify-content:center;margin-bottom:16px;}
+.pin-inp{width:44px;height:52px;font-size:22px;font-weight:800;text-align:center;background:#1A1A1A;border:2px solid #2A2A2A;border-radius:10px;color:var(--ink);outline:none;font-family:inherit;}
+.pin-inp:focus{border-color:var(--g);}
+.btn-login{width:100%;padding:12px;background:var(--g);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.login-err{color:var(--rd);font-size:12px;min-height:16px;}
+
+/* ── QR MODAL ── */
+#qrModal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:50;}
+#qrModal.show{display:flex;}
+.qr-box{background:#111;border:1px solid #222;border-radius:16px;padding:24px;text-align:center;}
+.qr-box img{width:200px;height:200px;border-radius:8px;background:#fff;padding:8px;}
+
+/* ── EMPTY ── */
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--gr);gap:8px;}
+.empty-ico{font-size:40px;}
+
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-box">
+    <div class="login-title">🥩 CYC Carnes</div>
+    <div class="login-sub">CRM Comercial — Ingresa tu PIN</div>
+    <div class="pin-inputs">
+      <input class="pin-inp" maxlength="1" type="password" id="p0" oninput="pinNext(0)">
+      <input class="pin-inp" maxlength="1" type="password" id="p1" oninput="pinNext(1)">
+      <input class="pin-inp" maxlength="1" type="password" id="p2" oninput="pinNext(2)">
+      <input class="pin-inp" maxlength="1" type="password" id="p3" oninput="pinNext(3)">
+    </div>
+    <div class="login-err" id="pinErr"></div>
+    <button class="btn-login" onclick="checkPin()">Entrar</button>
+  </div>
+</div>
+
+<!-- QR MODAL -->
+<div id="qrModal">
+  <div class="qr-box">
+    <div style="font-weight:800;margin-bottom:12px;">📱 Escanea con WhatsApp</div>
+    <img id="qrImg" src="" alt="QR">
+    <div style="font-size:11px;color:#666;margin-top:10px;">WhatsApp → Dispositivos vinculados → Vincular dispositivo</div>
+    <button onclick="document.getElementById('qrModal').classList.remove('show')" style="margin-top:12px;padding:7px 16px;background:#222;border:1px solid #333;border-radius:8px;color:#AAA;cursor:pointer;font-family:inherit;">Cerrar</button>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div class="tb-brand">🥩 CYC <span>Carnes</span></div>
+  <div class="tb-tab on"  onclick="gotoTab('clientes',this)" id="tab-clientes">👥 Clientes</div>
+  <div class="tb-tab"     onclick="gotoTab('stats',this)"   id="tab-stats">📊 Stats</div>
+  <div class="tb-tab"     onclick="gotoTab('masiva',this)"  id="tab-masiva">📱 Masiva WA</div>
+  <div class="tb-tab"     onclick="gotoTab('agenda',this)"  id="tab-agenda">📅 Agenda</div>
+  <div class="tb-tab"     onclick="gotoTab('bot',this)"     id="tab-bot">🤖 Bot IA</div>
+  <div class="tb-tab"     onclick="gotoTab('config',this)"  id="tab-config">⚙️ Config</div>
+  <div class="tb-kpi">
+    <div class="kv"><div class="kv-n" id="kT">—</div><div class="kv-l">Total</div></div>
+    <div class="kv"><div class="kv-n" id="kA" style="color:var(--or);">—</div><div class="kv-l">Activos</div></div>
+    <div class="kv"><div class="kv-n" id="kV" style="color:var(--gold);">—</div><div class="kv-l">VIP</div></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:5px;padding:0 10px;border-left:1px solid var(--br);flex-shrink:0;">
+    <div id="syncDot"></div>
+    <span id="syncLbl" style="font-size:9px;color:#555;font-weight:700;letter-spacing:.5px;">SYNC</span>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- ══ CLIENTES ══ -->
+  <div class="page on" id="pg-clientes" style="flex-direction:row;">
+    <div id="sidebar">
+      <div id="search-bar">
+        <input id="search-inp" placeholder="Buscar cliente, producto, ciudad…" oninput="renderList()">
+      </div>
+      <div id="filter-bar">
+        <div class="fb on" onclick="setFiltro('todos',this)">Todos</div>
+        <div class="fb" onclick="setFiltro('nuevo',this)">Nuevo</div>
+        <div class="fb" onclick="setFiltro('contactado',this)">Contactado</div>
+        <div class="fb" onclick="setFiltro('pedido_activo',this)">Pedido</div>
+        <div class="fb" onclick="setFiltro('regular',this)">Regular</div>
+        <div class="fb" onclick="setFiltro('frecuente',this)">Frecuente</div>
+        <div class="fb" onclick="setFiltro('vip',this)">VIP</div>
+        <div class="fb" onclick="setFiltro('distribuidor',this)">Distribuidor</div>
+        <div class="fb" onclick="setFiltro('inactivo',this)">Inactivo</div>
+      </div>
+      <div id="client-list"></div>
+    </div>
+    <div id="detail"></div>
+    <div class="empty" id="detail-empty" style="flex:1;display:flex;">
+      <div class="empty-ico">🥩</div>
+      <div>Selecciona un cliente</div>
+    </div>
+  </div>
+
+  <div class="page" id="pg-stats"></div>
+  <div class="page" id="pg-masiva"></div>
+  <div class="page" id="pg-agenda"></div>
+  <div class="page" id="pg-bot"></div>
+  <div class="page" id="pg-config"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════════════════
+//  CONFIG FIREBASE (editar en ⚙️ Config o acá directamente)
+// ══════════════════════════════════════════════════════════════════════
+var FB_CONFIG = JSON.parse(localStorage.getItem('cyc_fb_config') || 'null') || {
+  apiKey:    '',
+  projectId: '',
+  authDomain:'',
+  appId:     ''
+};
+
+// ══════════════════════════════════════════════════════════════════════
+//  PERFILES / LOGIN
+// ══════════════════════════════════════════════════════════════════════
+var PERFILES = {
+  'mike':   { pin: '1111', rol: 'vendedor', nombre: 'Mike'   },
+  'pipe':   { pin: '2222', rol: 'vendedor', nombre: 'Pipe'   },
+  'kelly':  { pin: '3333', rol: 'vendedor', nombre: 'Kelly'  },
+  'pao':    { pin: '4444', rol: 'vendedor', nombre: 'Pao'    },
+  'yomi':   { pin: '5555', rol: 'vendedor', nombre: 'Yomi'   },
+  'anita':  { pin: '6666', rol: 'vendedor', nombre: 'Anita'  },
+  'silvi':  { pin: '7777', rol: 'vendedor', nombre: 'Silvi'  },
+  'juanjo': { pin: '8888', rol: 'vendedor', nombre: 'JuanJO' },
+  'admin':  { pin: '0000', rol: 'admin',    nombre: 'Admin'  },
+};
+var session = null;
+var _apiToken = sessionStorage.getItem('cyc_token') || null;
+
+// Helper: fetch con token de autenticación incluido automáticamente
+function apiFetch(url, opts) {
+  opts = opts || {};
+  opts.headers = opts.headers || {};
+  if (_apiToken) opts.headers['x-cyc-token'] = _apiToken;
+  return fetch(url, opts);
+}
+
+function pinNext(i) {
+  var v = document.getElementById('p'+i).value;
+  if (v && i < 3) document.getElementById('p'+(i+1)).focus();
+  if (i === 3 && v) checkPin();
+}
+function checkPin() {
+  var pin = [0,1,2,3].map(function(i){ return document.getElementById('p'+i).value; }).join('');
+  var match = Object.entries(PERFILES).find(function(e){ return e[1].pin === pin; });
+  if (!match) {
+    document.getElementById('pinErr').textContent = 'PIN incorrecto';
+    [0,1,2,3].forEach(function(i){ document.getElementById('p'+i).value=''; });
+    document.getElementById('p0').focus();
+    setTimeout(function(){ document.getElementById('pinErr').textContent=''; }, 2000);
+    return;
+  }
+  session = { id: match[0], ...match[1] };
+  // Obtener token del servidor
+  apiFetch('/api/auth/login', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ pin: pin })
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if (d.ok) {
+      _apiToken = d.token;
+      sessionStorage.setItem('cyc_token', d.token);
+    }
+  }).catch(function(){}); // Si el servidor no responde, funciona igual (modo offline)
+  sessionStorage.setItem('cyc_session', JSON.stringify(session));
+  document.getElementById('login').style.display = 'none';
+  initApp();
+}
+// Restaurar sesión si ya había ingresado (survives F5)
+(function(){
+  try {
+    var s = sessionStorage.getItem('cyc_session');
+    if (s) { session = JSON.parse(s); document.getElementById('login').style.display='none'; initApp(); return; }
+  } catch(_) {}
+  document.getElementById('p0').focus();
+})();
+
+// ══════════════════════════════════════════════════════════════════════
+//  DATOS (localStorage + Firestore)
+// ══════════════════════════════════════════════════════════════════════
+var clients  = JSON.parse(localStorage.getItem('cyc_clients')  || '[]');
+var fsStates = JSON.parse(localStorage.getItem('cyc_states')   || '{}');
+var fsNotes  = JSON.parse(localStorage.getItem('cyc_notes')    || '{}');
+var fsSegs   = JSON.parse(localStorage.getItem('cyc_segs')     || '{}');
+var fsCarnes = JSON.parse(localStorage.getItem('cyc_carnes')   || '{}'); // datos extra de carnes
+var db = null;
+var currentId = null;
+var filtroActual = 'todos';
+
+function saveLS() {
+  localStorage.setItem('cyc_clients',  JSON.stringify(clients));
+  localStorage.setItem('cyc_states',   JSON.stringify(fsStates));
+  localStorage.setItem('cyc_notes',    JSON.stringify(fsNotes));
+  localStorage.setItem('cyc_segs',     JSON.stringify(fsSegs));
+  localStorage.setItem('cyc_carnes',   JSON.stringify(fsCarnes));
+  // Sincronizar al servidor (silencioso, para que las campañas auto tengan acceso a clientes)
+  _syncClientesServer();
+}
+var _syncDebounce = null;
+function _syncClientesServer() {
+  clearTimeout(_syncDebounce);
+  _syncDebounce = setTimeout(function(){
+    apiFetch('/api/sync-clientes', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ clients: clients, states: fsStates, carnes: fsCarnes, _origen: _deviceId })
+    }).catch(function(){}); // silencioso — no afecta la UX
+  }, 2000); // debounce 2s para no saturar con cada keystroke
+}
+
+// Carga datos desde el servidor al arrancar (nuevo dispositivo o recarga)
+function _cargarDesdeServidor() {
+  apiFetch('/api/sync-clientes')
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+      if (!d.ok) return;
+      var changed = false;
+      // Agregar clientes del servidor que no existen localmente
+      if (Array.isArray(d.clients)) {
+        d.clients.forEach(function(rc) {
+          if (!clients.find(function(lc){ return lc.id === rc.id; })) {
+            clients.push(rc);
+            changed = true;
+          }
+        });
+      }
+      // Mezclar estados (gana el más reciente)
+      if (d.states) {
+        Object.keys(d.states).forEach(function(cid) {
+          var rs = d.states[cid], ls = fsStates[cid];
+          if (!ls || !ls.updatedAt || (rs.updatedAt && rs.updatedAt > ls.updatedAt)) {
+            fsStates[cid] = rs; changed = true;
+          }
+        });
+      }
+      if (d.carnes) {
+        Object.keys(d.carnes).forEach(function(cid) {
+          if (!fsCarnes[cid]) { fsCarnes[cid] = d.carnes[cid]; changed = true; }
+        });
+      }
+      if (changed) { saveLS(); renderList(); }
+    })
+    .catch(function(){}); // offline — usar datos locales
+}
+
+// ── Estado de un cliente ──
+function stOf(c) { return (fsStates[c.id] && fsStates[c.id].pipeline) || c.pipeline || 'nuevo'; }
+function setP(cid, val) {
+  if (!fsStates[cid]) fsStates[cid] = {};
+  fsStates[cid].pipeline = val;
+  fsStates[cid].updatedAt = new Date().toISOString();
+  fsStates[cid].updatedBy = session ? session.nombre : '?';
+  saveLS();
+  if (db) db.collection('cyc_states').doc(cid).set(fsStates[cid]);
+  renderList(); buildDetail(cid);
+}
+function setAsesor(cid, val) {
+  if (!fsStates[cid]) fsStates[cid] = {};
+  fsStates[cid].asesor = val;
+  saveLS();
+  if (db) db.collection('cyc_states').doc(cid).set(fsStates[cid]);
+  buildDetail(cid);
+}
+
+// ── Tags ──
+function getTags(cid) { return (fsStates[cid] && fsStates[cid].tags) || []; }
+function addTag(cid, tag) {
+  if (!fsStates[cid]) fsStates[cid] = {};
+  var tags = getTags(cid);
+  if (!tags.includes(tag)) { tags.push(tag); fsStates[cid].tags = tags; saveLS(); if(db) db.collection('cyc_states').doc(cid).set(fsStates[cid]); }
+  buildDetail(cid);
+}
+function removeTag(cid, tag) {
+  if (!fsStates[cid]) fsStates[cid] = {};
+  fsStates[cid].tags = getTags(cid).filter(function(t){ return t !== tag; });
+  saveLS(); if(db) db.collection('cyc_states').doc(cid).set(fsStates[cid]);
+  buildDetail(cid);
+}
+
+// ── Notas ──
+function getNotes(cid) { return fsNotes[cid] || []; }
+function addNote(cid) {
+  var ta = document.getElementById('note-ta'); if (!ta) return;
+  var txt = ta.value.trim(); if (!txt) return;
+  var nota = { txt: txt, ts: new Date().toISOString(), autor: session ? session.nombre : '?' };
+  if (!fsNotes[cid]) fsNotes[cid] = [];
+  fsNotes[cid].unshift(nota);
+  saveLS();
+  if (db) db.collection('cyc_notes').doc(cid).set({ notas: fsNotes[cid] });
+  ta.value = ''; buildDetail(cid);
+}
+
+// ── Seguimientos ──
+function getSegs(cid) { return fsSegs[cid] || []; }
+function addSeg(cid) {
+  var f = document.getElementById('seg-fecha'); var n = document.getElementById('seg-nota');
+  if (!f || !f.value) return toast('Elige una fecha','e');
+  var seg = { id: Date.now(), fecha: f.value, nota: n ? n.value.trim() : '', ts: new Date().toISOString() };
+  if (!fsSegs[cid]) fsSegs[cid] = [];
+  fsSegs[cid].push(seg);
+  saveLS(); if(db) db.collection('cyc_segs').doc(cid).set({ segs: fsSegs[cid] });
+  f.value = ''; if(n) n.value = ''; buildDetail(cid);
+}
+function delSeg(cid, sid) {
+  fsSegs[cid] = (fsSegs[cid]||[]).filter(function(s){ return s.id !== sid; });
+  saveLS(); if(db) db.collection('cyc_segs').doc(cid).set({ segs: fsSegs[cid] });
+  buildDetail(cid);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  CATÁLOGO REAL — Shopify carnesycarnes.com (100 productos)
+// ══════════════════════════════════════════════════════════════════════
+var CATALOGO = {
+  "Carne de res": [
+    { n:"Lomo Fino Pv", p:130374, h:"lomo-fino-premium", t:"asar, freir, parrilla" },
+    { n:"Medallones Lomo Fino", p:47226, h:"medallones-lomo-fino", t:"asar, freir, parrilla" },
+    { n:"Chata o Churrasco Premium x 3LBS", p:95706, h:"chata-o-churrasco", t:"asar, freir, parrilla" },
+    { n:"Punta de Anca x 3 LIBRAS", p:103242, h:"punta-de-anca", t:"asar, freir, parrilla" },
+    { n:"Punta de anca porcionada x 2 und", p:38182, h:"punta-de-anca-porcionada", t:"asar, freir, parrilla" },
+    { n:"Rib eye Hueso Corto", p:33770, h:"rib-eye-hueso-corto", t:"asar, freir, parrilla" },
+    { n:"Rib eye hueso largo", p:32233, h:"rib-eye-hueso-largo", t:"asar, freir, parrilla" },
+    { n:"T-Bone", p:37870, h:"t-bone", t:"asar, freir, parrilla" },
+    { n:"Entrecort Premium", p:28509, h:"entrecort-premium", t:"asar, freir, parrilla" },
+    { n:"Chata porcionada x 2 porciones", p:33661, h:"chata-o-churrasco-porcionado", t:"asar, freir, parrilla" },
+    { n:"Pincho de Lomo Fino", p:30746, h:"pincho-de-lomo-fino", t:"asar, freir, parrilla" },
+    { n:"Lomo Ancho Pv", p:24869, h:"lomo-ancho-premium", t:"asar, freir, parrilla" },
+    { n:"Bife Parrillero", p:27108, h:"bife-parillero", t:"asar, freir, parrilla" },
+    { n:"Brochetas mixtas x3 Unid", p:33500, h:"brochetas-mixtas-x3-unid", t:"asar, freir, parrilla" },
+    { n:"Cadera de Res", p:24115, h:"cadera-premium", t:"asar, freir, guisar" },
+    { n:"Cecina de Res", p:24115, h:"cecina-premium", t:"asar, freir, guisar" },
+    { n:"Carabella de res", p:22550, h:"bola-premium", t:"asar, freir, guisar" },
+    { n:"Carne para asar/freir", p:22357, h:"asar-premium", t:"asar, freir, parrilla" },
+    { n:"Bota de res", p:22357, h:"herradero-a-granel", t:"asar, freir, guisar" },
+    { n:"Capon Muchacho", p:21603, h:"capon-a-granel", t:"asar, freir, guisar" },
+    { n:"Fajitas de Res", p:24939, h:"fajitas-especial-de-res", t:"asar, estofar, freir" },
+    { n:"Goulash de Res", p:24939, h:"goulash-especial-de-res-l-m", t:"asar, estofar, freir" },
+    { n:"Tira de asado", p:22389, h:"tira-de-asado", t:"asar" },
+    { n:"Tira de asado especial", p:48068, h:"tira-de-asado-especial-copia", t:"asar" },
+    { n:"Carne Oreada", p:24750, h:"carne-oreada", t:"" },
+    { n:"Sobrebarriga", p:60588, h:"sobrebarriga", t:"estofar, sudar" },
+    { n:"Carne para desmechar", p:19422, h:"aleta-premium", t:"estofar, sudar" },
+    { n:"Carne desmechada", p:22015, h:"carne-desmechada", t:"" },
+    { n:"Carne para guisar", p:19422, h:"guiso-a-granel", t:"estofar, guisar, sudar" },
+    { n:"Murillo de Pierna PV", p:17884, h:"murillo-premium", t:"estofar, sudar" },
+    { n:"Paletero de Res", p:18756, h:"paletero-a-granel", t:"estofar, sudar" },
+    { n:"Cogote", p:18397, h:"cogote-premium", t:"" },
+    { n:"Colas por 1 Kilogramo", p:18950, h:"colas-por-1-kilogramo", t:"estofar, guisar, sudar" },
+    { n:"Costilla de Res", p:13272, h:"costilla-de-res-por-libra", t:"asar, estofar" },
+    { n:"Molida especial x600 grs", p:25422, h:"molida-especial-por-600-grs", t:"asar, boloñesa, hamburguesa" },
+    { n:"Carne Molida 98/2", p:23521, h:"carne-molida-98-2-l-m", t:"boloñesa, hamburguesa, pastas" },
+    { n:"Molida de Res x 450g", p:12812, h:"molida-de-res", t:"boloñesa, hamburguesa" },
+    { n:"Box Familiar", p:231900, h:"box-familiar", t:"" },
+    { n:"Combo Pack Familiar", p:105000, h:"combo-pack-familiar", t:"" },
+    { n:"Duo Pack Familiar", p:31000, h:"duo-pack-familiar", t:"" }
+  ],
+  "Cerdo": [
+    { n:"Lomo de Cerdo", p:25450, h:"lomo-de-cerdo", t:"asar, freir" },
+    { n:"Lomo de cerdo porcionado", p:12950, h:"lomo-de-cerdo-porcionado", t:"asar, freir" },
+    { n:"Costilla de cerdo ahumada", p:22450, h:"costilla-de-cerdo-ahumada", t:"" },
+    { n:"Costillas de Cerdo", p:14900, h:"costillas-de-cerdo", t:"asar" },
+    { n:"Chuleta de Pierna de Cerdo", p:10950, h:"chuleta-de-pierna-de-cerdo", t:"" },
+    { n:"Tocineta de cerdo", p:11250, h:"tocineta-de-cerdo", t:"" },
+    { n:"Tocino de Cerdo", p:8950, h:"tocino-de-cerdo", t:"asar, freir" },
+    { n:"Bondiola de Cerdo", p:17500, h:"bondiola-de-cerdo", t:"" },
+    { n:"Pernil de Cerdo", p:10250, h:"pernil-de-cerdo", t:"" },
+    { n:"Chicharroncito", p:9950, h:"chicharroncito", t:"" }
+  ],
+  "Pollo": [
+    { n:"Pechuga de Pollo", p:11900, h:"pechuga-de-pollo", t:"" },
+    { n:"Pechuga Claripack", p:62800, h:"pechuga-claripack", t:"" },
+    { n:"Filete de Pechuga x 500g", p:9400, h:"filete-de-pechuga-x-500g", t:"" },
+    { n:"Pollo Entero x1", p:17500, h:"pollo-entero-x1", t:"" },
+    { n:"Contramuslo de Pollo x1kg", p:11350, h:"contramuslo-de-pollo-x1-kg", t:"" },
+    { n:"Muslo de Pollo x1kg", p:8900, h:"muslo-de-pollo", t:"" },
+    { n:"Alas de Pollo x1kg", p:8700, h:"alas-de-pollo", t:"" },
+    { n:"Apanado de Pollo x 1Kg", p:16850, h:"apanado-de-pollo-x-1kg", t:"" },
+    { n:"Nuggets de Pollo x 1Kg", p:17250, h:"nuggets-de-pollo-x-1kg", t:"" },
+    { n:"Rabadilla de Pollo x 1kg", p:8400, h:"rabadilla-de-pollo-x-1kg", t:"" },
+    { n:"Menudencias x 1kg", p:4200, h:"menudencias-x-1-kg", t:"" }
+  ],
+  "Charcutería": [
+    { n:"Hamburguesa Premium x 5 uds", p:8800, h:"hamburguesa-premium-x-5-uds", t:"" },
+    { n:"Chorizo Premium x 5 uds", p:8400, h:"chorizo-premium-x-5-uds", t:"" },
+    { n:"Longaniza x 5 uds", p:7700, h:"longaniza-premium-x-5-uds", t:"" },
+    { n:"Salchicha Premium x 5 uds", p:8000, h:"salchicha-premium-x-5-uds", t:"" },
+    { n:"Morcilla x 5 uds", p:7500, h:"morcilla-premium-x-5-uds", t:"" },
+    { n:"Jamon de Cerdo", p:6350, h:"jamon-de-cerdo", t:"" },
+    { n:"Salchichon Cervecero", p:5450, h:"salchichon-cervecero", t:"" }
+  ],
+  "Mar": [
+    { n:"Camaron 36/40 500g", p:28600, h:"camaron-36-40-500g", t:"" },
+    { n:"Filete de Trucha x 500g", p:25300, h:"filete-de-trucha-x-500g", t:"" },
+    { n:"Filete de Tilapia x 1Kg", p:23200, h:"filete-de-tilapia-x-1-kg", t:"" },
+    { n:"Pulpo Precocido x 400g", p:26300, h:"pulpo-precocido-x-400g", t:"" },
+    { n:"Filete de Salmon x 180g", p:16450, h:"filete-de-salmon-x-180g", t:"" },
+    { n:"Cazuela de Mariscos x 500g", p:15100, h:"cazuela-de-mariscos-x-500g", t:"" },
+    { n:"Calamares Precocidos x 400g", p:15100, h:"calamares-precocidos-x-400g", t:"" }
+  ],
+  "Pavo": [
+    { n:"Pechuga de Pavo Completa", p:82500, h:"pechuga-de-pavo", t:"" },
+    { n:"Pavo Entero Natural", p:81500, h:"pavo-entero-natural", t:"" }
+  ],
+  "Vísceras": [
+    { n:"Lengua", p:14450, h:"lengua", t:"estofar, sudar" },
+    { n:"Chunchulla", p:11250, h:"chunchulla", t:"asar" },
+    { n:"Higado", p:6380, h:"higado", t:"freir" },
+    { n:"Pajarilla", p:3850, h:"pajarilla", t:"freir" }
+  ],
+  "Complementarios": [
+    { n:"Carbon 2.5 Kilos", p:14400, h:"carbon-2-5-kilos", t:"" },
+    { n:"Cebollitas Ocaneras", p:10800, h:"cebollitas-ocaneras", t:"" },
+    { n:"Arepa Santandereana x 5 uds", p:8000, h:"arepa-santandereana-por-5-uds", t:"" },
+    { n:"Salsa de Pimienta", p:8200, h:"salsa-de-pimienta", t:"" },
+    { n:"Salsa BBQ", p:7200, h:"salsa-bbq", t:"" },
+    { n:"Hogao", p:7200, h:"hogao", t:"" },
+    { n:"Salsa de Aji", p:7200, h:"salsa-de-aji", t:"" },
+    { n:"Mermelada de Cebolla", p:6800, h:"mermelada-de-cebolla", t:"" },
+    { n:"Chimichurri", p:5000, h:"chimichurri", t:"" },
+    { n:"Guacamole", p:5000, h:"guacamole", t:"" },
+    { n:"Sal Parrillera", p:5200, h:"sal-parrillera", t:"" },
+    { n:"Pimienta negra molida 35g", p:4800, h:"pimienta-negra-molida-35g", t:"" },
+    { n:"Paprika ahumada 35g", p:4800, h:"paprika-ahumada-35g", t:"" },
+    { n:"Comino 25g", p:4800, h:"comino-25g", t:"" },
+    { n:"Ajo granulado 50g", p:4800, h:"ajo-granulado-50g", t:"" },
+    { n:"Romero Fresco", p:3400, h:"romero-fresco", t:"" }
+  ],
+  "Combos y Packs": [
+    { n:"Combo Pa' Picar", p:71730, h:"combo-pa-picar", t:"" },
+    { n:"Verduras para parrilla 500g", p:6200, h:"verduras-para-parrilla-500g", t:"" },
+    { n:"Maiz Super Dulce 500g", p:3700, h:"maiz-super-dulce-500-g", t:"" }
+  ]
+};
+
+// ── Segmentos CRM reales (archivo 03) ──
+var SEGMENTOS_CRM = {
+  'vip':         { lbl:'VIP/Premium',       desc:'Compra >$200K/mes o cortes premium frecuentes',   accion:'Ofertas exclusivas, acceso anticipado a BOX' },
+  'frecuente':   { lbl:'Frecuente',          desc:'Compra 2+ veces al mes',                          accion:'Programa fidelización, descuentos por volumen' },
+  'regular':     { lbl:'Ocasional',          desc:'Compra 1 vez al mes o menos',                     accion:'Recordatorios de ofertas, promover BOX Familiar' },
+  'nuevo':       { lbl:'Nuevo',              desc:'Primera compra o registro reciente',               accion:'Descuento 10% primer pedido, bienvenida personalizada' },
+  'inactivo':    { lbl:'Inactivo',           desc:'Sin compra en últimos 60 días',                   accion:'Campaña reactivación con descuento especial (VUELVE15)' },
+  'distribuidor':{ lbl:'Distribuidor',       desc:'Empresa, NIT, compra >50kg',                      accion:'Asesor comercial dedicado, precios mayoristas' },
+  'parrillero':  { lbl:'Parrillero',         desc:'Compra frecuente de cortes para asar',            accion:'Promociones complementarios (carbón, salsas, arepas)' },
+  'fitness':     { lbl:'Saludable/Fitness',  desc:'Busca línea muscular, carnes magras',             accion:'Cross-sell línea muscular, contenido nutricional' },
+};
+
+var TIPOS_CLIENTE = ['Restaurante','Hotel','Carnicería','Asadero','Cafetería','Mayorista','Distribuidor','Domicilio particular','Catering','Finca/Eventos','Fitness/Gym','Supermercado'];
+var CANALES_CAPTACION = ['WhatsApp','Instagram','Facebook','Shopify web','Referido','Punto de venta','Call center','Formulario distribuidores','Aliado comercial'];
+var CATEGORIAS_PREFERIDAS = ['Res - Cortes premium','Res - Para asar','Res - Para guisar','Cerdo','Pollo','Charcutería','Mar','Complementarios','Combos y Packs'];
+
+// Precio formateado COP
+function fmtCOP(n){ return '$'+Number(n).toLocaleString('es-CO'); }
+
+// ── Datos carnes ──
+function saveCarnes(cid) {
+  var f = function(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  var prods = [];
+  document.querySelectorAll('.prod-check:checked').forEach(function(el){ prods.push(el.value); });
+  fsCarnes[cid] = {
+    tipo_cliente:       f('c-tipo'),
+    segmento:           f('c-segmento'),
+    canal_captacion:    f('c-canal'),
+    email:              f('c-email'),
+    barrio:             f('c-barrio'),
+    direccion:          f('c-dir'),
+    cumpleanos:         f('c-cumple'),
+    productos:          prods,
+    categoria_pref:     f('c-catpref'),
+    kg_ultimo:          f('c-kg'),
+    fecha_ultimo:       f('c-fecha'),
+    ticket_promedio:    f('c-ticket'),
+    frecuencia:         f('c-frec'),
+    ciudad:             f('c-ciudad'),
+    proveedor:          f('c-prov'),
+    presupuesto:        f('c-budget'),
+    notas_prod:         f('c-notasprod')
+  };
+  saveLS(); if(db) db.collection('cyc_carnes').doc(cid).set(fsCarnes[cid]);
+  toast('✅ Datos guardados');
+}
+
+// ── Programación de contacto automático ──
+var fsAgenda = {};  // cache local agenda del servidor
+
+function cargarAgendaServidor() {
+  return apiFetch('/api/agenda/todos')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      d.agenda.forEach(function(a){ fsAgenda[a.clienteId] = a; });
+    }).catch(function(){});
+}
+
+function guardarProgramacion(cid) {
+  var c  = clients.find(function(x){ return x.id===cid; });
+  var car = fsCarnes[cid]||{};
+  var f  = function(id){ var el=document.getElementById(id); return el?el.value:''; };
+  var payload = {
+    clienteId:             cid,
+    nombre:                c ? c.nombre : '',
+    telefono:              c ? c.telefono : '',
+    email:                 car.email || f('ag-email'),
+    frecuencia:            f('ag-freq'),
+    canal:                 f('ag-canal'),
+    producto:              (car.productos&&car.productos.length) ? car.productos.join(', ') : (c ? c.producto||'' : ''),
+    mensaje_personalizado: f('ag-msg') || null,
+    activo:                true
+  };
+  apiFetch('/api/agenda/guardar', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.ok){ fsAgenda[cid]=payload; fsAgenda[cid].proximo_contacto=d.proximo; toast('✅ Contacto automático programado — próximo: '+d.proximo); buildDetail(cid); }
+    }).catch(function(){ toast('⚠️ Servidor no responde. ¿Está corriendo npm start?','e'); });
+}
+
+function cancelarProgramacion(cid) {
+  apiFetch('/api/agenda/'+cid, { method:'DELETE' })
+    .then(function(){ delete fsAgenda[cid]; toast('🗑️ Contacto automático cancelado'); buildDetail(cid); })
+    .catch(function(){ toast('Error cancelando','e'); });
+}
+
+function probarMensaje(cid) {
+  apiFetch('/api/agenda/probar', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({clienteId:cid}) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){ toast(d.ok ? '✅ Mensaje de prueba enviado' : '❌ '+d.error, d.ok?'s':'e'); })
+    .catch(function(){ toast('⚠️ Servidor no responde','e'); });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  SCORE
+// ══════════════════════════════════════════════════════════════════════
+function score(c) {
+  var st = stOf(c);
+  if (st === 'vip') return 100;
+  if (st === 'inactivo') return 2;
+  var base = { nuevo:5, contactado:18, pedido_activo:40, regular:55, frecuente:75, distribuidor:65 }[st] || 5;
+  var tags = getTags(c.id);
+  var car  = fsCarnes[c.id] || {};
+  // Tags de valor
+  if (tags.includes('VIP'))         base += 15;
+  if (tags.includes('Mayorista'))   base += 12;
+  if (tags.includes('Distribuidor'))base += 10;
+  // Segmento CRM
+  if (car.segmento === 'vip')       base += 15;
+  if (car.segmento === 'distribuidor') base += 10;
+  if (car.segmento === 'frecuente') base += 8;
+  // Ticket promedio
+  if (car.ticket_promedio) {
+    var tick = parseInt(String(car.ticket_promedio).replace(/\D/g,'')) || 0;
+    if (tick >= 200000) base += 12;
+    else if (tick >= 100000) base += 7;
+    else if (tick >= 50000) base += 3;
+  }
+  // Productos seleccionados
+  if ((car.productos && car.productos.length > 3) || car.producto) base += 8;
+  else if (car.productos && car.productos.length > 0) base += 4;
+  // Recencia
+  if (car.fecha_ultimo) {
+    var dias = (Date.now() - new Date(car.fecha_ultimo)) / 86400000;
+    if (dias > 60)      base -= 15;
+    else if (dias > 30) base -= 7;
+    else if (dias < 7)  base += 10;
+    else if (dias < 14) base += 6;
+  }
+  // Completitud del perfil
+  if (car.email)          base += 3;
+  if (car.barrio)         base += 2;
+  if (car.canal_captacion)base += 2;
+  if (car.cumpleanos)     base += 3;
+  // Agenda activa
+  if (fsAgenda[c.id] && fsAgenda[c.id].activo) base += 5;
+  // Seguimientos
+  if (getSegs(c.id).length > 0) base += 5;
+  return Math.max(2, Math.min(99, Math.round(base)));
+}
+function scoreBadge(c) {
+  var s = score(c);
+  if (s >= 80) return '<span class="score-badge score-vip">👑 '+s+'</span>';
+  if (s >= 55) return '<span class="score-badge score-caliente">🔥 '+s+'</span>';
+  if (s >= 30) return '<span class="score-badge score-tibio">⏳ '+s+'</span>';
+  return '<span class="score-badge score-frio">❄️ '+s+'</span>';
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  RENDER LISTA
+// ══════════════════════════════════════════════════════════════════════
+var PIPELINE = {
+  nuevo:        { lbl:'Nuevo',        co:'#4CAF50', bg:'#1A2A1A' },
+  contactado:   { lbl:'Contactado',   co:'#64B5F6', bg:'#1A1A2A' },
+  pedido_activo:{ lbl:'Pedido activo',co:'#FFB300', bg:'#2A1A00' },
+  regular:      { lbl:'Ocasional',    co:'#AB47BC', bg:'#1E1A2A' },
+  frecuente:    { lbl:'Frecuente',    co:'#26A69A', bg:'#002A1A' },
+  vip:          { lbl:'VIP/Premium',  co:'#FF8F00', bg:'#2A1800' },
+  distribuidor: { lbl:'Distribuidor', co:'#E91E63', bg:'#2A0A1A' },
+  inactivo:     { lbl:'Inactivo',     co:'#EF5350', bg:'#2A1A1A' }
+};
+
+function renderList() {
+  var q = (document.getElementById('search-inp')||{}).value || '';
+  var q2 = q.toLowerCase();
+  var lista = clients.filter(function(c) {
+    var st = stOf(c);
+    if (filtroActual !== 'todos' && st !== filtroActual) return false;
+    if (q2) {
+      var h = (c.nombre+' '+(c.telefono||'')+' '+(c.ciudad||'')+' '+((fsCarnes[c.id]&&fsCarnes[c.id].producto)||'')).toLowerCase();
+      return h.includes(q2);
+    }
+    return true;
+  });
+
+  // KPIs
+  document.getElementById('kT').textContent = clients.length;
+  document.getElementById('kA').textContent = clients.filter(function(c){ var s=stOf(c); return ['pedido_activo','regular','frecuente'].includes(s); }).length;
+  document.getElementById('kV').textContent = clients.filter(function(c){ return stOf(c)==='vip'; }).length;
+
+  var html = lista.length ? lista.map(function(c) {
+    var st = stOf(c);
+    var p  = PIPELINE[st] || PIPELINE.nuevo;
+    var tags = getTags(c.id);
+    var car = fsCarnes[c.id] || {};
+    return '<div class="ci'+(c.id===currentId?' on':'')+'" onclick="openClient(\''+escQ(c.id)+'\');">'
+      +'<div class="ci-name">'+escH(c.nombre)+' '+scoreBadge(c)+'</div>'
+      +'<div class="ci-sub">'
+      +(c.telefono?'📞 '+escH(c.telefono)+'  ':'')
+      +(car.ciudad||c.ciudad?'📍 '+escH(car.ciudad||c.ciudad||''):'')
+      +'</div>'
+      +(function(){ var p=(car.productos&&car.productos.length)?car.productos.slice(0,2).join(', '):(c.producto||''); var tk=car.ticket_promedio?'<span style="color:var(--gold);margin-left:4px;">'+escH(car.ticket_promedio)+'</span>':''; return (p||tk)?'<div style="font-size:10px;color:var(--gr);margin-top:1px;">'+(p?'🥩 '+escH(p):'')+tk+'</div>':''; })()
+      +'<div class="ci-chips">'
+      +'<span class="chip chip-'+st+'" style="background:'+p.bg+';color:'+p.co+';">'+p.lbl+'</span>'
+      +tags.slice(0,2).map(function(t){ return '<span class="chip" style="background:#222;color:#888;">'+escH(t)+'</span>'; }).join('')
+      +'</div>'
+      +'</div>';
+  }).join('') : '<div style="text-align:center;color:var(--gr);padding:30px 10px;font-size:12px;">Sin resultados</div>';
+
+  document.getElementById('client-list').innerHTML = html;
+}
+
+function setFiltro(f, btn) {
+  filtroActual = f;
+  document.querySelectorAll('.fb').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  renderList();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  DETALLE DEL CLIENTE
+// ══════════════════════════════════════════════════════════════════════
+function openClient(id) {
+  currentId = id;
+  document.getElementById('detail-empty').style.display = 'none';
+  document.getElementById('detail').classList.add('on');
+  buildDetail(id);
+  renderList();
+}
+
+function buildDetail(cid) {
+  var c   = clients.find(function(x){ return x.id === cid; });
+  if (!c) return;
+  var st  = stOf(c);
+  var p   = PIPELINE[st] || PIPELINE.nuevo;
+  var tags = getTags(cid);
+  var notes = getNotes(cid);
+  var segs  = getSegs(cid);
+  var car   = fsCarnes[cid] || {};
+  var st2   = fsStates[cid] || {};
+
+  var waHref = c.telefono ? 'https://wa.me/57'+c.telefono.replace(/\D/g,'') : '#';
+
+  document.getElementById('detail').innerHTML =
+    '<div style="max-width:700px;">'
+
+    // ── Header ──
+    +'<div class="sec">'
+    +'<div class="d-name">'+escH(c.nombre)+'</div>'
+    +'<div class="d-chips">'
+    +'<span class="chip chip-'+st+'" style="background:'+p.bg+';color:'+p.co+';">'+p.lbl+'</span>'
+    +scoreBadge(c)
+    +tags.map(function(t){ return '<span class="tag-chip">'+escH(t)+'<span class="tag-del" onclick="removeTag(\''+escQ(cid)+'\',\''+escQ(t)+'\')">&times;</span></span>'; }).join('')
+    +'</div>'
+    +'<div class="d-meta">'
+    +(c.telefono?'<span>📞 '+escH(c.telefono)+'</span>':'')
+    +(c.email?'<span>✉️ '+escH(c.email)+'</span>':'')
+    +(car.ciudad||c.ciudad?'<span>📍 '+escH(car.ciudad||c.ciudad)+'</span>':'')
+    +(st2.asesor?'<span>👤 '+escH(st2.asesor)+'</span>':'')
+    +'</div>'
+    +(c.telefono?'<div style="margin-top:10px;"><a class="btn-wa" href="'+waHref+'" target="_blank">💬 Escribir por WhatsApp</a></div>':'')
+    +'</div>'
+
+    // ── Pipeline ──
+    +'<div class="sec"><div class="sec-l">Pipeline</div>'
+    +'<div class="pl-btns">'
+    +Object.entries(PIPELINE).map(function(e){
+      return '<button class="pl-btn'+(st===e[0]?' on':'')+'" onclick="setP(\''+escQ(cid)+'\',\''+e[0]+'\')" style="'+(st===e[0]?'border-color:'+e[1].co+';color:'+e[1].co+';background:'+e[1].bg+';':'')+'">'+e[1].lbl+'</button>';
+    }).join('')
+    +'</div></div>'
+
+    // ── Asesor ──
+    +'<div class="sec"><div class="sec-l">Asesor asignado</div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;">'
+    +Object.values(PERFILES).map(function(p2){
+      var on=(st2.asesor===p2.nombre);
+      return '<button class="pl-btn'+(on?' on':'')+'" onclick="setAsesor(\''+escQ(cid)+'\',\''+escQ(p2.nombre)+'\')" style="'+(on?'border-color:var(--bl);color:var(--bl);background:rgba(59,130,246,.1);':'')+'">'+escH(p2.nombre)+'</button>';
+    }).join('')
+    +'</div></div>'
+
+    // ── Tags ──
+    +'<div class="sec"><div class="sec-l">Etiquetas</div>'
+    +'<div class="tag-list">'+tags.map(function(t){ return '<span class="tag-chip">'+escH(t)+'<span class="tag-del" onclick="removeTag(\''+escQ(cid)+'\',\''+escQ(t)+'\')">&times;</span></span>'; }).join('')+'</div>'
+    +'<div class="tag-sugs">'
+    +['VIP','Mayorista','Restaurante','Hotel','Distribuidor','Carnicería','Finca','Referido'].map(function(t){
+      return tags.includes(t)?'':'<button onclick="addTag(\''+escQ(cid)+'\',\''+escQ(t)+'\');" style="padding:3px 9px;border:1px dashed var(--br2);border-radius:100px;font-size:11px;background:transparent;cursor:pointer;color:var(--gr);font-family:inherit;">+ '+escH(t)+'</button>';
+    }).join('')
+    +'</div></div>'
+
+    // ── Datos comerciales ──
+    +'<div class="sec"><div class="sec-l">🥩 Datos comerciales</div>'
+    // Fila 1: Tipo, Segmento, Canal captación
+    +'<div class="carnes-grid" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:8px;">'
+    +'<div><div class="carnes-lbl">Tipo de cliente</div><select id="c-tipo">'
+    +'<option value="">Seleccionar</option>'
+    +TIPOS_CLIENTE.map(function(t){ return '<option'+(car.tipo_cliente===t?' selected':'')+'>'+t+'</option>'; }).join('')
+    +'</select></div>'
+    +'<div><div class="carnes-lbl">Segmento CRM</div><select id="c-segmento">'
+    +'<option value="">Seleccionar</option>'
+    +Object.entries(SEGMENTOS_CRM).map(function(e){ return '<option value="'+e[0]+'"'+(car.segmento===e[0]?' selected':'')+'>'+e[1].lbl+'</option>'; }).join('')
+    +'</select></div>'
+    +'<div><div class="carnes-lbl">Canal de captación</div><select id="c-canal">'
+    +'<option value="">Seleccionar</option>'
+    +CANALES_CAPTACION.map(function(t){ return '<option'+(car.canal_captacion===t?' selected':'')+'>'+t+'</option>'; }).join('')
+    +'</select></div>'
+    +'</div>'
+    // Fila 2: Email, Cumpleaños, Barrio
+    +'<div class="carnes-grid" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:8px;">'
+    +'<div><div class="carnes-lbl">Email</div><input id="c-email" type="text" value="'+escH(car.email||c.email||'')+'" placeholder="cliente@email.com"></div>'
+    +'<div><div class="carnes-lbl">Cumpleaños</div><input id="c-cumple" type="date" value="'+escH(car.cumpleanos||'')+'"></div>'
+    +'<div><div class="carnes-lbl">Barrio</div><input id="c-barrio" type="text" value="'+escH(car.barrio||'')+'" placeholder="Cabecera, Sotomayor…"></div>'
+    +'</div>'
+    // Fila 3: Ciudad, Dirección
+    +'<div class="carnes-grid" style="grid-template-columns:1fr 2fr;margin-bottom:8px;">'
+    +'<div><div class="carnes-lbl">Ciudad / Zona</div><input id="c-ciudad" type="text" value="'+escH(car.ciudad||c.ciudad||'')+'" placeholder="Bucaramanga"></div>'
+    +'<div><div class="carnes-lbl">Dirección de entrega</div><input id="c-dir" type="text" value="'+escH(car.direccion||'')+'" placeholder="Cra 35 # 48-20 Local 3"></div>'
+    +'</div>'
+    // Fila 4: Métricas comerciales
+    +'<div class="carnes-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:8px;">'
+    +'<div><div class="carnes-lbl">Último pedido (kg/lb)</div><input id="c-kg" type="text" value="'+escH(car.kg_ultimo||'')+'" placeholder="50 kg · 5 lb"></div>'
+    +'<div><div class="carnes-lbl">Fecha último pedido</div><input id="c-fecha" type="date" value="'+escH(car.fecha_ultimo||'')+'"></div>'
+    +'<div><div class="carnes-lbl">Ticket promedio COP</div><input id="c-ticket" type="text" value="'+escH(car.ticket_promedio||'')+'" placeholder="$150.000"></div>'
+    +'<div><div class="carnes-lbl">Frecuencia de compra</div><select id="c-frec"><option value="">Seleccionar</option>'
+    +['Semanal','Quincenal','Mensual','Eventual'].map(function(f){ return '<option'+(car.frecuencia===f?' selected':'')+'>'+f+'</option>'; }).join('')
+    +'</select></div>'
+    +'</div>'
+    // Fila 5: Proveedor, Presupuesto, Categoría preferida
+    +'<div class="carnes-grid" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:12px;">'
+    +'<div><div class="carnes-lbl">Proveedor actual</div><input id="c-prov" type="text" value="'+escH(car.proveedor||'')+'" placeholder="Frigorífico X…"></div>'
+    +'<div><div class="carnes-lbl">Presupuesto mensual</div><input id="c-budget" type="text" value="'+escH(car.presupuesto||'')+'" placeholder="$500.000"></div>'
+    +'<div><div class="carnes-lbl">Categoría preferida</div><select id="c-catpref">'
+    +'<option value="">Seleccionar</option>'
+    +CATEGORIAS_PREFERIDAS.map(function(t){ return '<option'+(car.categoria_pref===t?' selected':'')+'>'+t+'</option>'; }).join('')
+    +'</select></div>'
+    +'</div>'
+    // Catálogo de productos con precios
+    +'<div style="margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;">'
+    +'<div class="carnes-lbl">Productos de interés ('+((car.productos||[]).length)+' seleccionados)</div>'
+    +'<a href="https://carnesycarnes.com/collections/todos-los-productos" target="_blank" style="font-size:10px;color:var(--g);">Ver tienda ↗</a>'
+    +'</div>'
+    +'<div style="display:flex;flex-direction:column;gap:8px;">'
+    +Object.entries(CATALOGO).map(function(entry){
+        var catNombre = entry[0]; var catProds = entry[1];
+        return '<div style="background:var(--bg);border-radius:8px;padding:8px;">'
+          +'<div style="font-size:10px;font-weight:800;color:var(--g);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;">'+escH(catNombre)+'</div>'
+          +'<div style="display:flex;flex-wrap:wrap;gap:4px;">'
+          +catProds.map(function(prod){
+            var checked = (car.productos||[]).includes(prod.n);
+            var url = prod.h ? 'https://carnesycarnes.com/products/'+prod.h : '#';
+            return '<label style="display:flex;align-items:center;gap:4px;background:var(--w);border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;border:1px solid '+(checked?'var(--g)':'var(--br2)')+';color:'+(checked?'var(--g)':'var(--ink2)')+';transition:border-color .12s;">'
+              +'<input type="checkbox" class="prod-check" value="'+escH(prod.n)+'"'+(checked?' checked':'')+' style="accent-color:var(--g);flex-shrink:0;"> '
+              +'<span>'+escH(prod.n)+'</span>'
+              +'<span style="color:var(--gr);font-size:10px;flex-shrink:0;">'+fmtCOP(prod.p)+'</span>'
+              +(prod.h?'<a href="'+url+'" target="_blank" onclick="event.stopPropagation();" style="color:var(--gr);font-size:9px;flex-shrink:0;text-decoration:none;" title="Ver en tienda">↗</a>':'')
+              +'</label>';
+          }).join('')
+          +'</div></div>';
+      }).join('')
+    +'</div>'
+    +'<div style="margin-top:8px;"><div class="carnes-lbl">Notas comerciales</div><input id="c-notasprod" type="text" value="'+escH(car.notas_prod||'')+'" placeholder="Prefiere cortes grandes, sin grasa, madurado largo…"></div>'
+    // Segmento sugerido
+    +(car.segmento && SEGMENTOS_CRM[car.segmento]?'<div style="margin-top:8px;background:var(--bg);border-radius:8px;padding:8px;font-size:11px;"><strong style="color:var(--g);">Acción sugerida:</strong> '+escH(SEGMENTOS_CRM[car.segmento].accion)+'</div>':'')
+    +'<button class="btn-save" onclick="saveCarnes(\''+escQ(cid)+'\')" style="margin-top:12px;width:100%;">💾 Guardar datos comerciales</button>'
+    +'</div>'
+
+    // ── Contacto automático ──
+    +(function(){
+      var ag = fsAgenda[cid];
+      var activo = ag && ag.activo;
+      return '<div class="sec" style="border-color:'+(activo?'var(--g)':'var(--br)')+'">'
+        +'<div class="sec-l" style="color:'+(activo?'var(--g)':'var(--gr)')+'">🔔 Contacto automático '+(activo?'· ACTIVO':'')+'</div>'
+        +(activo
+          ?'<div style="background:var(--gp);border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px;">'
+            +'<div>📅 Próximo contacto: <b>'+escH(ag.proximo_contacto)+'</b></div>'
+            +'<div style="color:var(--gr);margin-top:3px;">Frecuencia: '+escH(ag.frecuencia)+' · Canal: '+escH(ag.canal)+'</div>'
+            +(ag.producto?'<div style="color:var(--gr);">Producto: '+escH(ag.producto)+'</div>':'')
+            +'</div>'
+            +'<div style="display:flex;gap:6px;">'
+            +'<button class="btn-save" onclick="probarMensaje(\''+escQ(cid)+'\')" style="background:var(--bl);">📤 Enviar prueba ahora</button>'
+            +'<button class="btn-save" onclick="cancelarProgramacion(\''+escQ(cid)+'\')" style="background:var(--rd);">🗑️ Cancelar</button>'
+            +'</div>'
+          :'<div style="font-size:11px;color:var(--gr);margin-bottom:10px;">Programa cuándo contactar a este cliente automáticamente por WhatsApp y/o email.</div>'
+            +'<div class="carnes-grid" style="margin-bottom:8px;">'
+            +'<div><div class="carnes-lbl">Frecuencia</div><select id="ag-freq">'
+            +['semanal','quincenal','mensual','bimestral'].map(function(fr){ var match=(car.frecuencia||'').toLowerCase().indexOf(fr)>=0; return '<option value="'+fr+'"'+(match?' selected':'')+'>'+fr.charAt(0).toUpperCase()+fr.slice(1)+'</option>'; }).join('')
+            +'</select></div>'
+            +'<div><div class="carnes-lbl">Canal</div><select id="ag-canal">'
+            +'<option value="whatsapp">📱 WhatsApp</option>'
+            +'<option value="email">📧 Email</option>'
+            +'<option value="ambos">📱+📧 Ambos</option>'
+            +'</select></div>'
+            +'</div>'
+            +'<div style="margin-bottom:8px;"><div class="carnes-lbl">Mensaje personalizado (opcional)</div>'
+            +'<textarea id="ag-msg" style="height:60px;" placeholder="Hola {nombre}, te escribimos para recordarte tu pedido de {producto}… (déjalo vacío para usar el mensaje estándar)"></textarea></div>'
+            +'<button class="btn-save" onclick="guardarProgramacion(\''+escQ(cid)+'\')" style="width:100%;">🔔 Activar contacto automático</button>'
+        )
+        +'</div>';
+    })()
+
+    // ── Seguimientos ──
+    +'<div class="sec"><div class="sec-l">📅 Seguimientos</div>'
+    +segs.sort(function(a,b){return a.fecha.localeCompare(b.fecha);}).map(function(s){
+      var venc = s.fecha < new Date().toISOString().slice(0,10);
+      return '<div class="seg-item"><div><div class="seg-txt'+(venc?' seg-vencido':'')+'">'+(venc?'⚠️ ':'')+(s.nota||'Seguimiento')+'</div><div class="seg-date">'+s.fecha+'</div></div>'
+        +'<button class="seg-del" onclick="delSeg(\''+escQ(cid)+'\','+s.id+')">✕</button></div>';
+    }).join('')
+    +'<div style="display:flex;gap:6px;margin-top:8px;">'
+    +'<input id="seg-fecha" type="date" style="flex:1;" value="'+new Date().toISOString().slice(0,10)+'">'
+    +'<input id="seg-nota" type="text" style="flex:2;" placeholder="Nota del seguimiento…">'
+    +'<button class="btn-save" onclick="addSeg(\''+escQ(cid)+'\')">+</button>'
+    +'</div></div>'
+
+    // ── Notas ──
+    +'<div class="sec"><div class="sec-l">📝 Notas</div>'
+    +'<textarea id="note-ta" placeholder="Escribe una nota…" style="margin-bottom:6px;"></textarea>'
+    +'<button class="btn-save" onclick="addNote(\''+escQ(cid)+'\')">💾 Guardar nota</button>'
+    +'<div style="margin-top:10px;">'
+    +notes.slice(0,10).map(function(n){ return '<div class="note-item"><div class="note-txt">'+escH(n.txt)+'</div><div class="note-meta">'+escH(n.autor||'?')+' · '+escH((n.ts||'').slice(0,10))+'</div></div>'; }).join('')
+    +'</div></div>'
+
+    +'</div>';
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════════════════════════════════
+function gotoTab(tab, btn) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
+  document.querySelectorAll('.tb-tab').forEach(function(t){ t.classList.remove('on'); });
+  document.getElementById('pg-'+tab).classList.add('on');
+  btn.classList.add('on');
+  if (tab==='stats')   renderStats();
+  if (tab==='masiva')  renderMasiva();
+  if (tab==='agenda')  renderAgenda();
+  if (tab==='bot')     renderBot();
+  if (tab==='config')  renderConfig();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  STATS
+// ══════════════════════════════════════════════════════════════════════
+function renderStats() {
+  var pg = document.getElementById('pg-stats'); if (!pg) return;
+  var total = clients.length;
+  var porPipeline = {};
+  Object.keys(PIPELINE).forEach(function(k){ porPipeline[k]=0; });
+  clients.forEach(function(c){ var s=stOf(c); porPipeline[s]=(porPipeline[s]||0)+1; });
+  var activos = (porPipeline.pedido_activo||0)+(porPipeline.regular||0)+(porPipeline.frecuente||0);
+  var vips    = porPipeline.vip||0;
+  var maxP    = Math.max(1, ...Object.values(porPipeline));
+
+  pg.innerHTML='<div style="max-width:820px;margin:0 auto;width:100%;">'
+    +'<div style="font-weight:900;font-size:18px;margin-bottom:16px;">📊 Dashboard CYC Carnes</div>'
+    +'<div class="kpi-grid">'
+    +'<div class="kpi-card"><div class="kpi-n">'+total+'</div><div class="kpi-l">Total clientes</div></div>'
+    +'<div class="kpi-card"><div class="kpi-n" style="color:var(--or);">'+activos+'</div><div class="kpi-l">Clientes activos</div></div>'
+    +'<div class="kpi-card"><div class="kpi-n" style="color:var(--gold);">'+vips+'</div><div class="kpi-l">Clientes VIP</div></div>'
+    +'<div class="kpi-card"><div class="kpi-n" style="color:var(--rd);">'+(porPipeline.inactivo||0)+'</div><div class="kpi-l">Inactivos</div></div>'
+    +'</div>'
+    +'<div class="sec" style="margin-bottom:12px;"><div class="sec-l">Distribución por pipeline</div>'
+    +Object.entries(PIPELINE).map(function(e){
+      var n=porPipeline[e[0]]||0;
+      var pct=Math.round(n/maxP*100);
+      return '<div class="bar-row"><div class="bar-lbl">'+e[1].lbl+'</div><div class="bar-bg"><div class="bar-fill" style="width:'+pct+'%;background:'+e[1].co+';"></div></div><div class="bar-val">'+n+'</div></div>';
+    }).join('')+'</div>'
+
+    +'<div class="sec"><div class="sec-l">Top clientes por score</div>'
+    +clients.slice().sort(function(a,b){ return score(b)-score(a); }).slice(0,8).map(function(c){
+      var s=score(c); var car=fsCarnes[c.id]||{};
+      return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--br);">'
+        +scoreBadge(c)
+        +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-weight:700;font-size:12px;">'+escH(c.nombre)+'</div>'
+        +(function(){ var p=(car.productos&&car.productos.length)?car.productos.slice(0,2).join(', '):(car.producto||''); return p?'<div style="font-size:10px;color:var(--gr);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+escH(p)+(car.frecuencia?' · '+escH(car.frecuencia):'')+'</div>':''; })()
+        +(car.ticket_promedio?'<div style="font-size:10px;color:var(--gold);">Ticket: '+escH(car.ticket_promedio)+'</div>':'')
+        +'</div>'
+        +'<div style="text-align:right;font-size:10px;color:var(--gr);">'+escH(stOf(c))+(car.ciudad||c.ciudad?'<br>📍'+escH(car.ciudad||c.ciudad):'')+'</div>'
+        +'</div>';
+    }).join('')+'</div>'
+
+    // ── Panel Shopify ──
+    +'<div class="sec" style="margin-top:12px;">'
+    +'<div class="sec-l">🛒 Análisis Shopify — carnesycarnes.com</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px;">'
+    +'<div class="kpi-card"><div class="kpi-n" style="color:var(--g);">102</div><div class="kpi-l">Productos publicados</div></div>'
+    +'<div class="kpi-card"><div class="kpi-n" style="color:var(--bl);">28+</div><div class="kpi-l">Colecciones activas</div></div>'
+    +'<div class="kpi-card"><div class="kpi-n" style="font-size:14px;color:var(--gold);">$3.400–$231.900</div><div class="kpi-l">Rango de precios COP</div></div>'
+    +'<div class="kpi-card"><div class="kpi-n" style="color:var(--or);">~$27K</div><div class="kpi-l">Precio promedio</div></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+    // Distribución por categoría
+    +'<div>'
+    +'<div style="font-size:11px;font-weight:700;color:var(--gr);margin-bottom:6px;">DISTRIBUCIÓN POR CATEGORÍA</div>'
+    +[['Carne de res','42 prods','41%','var(--g)'],['Pollo','11 prods','11%','#F97316'],['Cerdo','9 prods','9%','#E91E63'],
+      ['Complementarios','12 prods','12%','#4CAF50'],['Charcutería','7 prods','7%','#9C27B0'],
+      ['Mar','7 prods','7%','var(--bl)'],['Vísceras','3 prods','3%','#795548'],['Pavo','2 prods','2%','#607D8B']].map(function(r){
+      return '<div class="bar-row" style="margin-bottom:4px;">'
+        +'<div class="bar-lbl" style="width:110px;font-size:10px;">'+r[0]+'</div>'
+        +'<div class="bar-bg" style="height:6px;"><div class="bar-fill" style="width:'+r[2]+';background:'+r[3]+';"></div></div>'
+        +'<div style="font-size:10px;font-weight:700;min-width:50px;">'+r[1]+'</div>'
+        +'</div>';
+    }).join('')
+    +'</div>'
+    // Fortalezas y oportunidades
+    +'<div>'
+    +'<div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:6px;">✅ FORTALEZAS</div>'
+    +['Catálogo amplio: 102 productos, 28+ colecciones','Propuesta de valor: madurado, pasto, trazabilidad','3 tiendas propias + 11 puntos aliados en Santander','Popup captación: 10% descuento + email/cumpleaños','Líneas especializadas: Premium, Muscular, BOX'].map(function(f){
+      return '<div style="font-size:10px;color:var(--ink2);padding:2px 0;">'+escH(f)+'</div>';
+    }).join('')
+    +'<div style="font-size:11px;font-weight:700;color:var(--or);margin:8px 0 4px;">⚠️ OPORTUNIDADES</div>'
+    +['No hay programa de fidelización estructurado','Varios productos sin tags (dificulta segmentación)','Falta blog/contenido para SEO orgánico','Oportunidad de implementar reviews de clientes','Inconsistencia en vendor ("Mi tienda" vs "C&C")'].map(function(f){
+      return '<div style="font-size:10px;color:var(--ink2);padding:2px 0;">'+escH(f)+'</div>';
+    }).join('')
+    +'</div>'
+    +'</div>'
+
+    // Segmentos CRM
+    +'<div style="margin-top:12px;">'
+    +'<div style="font-size:11px;font-weight:700;color:var(--gr);margin-bottom:6px;">SEGMENTOS CRM</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px;">'
+    +Object.entries(SEGMENTOS_CRM).map(function(e){
+      var cnt = clients.filter(function(c){ return (fsCarnes[c.id]&&fsCarnes[c.id].segmento===e[0]) || stOf(c)===e[0]; }).length;
+      return '<div style="background:var(--bg);border-radius:8px;padding:8px;">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">'
+        +'<span style="font-weight:700;font-size:11px;">'+escH(e[1].lbl)+'</span>'
+        +'<span style="font-size:13px;font-weight:900;color:var(--g);">'+cnt+'</span>'
+        +'</div>'
+        +'<div style="font-size:9px;color:var(--gr);">'+escH(e[1].desc)+'</div>'
+        +'<div style="font-size:9px;color:var(--or);margin-top:2px;">→ '+escH(e[1].accion)+'</div>'
+        +'</div>';
+    }).join('')
+    +'</div></div>'
+    +'</div>'
+
+    +'</div>';
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  MASIVA WA
+// ══════════════════════════════════════════════════════════════════════
+// ── Plantillas WA reales (archivo 04_PLANTILLAS_WHATSAPP_MASIVO.xlsx) ──
+var TEMPLATES = [
+  { id:'bienvenida', emoji:'👋', nombre:'Bienvenida Nuevo Cliente', segmento:'nuevo',
+    dia:'Automático al registro', hora:'Automático',
+    texto:'Hola {nombre}! Bienvenido/a a *Carnes y Carnes* 🥩 Somos pioneros en trazabilidad y calidad cárnica en Santander. Nuestro ganado es alimentado 100% con pasto y todos nuestros cortes son madurados.\n\n🎁 Disfruta un *10% de descuento* en tu primer pedido online.\n\nExplora nuestro catálogo: https://carnesycarnes.com/collections/todos-los-productos' },
+
+  { id:'oferta_semanal', emoji:'💥', nombre:'Oferta Semanal', segmento:'frecuente, ocasional',
+    dia:'Lunes', hora:'8:00 AM',
+    texto:'Hola {nombre}! 🔥 Estas son nuestras *ofertas de esta semana* en Carnes y Carnes. Aprovecha precios especiales en cortes seleccionados.\n\nPor compras superiores a $60.000, tu domicilio sale a solo $3.000! 🚚\n\nVer ofertas: https://carnesycarnes.com/collections/ofertas' },
+
+  { id:'box_familiar', emoji:'📦', nombre:'BOX Familiar — Todo para tu semana', segmento:'frecuente, vip',
+    dia:'Viernes', hora:'11:00 AM',
+    texto:'Hola {nombre}! 🥩 ¿Ya conoces nuestro *BOX Familiar*? Tiene todo lo que necesitas para tu semana: los mejores cortes de res, cerdo y pollo seleccionados por nuestros expertos.\n\nAhorra tiempo y dinero con un solo pedido. *Precio especial: $231.900*\n\nhttps://carnesycarnes.com/products/box-familiar' },
+
+  { id:'reactivacion', emoji:'💔', nombre:'Reactivación — Te extrañamos', segmento:'inactivo',
+    dia:'Trigger 60 días sin compra', hora:'Automático',
+    texto:'Hola {nombre}! En *Carnes y Carnes* te extrañamos 😢\n\nHa pasado un tiempo desde tu última compra y queremos consentirte con un *descuento especial del 15%* en tu próximo pedido.\n\n🏷️ Usa el código: *VUELVE15* (válido 7 días)\n\nhttps://carnesycarnes.com' },
+
+  { id:'parrilla', emoji:'🔥', nombre:'Promo Parrillera — Fin de semana', segmento:'parrillero',
+    dia:'Jueves', hora:'5:00 PM',
+    texto:'Hola {nombre}! 🔥 Este fin de semana es perfecto para un asado. Tenemos:\n\n🥩 Churrasco Premium x3LBS — $95.706\n🥩 Rib Eye desde — $32.233\n🌽 Complementa con carbón, chimichurri y arepas santandereanas\n\nDomicilio a $3.000 en compras desde $60.000!\n\nhttps://carnesycarnes.com/collections/asar' },
+
+  { id:'cumpleanos', emoji:'🎂', nombre:'Cumpleaños', segmento:'todos',
+    dia:'Automático en fecha cumpleaños', hora:'Automático',
+    texto:'🎂 *Feliz cumpleaños {nombre}!*\n\nEn Carnes y Carnes queremos celebrar contigo. Te obsequiamos un *20% de descuento* en tu próximo pedido.\n\n🏷️ Usa el código: *CUMPLE20* (válido 15 días)\n\n¿Qué tal un asado para celebrar? 🥩🎉\n\nhttps://carnesycarnes.com/collections/premium' },
+
+  { id:'fitness', emoji:'💪', nombre:'Línea Muscular / Fitness', segmento:'saludable/fitness',
+    dia:'Martes', hora:'10:00 AM',
+    texto:'Hola {nombre}! 💪 Nuestra *Línea Muscular* está pensada para ti: carnes magras, altas en proteína y perfectas para una alimentación saludable.\n\n✅ Pechuga de pollo desde $11.900\n✅ Lomo de cerdo porcionado $12.950\n✅ Carne Molida 98/2 — $23.521\n\nhttps://carnesycarnes.com/collections/muscular' },
+
+  { id:'nuevo_producto', emoji:'✨', nombre:'Nuevo Producto / Combo', segmento:'todos',
+    dia:'Miércoles', hora:'9:00 AM',
+    texto:'Hola {nombre}! ✨ Tenemos algo nuevo para ti en *Carnes y Carnes*: {producto}\n\nPídelo ya con domicilio a solo $3.000 (compras desde $60K).\n\nhttps://carnesycarnes.com' },
+
+  { id:'distribuidor', emoji:'🤝', nombre:'Alianza Comercial — Distribuidores', segmento:'distribuidor',
+    dia:'Según prospecto', hora:'Horario comercial',
+    texto:'Hola {nombre}! En *Carnes y Carnes* buscamos aliados estratégicos 🤝\n\nContamos con la mejor planta de producción del nororiente colombiano, ganado 100% pastoril y procesos de trazabilidad certificados.\n\nQuiero coordinar una cita con un consultor para conocer nuestras condiciones comerciales.\n\nhttps://carnesycarnes.com/pages/distribuidores' },
+
+  { id:'carrito', emoji:'🛒', nombre:'Carrito Abandonado', segmento:'todos',
+    dia:'Automático 1h después de abandono', hora:'Automático',
+    texto:'Hola {nombre}! 🛒 Vimos que dejaste productos en tu carrito de *Carnes y Carnes*.\n\nNo te quedes sin tus cortes favoritos! Completa tu pedido ahora y aprovecha el domicilio a $3.000 en compras desde $60.000.\n\nhttps://carnesycarnes.com/cart' },
+];
+var tplSel = null;
+var masivaFiltro = 'todos';
+var masivaStop = false;
+var _masivaInterval = null;
+var MASIVA_DELAY_MIN = parseInt(localStorage.getItem('cyc_delay_min')||'12');
+var MASIVA_DELAY_MAX = parseInt(localStorage.getItem('cyc_delay_max')||'25');
+var MASIVA_TANDA     = parseInt(localStorage.getItem('cyc_tanda')||'30');
+
+function masivaSaveDelay(mn,mx,t){
+  MASIVA_DELAY_MIN=mn; MASIVA_DELAY_MAX=mx; MASIVA_TANDA=t||MASIVA_TANDA;
+  localStorage.setItem('cyc_delay_min',mn);
+  localStorage.setItem('cyc_delay_max',mx);
+  localStorage.setItem('cyc_tanda',MASIVA_TANDA);
+}
+
+function renderMasiva() {
+  var pg = document.getElementById('pg-masiva'); if (!pg) return;
+
+  // Estado WhatsApp
+  var waStatus = localStorage.getItem('cyc_wa_status') || 'desconectado';
+  var waOk  = (waStatus === 'conectado');
+  var waQR  = (waStatus === 'qr_pendiente');
+
+  var base = clients.filter(function(c){
+    if (masivaFiltro === 'todos') return !!c.telefono;
+    return stOf(c) === masivaFiltro && !!c.telefono;
+  });
+
+  var waDotClass = waOk ? 'wa-conectado' : (waQR ? 'wa-qr' : 'wa-desconectado');
+  var waMsj = waOk ? '✅ Conectado' : (waQR ? '📱 QR pendiente — escanea el código' : '❌ Desconectado');
+  var waSub = waOk ? 'Listo para enviar mensajes' : (waQR ? 'Abre WhatsApp → Dispositivos vinculados → Vincular dispositivo' : 'Ejecuta npm start en la carpeta CYC');
+
+  pg.innerHTML='<div style="max-width:680px;margin:0 auto;width:100%;">'
+
+    // Estado WA
+    +'<div class="masiva-box">'
+    +'<div class="masiva-title">📱 Estado WhatsApp</div>'
+    +'<div class="wa-status">'
+    +'<div class="wa-dot '+waDotClass+'"></div>'
+    +'<div><div style="font-weight:700;font-size:13px;">'+waMsj+'</div>'
+    +'<div style="font-size:11px;color:var(--gr);">'+waSub+'</div></div>'
+    +'<button onclick="verificarWA()" style="margin-left:auto;padding:6px 12px;background:'+(waOk?'var(--br2)':'var(--wa)')+';color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">'+(waOk?'🔄 Refrescar':'Verificar')+'</button>'
+    +'</div>'
+    +(waQR?'<button onclick="mostrarQR()" style="margin-top:8px;padding:8px 16px;background:#C62828;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;">📷 Ver código QR para escanear</button>':'')
+    +(!waOk&&!waQR?'<div style="background:var(--bg);border-radius:8px;padding:10px;font-size:11px;color:var(--gr);margin-top:6px;">Abre una terminal en la carpeta CYC y ejecuta <code style="background:#222;padding:2px 6px;border-radius:4px;color:#EEE;">npm start</code></div>':'')
+    +(waOk?'<button onclick="mostrarQR()" style="margin-top:6px;padding:5px 12px;background:var(--w2);border:1px solid var(--br2);border-radius:7px;font-size:11px;cursor:pointer;color:var(--gr);font-family:inherit;">📷 Ver QR</button>':'')
+    +'</div>'
+
+    // Paso 1: Plantilla
+    +'<div class="masiva-box">'
+    +'<div class="masiva-title">① Elige la campaña</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">'
+    +TEMPLATES.map(function(t){
+      var sel = tplSel===t.id;
+      return '<div class="tpl-card'+(sel?' sel':'')+'" onclick="tplSel=\''+t.id+'\';renderMasiva();" style="padding:10px;">'
+        +'<div class="tpl-name">'+t.emoji+' '+escH(t.nombre)+'</div>'
+        +'<div style="font-size:9px;color:var(--gr);margin:2px 0;">👥 '+escH(t.segmento)+' · 📅 '+escH(t.dia)+'</div>'
+        +'<div class="tpl-prev">'+escH(t.texto.replace(/\*/g,'').slice(0,70))+'…</div>'
+        +'</div>';
+    }).join('')
+    +'</div>'
+    +(tplSel?(function(){
+      var tpl = TEMPLATES.find(function(t){return t.id===tplSel;});
+      if (!tpl) return '';
+      return '<div style="background:var(--bg);border-radius:8px;padding:12px;margin-top:8px;">'
+        +'<div style="font-size:10px;color:var(--gr);margin-bottom:6px;display:flex;gap:12px;">'
+        +'<span>👥 Segmento: <b style="color:var(--ink2);">'+escH(tpl.segmento)+'</b></span>'
+        +'<span>📅 Día: <b style="color:var(--ink2);">'+escH(tpl.dia)+'</b></span>'
+        +'<span>⏰ Hora: <b style="color:var(--ink2);">'+escH(tpl.hora||'')+'</b></span>'
+        +'</div>'
+        +'<div style="font-size:12px;color:var(--ink2);line-height:1.6;white-space:pre-wrap;border-left:3px solid var(--g);padding-left:10px;">'+escH(tpl.texto)+'</div>'
+        +'</div>';
+    })():'')
+    +'</div>'
+
+    // Paso 2: Filtros
+    +'<div class="masiva-box">'
+    +'<div class="masiva-title">② Destinatarios</div>'
+    +'<div class="filter-chips">'
+    +[['todos','Todos'],['nuevo','Nuevos'],['pedido_activo','Con pedido'],['regular','Ocasionales'],['frecuente','Frecuentes'],['vip','VIP'],['distribuidor','Distribuidores'],['inactivo','Inactivos']].map(function(p){
+      var on = masivaFiltro===p[0];
+      return '<div class="m-chip'+(on?' sel':'')+'" onclick="masivaFiltro=\''+p[0]+'\';renderMasiva();">'+escH(p[1])+'</div>';
+    }).join('')
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:10px;padding:12px;margin-top:8px;">'
+    +'<div style="font-size:36px;font-weight:900;color:var(--wa);line-height:1;min-width:46px;text-align:center;">'+base.length+'</div>'
+    +'<div><div style="font-weight:700;font-size:13px;">contacto'+( base.length!==1?'s':'')+' listos</div>'
+    +'<div style="font-size:11px;color:var(--gr);margin-top:2px;">'+(tplSel?'✅ Plantilla: '+escH((TEMPLATES.find(function(t){return t.id===tplSel;})||{nombre:'?'}).nombre):'⚠️ Selecciona una plantilla')+'</div>'
+    +(base.length>0?'<div style="font-size:10px;color:var(--gr);margin-top:2px;">'+base.slice(0,4).map(function(c){return escH(c.nombre.split(' ')[0]);}).join(', ')+(base.length>4?' y '+(base.length-4)+' más':'')+'</div>':'')
+    +'</div></div></div>'
+
+    // Paso 3: Enviar
+    +'<div class="masiva-box" style="border:2px solid var(--wa);">'
+    +'<div class="masiva-title" style="color:var(--wa);">③ Enviar campaña</div>'
+    +'<div id="masivaProgWrap" style="display:none;">'
+    +'<div class="prog-bar"><div id="masivaProgFill" class="prog-fill" style="width:0%"></div></div>'
+    +'<div id="masivaProgInfo" style="display:flex;justify-content:space-between;font-size:11px;color:var(--gr);margin-top:4px;"></div>'
+    +'</div>'
+    +'<div id="masivaLog" class="m-log" style="display:none;"></div>'
+    +'<button id="btn-send-masiva" class="btn-send" '+((!waOk||!tplSel||base.length===0)?'disabled':'')+' onclick="iniciarMasiva();">📤 Enviar a '+base.length+' contactos</button>'
+    +'<button id="btn-stop-masiva" class="btn-stop" onclick="detenerMasiva();">⛔ Detener envío</button>'
+    +'</div>'
+
+    // Paso 4: Ajustes de envío
+    +'<div class="masiva-box">'
+    +'<div class="masiva-title" style="cursor:pointer;" onclick="var s=document.getElementById(\'masivaCfgBody\');s.style.display=s.style.display===\'none\'?\'block\':\'none\';">⚙️ Ajustes de envío <span style="font-size:10px;color:var(--gr);">(click para expandir)</span></div>'
+    +'<div id="masivaCfgBody" style="display:none;">'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">'
+    // Delay mínimo
+    +'<div>'
+    +'<div style="font-size:11px;color:var(--gr);margin-bottom:4px;">Delay mínimo entre mensajes (seg)</div>'
+    +'<div style="display:flex;align-items:center;gap:8px;">'
+    +'<input id="cfgDelayMin" type="number" min="3" max="59" value="'+MASIVA_DELAY_MIN+'" style="width:60px;" oninput="var r=document.getElementById(\'cfgDelayMinR\');if(r)r.value=this.value;">'
+    +'<input id="cfgDelayMinR" type="range" min="3" max="59" value="'+MASIVA_DELAY_MIN+'" style="flex:1;" oninput="var n=document.getElementById(\'cfgDelayMin\');if(n)n.value=this.value;">'
+    +'</div>'
+    +'</div>'
+    // Delay máximo
+    +'<div>'
+    +'<div style="font-size:11px;color:var(--gr);margin-bottom:4px;">Delay máximo entre mensajes (seg)</div>'
+    +'<div style="display:flex;align-items:center;gap:8px;">'
+    +'<input id="cfgDelayMax" type="number" min="5" max="120" value="'+MASIVA_DELAY_MAX+'" style="width:60px;" oninput="var r=document.getElementById(\'cfgDelayMaxR\');if(r)r.value=this.value;">'
+    +'<input id="cfgDelayMaxR" type="range" min="5" max="120" value="'+MASIVA_DELAY_MAX+'" style="flex:1;" oninput="var n=document.getElementById(\'cfgDelayMax\');if(n)n.value=this.value;">'
+    +'</div>'
+    +'</div>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-top:10px;">'
+    +'<div style="flex:1;">'
+    +'<div style="font-size:11px;color:var(--gr);margin-bottom:4px;">Tamaño de tanda (msgs antes de pausa larga)</div>'
+    +'<input id="cfgTanda" type="number" min="5" max="100" value="'+MASIVA_TANDA+'" style="width:80px;">'
+    +'</div>'
+    +'<div style="flex:1;background:var(--bg);border-radius:8px;padding:8px;font-size:10px;color:var(--gr);">'
+    +'⚠️ Delays cortos aumentan riesgo de bloqueo. Recomendado: min 12s–max 30s, tanda 30'
+    +'</div>'
+    +'</div>'
+    +'<button class="btn-save" style="margin-top:8px;" onclick="_guardarCfgMasiva()">💾 Guardar ajustes</button>'
+    +'</div>'
+    +'</div>'
+
+    // Campañas automáticas
+    +'<div class="masiva-box">'
+    +'<div class="masiva-title" style="cursor:pointer;" onclick="var s=document.getElementById(\'masivaCampBody\');if(s){s.style.display=s.style.display===\'none\'?\'block\':\'none\';if(s.style.display===\'block\')renderCampaigns();}">'
+    +'🗓️ Campañas automáticas <span style="font-size:10px;color:var(--gr);">(click para configurar)</span></div>'
+    +'<div id="masivaCampBody" style="display:none;"></div>'
+    +'</div>'
+
+    +'</div>';
+}
+
+function verificarWA() {
+  apiFetch('/api/status')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var ok = d.whatsapp === 'conectado';
+      localStorage.setItem('cyc_wa_status', ok ? 'conectado' : 'desconectado');
+      renderMasiva();
+      toast(ok ? '✅ WhatsApp conectado' : '❌ Sin conexión — ¿está corriendo npm start?', ok ? 's' : 'e');
+    })
+    .catch(function(){ toast('⚠️ Servidor no responde. Ejecuta npm start primero.', 'e'); });
+}
+
+function mostrarQR() {
+  apiFetch('/api/qr')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok) {
+        document.getElementById('qrImg').src = d.qr;
+        document.getElementById('qrModal').classList.add('show');
+      } else {
+        toast(d.msg === 'ya_conectado' ? '✅ WhatsApp ya está conectado' : '⚠️ QR no disponible', 'e');
+      }
+    })
+    .catch(function(){ toast('⚠️ Servidor no responde','e'); });
+}
+
+function iniciarMasiva() {
+  var tpl = TEMPLATES.find(function(t){ return t.id===tplSel; });
+  if (!tpl) return toast('Elige una plantilla','e');
+  var base = clients.filter(function(c){
+    if (masivaFiltro==='todos') return !!c.telefono;
+    return stOf(c)===masivaFiltro && !!c.telefono;
+  });
+  if (!base.length) return toast('Sin contactos','e');
+
+  var contactos = base.map(function(c){
+    var car = fsCarnes[c.id] || {};
+    return { nombre:c.nombre, whatsapp:c.telefono.replace(/\D/g,'').replace(/^0/,'57'),
+             producto:car.producto||'', kg_ultimo:car.kg_ultimo||'', fecha_ultimo:car.fecha_ultimo||'', ciudad:car.ciudad||c.ciudad||'' };
+  });
+
+  document.getElementById('btn-send-masiva').style.display = 'none';
+  document.getElementById('btn-stop-masiva').style.display = 'block';
+  document.getElementById('masivaProgWrap').style.display = 'block';
+  var logEl = document.getElementById('masivaLog');
+  logEl.style.display = 'block';
+  logEl.innerHTML = '';
+  masivaStop = false;
+
+  apiFetch('/api/difusion', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json' },
+    body: JSON.stringify({ contactos: contactos, variaciones: [tpl.texto], delayMinSeg:MASIVA_DELAY_MIN, delayMaxSeg:MASIVA_DELAY_MAX, tamanoTanda:MASIVA_TANDA, pausaTandaMin:15 })
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if (!d.ok) { toast('Error: '+d.error, 'e'); resetBotonesEnvio(); }
+  }).catch(function(){ toast('⚠️ Servidor no responde','e'); resetBotonesEnvio(); });
+}
+
+function _guardarCfgMasiva() {
+  var mn = parseInt((document.getElementById('cfgDelayMin')||{}).value||MASIVA_DELAY_MIN);
+  var mx = parseInt((document.getElementById('cfgDelayMax')||{}).value||MASIVA_DELAY_MAX);
+  var ta = parseInt((document.getElementById('cfgTanda')||{}).value||MASIVA_TANDA);
+  if (isNaN(mn)||isNaN(mx)||isNaN(ta)) return toast('⚠️ Ingresa números válidos','e');
+  if (mn < 3) return toast('⚠️ Delay mínimo: 3 segundos','e');
+  if (mn >= mx) return toast('⚠️ El delay máximo ('+mx+'s) debe ser mayor al mínimo ('+mn+'s)','e');
+  masivaSaveDelay(mn, mx, ta);
+  toast('✅ Ajustes guardados: '+mn+'–'+mx+'s · tanda '+ta);
+}
+
+var _campaigns = null;
+var CAMP_DEFAULTS = [
+  { id:'oferta_semanal',  nombre:'Oferta Semanal',           dia:'lun', hora:8,  segmentos:['frecuente','regular'], texto: TEMPLATES.find(function(t){return t.id==='oferta_semanal';})||{texto:''}, activa:false, delayMin:12, delayMax:25, tanda:30 },
+  { id:'box_familiar',    nombre:'BOX Familiar',             dia:'vie', hora:11, segmentos:['frecuente','vip'],     texto: TEMPLATES.find(function(t){return t.id==='box_familiar';})||{texto:''},    activa:false, delayMin:12, delayMax:25, tanda:30 },
+  { id:'parrilla',        nombre:'Promo Parrillera',         dia:'jue', hora:17, segmentos:['todos'],               texto: TEMPLATES.find(function(t){return t.id==='parrilla';})||{texto:''},        activa:false, delayMin:12, delayMax:25, tanda:30 },
+  { id:'fitness',         nombre:'Línea Muscular / Fitness', dia:'mar', hora:10, segmentos:['fitness','nuevo'],     texto: TEMPLATES.find(function(t){return t.id==='fitness';})||{texto:''},         activa:false, delayMin:12, delayMax:25, tanda:30 },
+].map(function(c){ if (c.texto && c.texto.texto) c.texto = c.texto.texto; return c; });
+
+function renderCampaigns() {
+  var el = document.getElementById('masivaCampBody'); if (!el) return;
+  el.innerHTML = '<div style="font-size:11px;color:var(--gr);margin:8px 0 6px;">El servidor ejecuta automáticamente las campañas habilitadas en el día/hora configurado (hora Colombia). Los clientes se sincronizan automáticamente al guardar.</div><div id="camp-list">⏳ Cargando...</div>';
+  apiFetch('/api/campaigns').then(function(r){return r.json();}).then(function(d){
+    if (d.ok) { _campaigns = d.campaigns.length ? d.campaigns : JSON.parse(JSON.stringify(CAMP_DEFAULTS)); }
+    else _campaigns = JSON.parse(JSON.stringify(CAMP_DEFAULTS));
+    _renderCampList();
+  }).catch(function(){ _campaigns = JSON.parse(JSON.stringify(CAMP_DEFAULTS)); _renderCampList(); });
+}
+
+var DIAS_LABEL = {lun:'Lunes',mar:'Martes',mie:'Miércoles',jue:'Jueves',vie:'Viernes',sab:'Sábado',dom:'Domingo'};
+function _renderCampList() {
+  var el = document.getElementById('camp-list'); if (!el) return;
+  el.innerHTML = (_campaigns||[]).map(function(c, i){
+    var hLabel = (c.hora < 12 ? c.hora+':00 AM' : (c.hora===12?'12:00 PM':(c.hora-12)+':00 PM'));
+    return '<div style="background:var(--bg);border-radius:10px;padding:10px;margin-bottom:8px;display:flex;gap:10px;align-items:center;">'
+      +'<label style="cursor:pointer;display:flex;align-items:center;gap:6px;">'
+      +'<input type="checkbox" '+(c.activa?'checked':'')+' onchange="_toggleCamp('+i+',this.checked)" style="width:16px;height:16px;accent-color:var(--wa);">'
+      +'<span style="font-size:12px;font-weight:700;">'+escH(c.nombre)+'</span>'
+      +'</label>'
+      +'<span style="font-size:10px;color:var(--gr);">📅 '+escH(DIAS_LABEL[c.dia]||c.dia)+' '+hLabel+'</span>'
+      +'<span style="font-size:10px;color:var(--ink2);">👥 '+escH((c.segmentos||[]).join(', '))+'</span>'
+      +'<span style="margin-left:auto;width:8px;height:8px;border-radius:50%;background:'+(c.activa?'var(--wa)':'#555')+';display:inline-block;"></span>'
+      +'</div>';
+  }).join('')
+  +'<button class="btn-save" style="margin-top:6px;width:100%;" onclick="_guardarCampaigns()">💾 Guardar configuración de campañas</button>';
+}
+
+function _toggleCamp(i, val) {
+  if (_campaigns && _campaigns[i]) _campaigns[i].activa = val;
+}
+
+function _guardarCampaigns() {
+  if (!_campaigns) return;
+  apiFetch('/api/campaigns', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ campaigns: _campaigns })
+  }).then(function(r){return r.json();}).then(function(d){
+    toast(d.ok ? '✅ Campañas guardadas — el servidor las ejecutará automáticamente' : '❌ '+d.error, d.ok?'s':'e');
+  }).catch(function(){ toast('⚠️ Servidor no responde','e'); });
+}
+
+function detenerMasiva() {
+  masivaStop = true;
+  var btn = document.getElementById('btn-stop-masiva');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Deteniendo…'; }
+  toast('⛔ Deteniendo envío…', 'e');
+}
+
+function resetBotonesEnvio() {
+  var s = document.getElementById('btn-send-masiva');
+  var p = document.getElementById('btn-stop-masiva');
+  if (s) { s.style.display='block'; s.disabled=false; }
+  if (p) { p.style.display='none'; p.disabled=false; p.textContent='⛔ Detener envío'; }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  AGENDA
+// ══════════════════════════════════════════════════════════════════════
+var MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+var _agYear = new Date().getFullYear();
+var _agMonth = new Date().getMonth();
+var _agDay = null;
+
+function renderAgenda() {
+  var pg = document.getElementById('pg-agenda'); if (!pg) return;
+  var hoy = new Date().toISOString().slice(0,10);
+
+  // Recopilar seguimientos manuales
+  var allSegs = [];
+  clients.forEach(function(c){
+    (fsSegs[c.id]||[]).forEach(function(s){ allSegs.push({ c:c, s:s, tipo:'seg' }); });
+  });
+
+  // Recopilar contactos automáticos programados (de fsAgenda)
+  Object.values(fsAgenda).forEach(function(ag){
+    if (!ag.activo || !ag.proximo_contacto) return;
+    var c = clients.find(function(x){ return x.id===ag.clienteId; }) || { id:ag.clienteId, nombre:ag.nombre||ag.clienteId };
+    allSegs.push({ c:c, s:{ fecha:ag.proximo_contacto, nota:'🔔 Contacto automático ('+ag.canal+')' }, tipo:'agenda' });
+  });
+
+  var pendHoy   = allSegs.filter(function(x){ return x.s.fecha===hoy; }).length;
+  var vencidos  = allSegs.filter(function(x){ return x.s.fecha<hoy && x.tipo==='seg'; }).length;
+  var totalMes  = allSegs.filter(function(x){ return x.s.fecha.slice(0,7)===(_agYear+'-'+String(_agMonth+1).padStart(2,'0')); }).length;
+  var autoActivos = Object.values(fsAgenda).filter(function(a){ return a.activo; }).length;
+
+  // Construir mapa fecha→items
+  var mapaSegs = {};
+  allSegs.forEach(function(x){ var f=x.s.fecha; if(!mapaSegs[f]) mapaSegs[f]=[]; mapaSegs[f].push(x); });
+
+  // Primer día del mes
+  var primerDia = new Date(_agYear, _agMonth, 1).getDay();
+  var diasMes   = new Date(_agYear, _agMonth+1, 0).getDate();
+
+  var celdas = '';
+  ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(function(d){
+    celdas += '<div class="pag-hd">'+d+'</div>';
+  });
+  for (var i=0; i<primerDia; i++) celdas += '<div class="pag-cell empty"></div>';
+  for (var d=1; d<=diasMes; d++) {
+    var fiso = _agYear+'-'+String(_agMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var items = mapaSegs[fiso] || [];
+    var cls = 'pag-cell'+(fiso===hoy?' today':'')+(fiso===_agDay?' sel':'')+(items.length?' has-seg':'');
+    var dots = items.slice(0,4).map(function(x){
+      var col = x.tipo==='agenda' ? '#4CAF50' : (stOf(x.c)==='vip'?'#FF8F00':stOf(x.c)==='pedido_activo'?'#FFB300':'#D32F2F');
+      return '<div class="pag-dot" style="background:'+col+';"></div>';
+    }).join('');
+    celdas += '<div class="'+cls+'" onclick="agSelDia(\''+fiso+'\')">'
+      +'<div class="pag-num">'+d+'</div>'
+      +(dots?'<div class="pag-dots">'+dots+'</div>':'')
+      +'</div>';
+  }
+
+  var detalle = '';
+  if (_agDay) {
+    var items = mapaSegs[_agDay] || [];
+    detalle = '<div class="pag-detail"><div style="font-weight:800;margin-bottom:10px;">📅 '+_agDay+' ('+items.length+' seguimiento'+(items.length!==1?'s':'')+')</div>'
+      +(items.length ? items.map(function(x){
+        return '<div class="pag-row">'
+          +'<div><div style="font-size:13px;font-weight:700;">'+escH(x.c.nombre)+'</div>'
+          +(x.s.nota?'<div style="font-size:11px;color:var(--gr);">'+escH(x.s.nota)+'</div>':'')
+          +'</div>'
+          +'<button class="pag-btn" onclick="openClientPag(\''+escQ(x.c.id)+'\')">👤 Ver</button>'
+          +'</div>';
+      }).join('') : '<div style="color:var(--gr);font-size:12px;">Sin seguimientos este día</div>')
+      +'</div>';
+  }
+
+  pg.innerHTML='<div style="max-width:820px;margin:0 auto;width:100%;">'
+    +'<div class="pag-kpis">'
+    +'<div class="pag-kpi"><div class="pag-kpi-n">'+pendHoy+'</div><div class="pag-kpi-l">Hoy</div></div>'
+    +'<div class="pag-kpi"><div class="pag-kpi-n" style="color:var(--rd);">'+vencidos+'</div><div class="pag-kpi-l">Vencidos</div></div>'
+    +'<div class="pag-kpi"><div class="pag-kpi-n">'+totalMes+'</div><div class="pag-kpi-l">Este mes</div></div>'
+    +'<div class="pag-kpi"><div class="pag-kpi-n" style="color:#4CAF50;">'+autoActivos+'</div><div class="pag-kpi-l">Auto-activos</div></div>'
+    +'</div>'
+    // Botón ejecutar hoy
+    +(pendHoy>0?'<div style="margin-bottom:12px;"><button onclick="ejecutarAgendaHoy()" style="padding:10px 18px;background:var(--g);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">▶️ Ejecutar '+pendHoy+' contacto'+(pendHoy!==1?'s':'')+' de hoy ahora</button></div>':'')
+    +'<div style="font-size:10px;color:var(--gr);margin-bottom:10px;">🟢 Verde = contacto automático · 🔴 Rojo = seguimiento manual · ⚠️ = vencido</div>'
+    +'<div class="pag-nav">'
+    +'<button class="pag-nav-btn" onclick="agNavMes(-1)">← Anterior</button>'
+    +'<div class="pag-month">'+MESES[_agMonth]+' '+_agYear+'</div>'
+    +'<button class="pag-nav-btn" onclick="agNavMes(1)">Siguiente →</button>'
+    +'</div>'
+    +'<div class="pag-grid">'+celdas+'</div>'
+    +detalle
+    +'</div>';
+}
+
+function agNavMes(d){ _agMonth+=d; if(_agMonth>11){_agMonth=0;_agYear++;} if(_agMonth<0){_agMonth=11;_agYear--;} _agDay=null; renderAgenda(); }
+function agSelDia(f){ _agDay=(_agDay===f)?null:f; renderAgenda(); }
+function openClientPag(id){
+  var tab = document.getElementById('tab-clientes');
+  if(tab) gotoTab('clientes',tab);
+  setTimeout(function(){ openClient(id); },100);
+}
+
+function ejecutarAgendaHoy() {
+  apiFetch('/api/agenda/ejecutar', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' })
+    .then(function(r){ return r.json(); })
+    .then(function(d){ toast(d.ok ? '⏳ Ejecutando — recibirás notificaciones por cada envío' : '❌ '+d.error, d.ok?'s':'e'); })
+    .catch(function(){ toast('⚠️ Servidor no responde. ¿Está corriendo npm start?','e'); });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  BOT IA
+// ══════════════════════════════════════════════════════════════════════
+var _botStatus = null;
+
+function renderBot() {
+  var pg = document.getElementById('pg-bot'); if (!pg) return;
+
+  apiFetch('/api/status')
+    .then(function(r){ return r.json(); })
+    .then(function(d){ _botStatus = d; renderBotContent(); })
+    .catch(function(){ _botStatus = null; renderBotContent(); });
+}
+
+function renderBotContent() {
+  var pg = document.getElementById('pg-bot'); if (!pg) return;
+  var ok = _botStatus && _botStatus.bot;
+  var waOk = _botStatus && _botStatus.whatsapp==='conectado';
+
+  pg.innerHTML='<div style="max-width:820px;margin:0 auto;width:100%;">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">'
+    +'<div style="font-size:28px;">🤖</div>'
+    +'<div><div style="font-weight:900;font-size:18px;">Bot IA · CYC Carnes</div>'
+    +'<div style="font-size:12px;color:var(--gr);">Claude Haiku · Responde consultas automáticamente por WhatsApp</div></div>'
+    +'<div style="margin-left:auto;display:flex;align-items:center;gap:6px;">'
+    +'<div style="width:9px;height:9px;border-radius:50%;background:'+(ok?'#4CAF50':'#555')+';"></div>'
+    +'<span style="font-size:11px;color:'+(ok?'#4CAF50':'#555')+';font-weight:700;letter-spacing:1px;">'+(ok?'ACTIVO':'INACTIVO')+'</span>'
+    +'</div></div>'
+
+    +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">'
+    +'<div class="sec" style="text-align:center;"><div style="font-size:22px;font-weight:900;color:'+(ok?'#4CAF50':'#555')+';">'+(ok?'✅':'❌')+'</div><div style="font-size:11px;color:var(--gr);">Bot IA</div></div>'
+    +'<div class="sec" style="text-align:center;"><div style="font-size:22px;font-weight:900;color:'+(waOk?'var(--wa)':'#555')+';">'+(waOk?'✅':'❌')+'</div><div style="font-size:11px;color:var(--gr);">WhatsApp</div></div>'
+    +'<div class="sec" style="text-align:center;"><div style="font-size:22px;font-weight:900;">'+(_botStatus?(_botStatus.difusion?'📤':'⏸️'):'—')+'</div><div style="font-size:11px;color:var(--gr);">Campaña</div></div>'
+    +'</div>'
+
+    +'<div class="sec" style="margin-bottom:12px;"><div class="sec-l">Qué sabe el bot</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:6px;">'
+    +['Productos CYC Carnes','Pedidos y cotizaciones','Quejas de entrega','Frecuencia de compra','Clientes nuevos','Seguimiento comercial']
+      .map(function(t){ return '<span style="background:var(--w2);border-radius:100px;padding:4px 10px;font-size:11px;color:var(--ink2);">✅ '+escH(t)+'</span>'; }).join('')
+    +'</div></div>'
+
+    +'<div class="sec" style="margin-bottom:12px;"><div class="sec-l">Probar bot manualmente</div>'
+    +'<div id="bot-chat" class="bot-chat-area"></div>'
+    +'<div style="display:flex;gap:6px;margin-top:8px;">'
+    +'<input id="bot-num" type="text" placeholder="Número (57300…)" style="width:150px;flex-shrink:0;">'
+    +'<input id="bot-msg" type="text" placeholder="Escribe un mensaje para probar el bot…" style="flex:1;" onkeydown="if(event.key===\'Enter\')enviarBot();">'
+    +'<button class="btn-save" onclick="enviarBot()">Enviar</button>'
+    +'</div>'
+    +(ok?'':'<div style="font-size:11px;color:var(--gr);margin-top:6px;">⚠️ El bot responderá aquí si el servidor está corriendo. Agrega ANTHROPIC_API_KEY al archivo .env</div>')
+    +'</div>'
+
+    +(ok?'':'<div style="background:#1A0A00;border:1px solid #3A2000;border-radius:12px;padding:14px;">'
+      +'<div style="font-weight:700;color:var(--gold);margin-bottom:8px;">⚠️ Configurar bot</div>'
+      +'<div style="font-family:monospace;font-size:12px;color:var(--ink2);line-height:2;">'
+      +'<div>1. Crea el archivo <span style="color:#EEE;">.env</span> en la carpeta CYC</div>'
+      +'<div>2. Agrega: <span style="color:var(--gold);">ANTHROPIC_API_KEY=sk-ant-api03-...</span></div>'
+      +'<div>3. Reinicia el servidor con <span style="color:#EEE;">npm start</span></div>'
+      +'</div></div>')
+    +'</div>';
+}
+
+function enviarBot() {
+  var num = (document.getElementById('bot-num')||{}).value||'';
+  var msg = (document.getElementById('bot-msg')||{}).value||'';
+  if (!msg.trim()) return;
+  var chat = document.getElementById('bot-chat');
+  if (chat) chat.innerHTML += '<div class="bot-msg-in">'+escH(msg)+'</div>';
+  if (document.getElementById('bot-msg')) document.getElementById('bot-msg').value='';
+
+  apiFetch('/api/bot', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ numero: num||'test', texto: msg })
+  }).then(function(r){ return r.json(); }).then(function(d){
+    var chat = document.getElementById('bot-chat');
+    if (chat) {
+      chat.innerHTML += '<div class="bot-msg-out">'+(d.ok?escH(d.respuesta):'❌ '+escH(d.error))+'</div>';
+      chat.scrollTop = chat.scrollHeight;
+    }
+  }).catch(function(){
+    var chat = document.getElementById('bot-chat');
+    if (chat) chat.innerHTML += '<div class="bot-msg-out" style="border-color:var(--rd);">⚠️ Servidor no responde</div>';
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════════════════════════════
+function renderConfig() {
+  var pg = document.getElementById('pg-config'); if (!pg) return;
+
+  pg.innerHTML='<div style="max-width:620px;margin:0 auto;width:100%;">'
+    +'<div style="font-weight:900;font-size:18px;margin-bottom:16px;">⚙️ Configuración</div>'
+
+    // Firebase
+    +'<div class="sec" style="margin-bottom:12px;">'
+    +'<div class="sec-l">Firebase (base de datos)</div>'
+    +'<div class="cfg-row"><div class="cfg-lbl">API Key</div><input id="cfg-apikey" type="text" placeholder="AIzaSy..." value="'+escH(FB_CONFIG.apiKey||'')+'"></div>'
+    +'<div class="cfg-row"><div class="cfg-lbl">Project ID</div><input id="cfg-proj" type="text" placeholder="cyc-crm" value="'+escH(FB_CONFIG.projectId||'')+'"></div>'
+    +'<div class="cfg-row"><div class="cfg-lbl">Auth Domain</div><input id="cfg-auth" type="text" placeholder="cyc-crm.firebaseapp.com" value="'+escH(FB_CONFIG.authDomain||'')+'"></div>'
+    +'<div class="cfg-row"><div class="cfg-lbl">App ID</div><input id="cfg-appid" type="text" placeholder="1:123:web:abc" value="'+escH(FB_CONFIG.appId||'')+'"></div>'
+    +'<button class="btn-save" onclick="guardarFBConfig()">💾 Guardar y conectar Firebase</button>'
+    +'<div style="margin-top:8px;font-size:11px;color:var(--gr);">Crea tu proyecto gratis en console.firebase.google.com → Web app → copia los datos de configuración</div>'
+    +'</div>'
+
+    // Backup y seguridad
+    +'<div class="sec" style="margin-bottom:12px;">'
+    +'<div class="sec-l">🔒 Backup y seguridad</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">'
+    +'<button class="btn-save" onclick="hacerBackupAhora()">💾 Hacer backup ahora</button>'
+    +'<button class="btn-save" style="background:var(--br2);color:var(--ink2);" onclick="verBackups()">📂 Ver backups</button>'
+    +'</div>'
+    +'<div id="backup-info" style="font-size:11px;color:var(--gr);"></div>'
+    +'<div style="margin-top:8px;font-size:11px;color:var(--gr);line-height:1.8;">'
+    +'📍 <strong>Ubicación:</strong> <code style="background:var(--bg);padding:2px 6px;border-radius:4px;color:var(--ink2);">CYC/backups/YYYY-MM-DD/</code><br>'
+    +'⏰ <strong>Backup automático</strong> cada día a las 2am Colombia — guarda últimos 30 días<br>'
+    +'🔑 <strong>Cambiar PINs:</strong> agrega <code style="background:var(--bg);padding:2px 6px;border-radius:4px;color:var(--gold);">CYC_PINS=1234,5678</code> al archivo <code style="background:var(--bg);padding:2px 6px;border-radius:4px;">.env</code>'
+    +'</div>'
+    +'</div>'
+
+    // Importar clientes
+    +'<div class="sec" style="margin-bottom:12px;">'
+    +'<div class="sec-l">Importar clientes (JSON)</div>'
+    +'<div style="font-size:11px;color:var(--gr);margin-bottom:8px;">Formato: [{id,nombre,telefono,email,ciudad,pipeline}, ...]</div>'
+    +'<textarea id="import-json" style="height:100px;font-family:monospace;font-size:11px;" placeholder=\'[{"id":"1","nombre":"Juan Pérez","telefono":"3001234567","ciudad":"Bogotá"}]\'></textarea>'
+    +'<button class="btn-save" onclick="importarClientes()" style="margin-top:6px;">📥 Importar</button>'
+    +'</div>'
+
+    // Exportar
+    +'<div class="sec" style="margin-bottom:12px;">'
+    +'<div class="sec-l">Exportar datos</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+    +'<button class="btn-save" onclick="exportarCSV()">📊 Exportar CSV</button>'
+    +'<button class="btn-save" style="background:var(--bl);" onclick="exportarJSON()">📋 Exportar JSON</button>'
+    +'</div></div>'
+
+    // Empresa
+    +'<div class="sec">'
+    +'<div class="sec-l">🥩 Empresa — Carnes y Carnes</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+
+    // Col 1: Contacto + Horario
+    +'<div>'
+    +'<div style="font-size:10px;font-weight:800;color:var(--gr);letter-spacing:1px;margin-bottom:6px;">CONTACTO</div>'
+    +[['🌐','Web','carnesycarnes.com'],['📱','WhatsApp','+57 318 578 0344'],['📞','Tel','+57 320 233 3333'],['📍','Ciudad','Bucaramanga, Santander']].map(function(r){
+      return '<div style="display:flex;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--br);">'
+        +'<span style="font-size:13px;">'+r[0]+'</span>'
+        +'<span style="font-size:10px;color:var(--gr);min-width:60px;">'+r[1]+'</span>'
+        +'<span style="font-size:11px;color:var(--ink2);">'+escH(r[2])+'</span>'
+        +'</div>';
+    }).join('')
+    +'<div style="font-size:10px;font-weight:800;color:var(--gr);letter-spacing:1px;margin-top:10px;margin-bottom:6px;">HORARIO</div>'
+    +'<div style="font-size:11px;color:var(--ink2);line-height:1.8;">'
+    +'🕗 Lun–Sáb: 8:00am – 9:00pm<br>🕗 Domingo: 8:00am – 8:00pm<br>🚚 Envío gratis &gt;$60.000 · $3.000 si es menor'
+    +'</div>'
+    +'</div>'
+
+    // Col 2: Puntos de venta + Propuesta de valor
+    +'<div>'
+    +'<div style="font-size:10px;font-weight:800;color:var(--gr);letter-spacing:1px;margin-bottom:6px;">PUNTOS DE VENTA (22)</div>'
+    +'<div style="font-size:11px;color:var(--ink2);line-height:1.8;">'
+    +'🏪 3 tiendas propias<br>🤝 11 aliados (MXM, Despensa Popular, Autoservicio La Quinta, etc.)<br>📦 Domicilio Bucaramanga y área metropolitana'
+    +'</div>'
+    +'<div style="font-size:10px;font-weight:800;color:var(--gr);letter-spacing:1px;margin-top:10px;margin-bottom:6px;">PROPUESTA DE VALOR</div>'
+    +'<div style="font-size:11px;color:var(--ink2);line-height:1.8;">'
+    +'✅ Ganado 100% alimentado con pasto<br>✅ Cortes madurados certificados<br>✅ Trazabilidad de granja a mesa<br>✅ Línea muscular / fitness<br>✅ BOX familiar semanal'
+    +'</div>'
+    +'</div>'
+
+    +'</div>'
+
+    // Slogan + Links clave
+    +'<div style="margin-top:12px;background:var(--bg);border-radius:8px;padding:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">'
+    +'<span style="font-style:italic;color:var(--g);font-weight:700;font-size:13px;">"Complacemos tu gusto cada día"</span>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;">'
+    +'<a href="https://carnesycarnes.com" target="_blank" style="padding:4px 10px;background:var(--w2);border:1px solid var(--br2);border-radius:100px;font-size:10px;color:var(--ink2);">🛒 Tienda</a>'
+    +'<a href="https://carnesycarnes.com/collections/todos-los-productos" target="_blank" style="padding:4px 10px;background:var(--w2);border:1px solid var(--br2);border-radius:100px;font-size:10px;color:var(--ink2);">📦 Catálogo</a>'
+    +'<a href="https://carnesycarnes.com/pages/distribuidores" target="_blank" style="padding:4px 10px;background:var(--w2);border:1px solid var(--br2);border-radius:100px;font-size:10px;color:var(--ink2);">🤝 Distribuidores</a>'
+    +'</div>'
+    +'</div>'
+    +'</div>'
+
+    +'</div>';
+}
+
+function hacerBackupAhora() {
+  var info = document.getElementById('backup-info');
+  if (info) info.textContent = '⏳ Haciendo backup...';
+  apiFetch('/api/backup', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (info) info.innerHTML = d.ok
+        ? '<span style="color:#4CAF50;">✅ Backup '+escH(d.fecha)+' — '+d.copiados+' archivos guardados en CYC/backups/</span>'
+        : '<span style="color:var(--rd);">❌ '+escH(d.error||'Error')+'</span>';
+    })
+    .catch(function(){ if (info) info.textContent = '⚠️ Servidor no responde'; });
+}
+
+function verBackups() {
+  var info = document.getElementById('backup-info');
+  if (info) info.textContent = '⏳ Cargando backups...';
+  apiFetch('/api/backup/lista')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (!d.ok || !d.backups.length) { if(info) info.textContent = 'Sin backups aún. Haz el primero ahora.'; return; }
+      if (info) info.innerHTML = '<div style="margin-top:6px;">'
+        +d.backups.map(function(b){
+          return '<div style="display:flex;gap:8px;padding:3px 0;border-bottom:1px solid var(--br);font-size:11px;">'
+            +'<span style="color:var(--ink2);min-width:90px;">'+escH(b.fecha)+'</span>'
+            +'<span style="color:var(--gr);">'+b.archivos+' archivos · '+b.kb+' KB</span>'
+            +'</div>';
+        }).join('')
+        +'</div>';
+    })
+    .catch(function(){ if(info) info.textContent = '⚠️ Servidor no responde'; });
+}
+
+function guardarFBConfig() {
+  FB_CONFIG = {
+    apiKey:     (document.getElementById('cfg-apikey')||{}).value||'',
+    projectId:  (document.getElementById('cfg-proj')||{}).value||'',
+    authDomain: (document.getElementById('cfg-auth')||{}).value||'',
+    appId:      (document.getElementById('cfg-appid')||{}).value||''
+  };
+  localStorage.setItem('cyc_fb_config', JSON.stringify(FB_CONFIG));
+  initFirebase();
+  toast('Firebase configurado ✓');
+}
+
+function importarClientes() {
+  var txt = (document.getElementById('import-json')||{}).value||'';
+  try {
+    var arr = JSON.parse(txt);
+    if (!Array.isArray(arr)) throw new Error('Debe ser un array');
+    var nuevos = 0;
+    arr.forEach(function(c){
+      if (!c.nombre) return;
+      if (!c.id) c.id = 'c_'+ Date.now() + '_' + Math.random().toString(36).slice(2,6);
+      var ex = clients.findIndex(function(x){ return x.id===c.id; });
+      if (ex>=0) clients[ex]={...clients[ex],...c}; else { clients.push(c); nuevos++; }
+    });
+    saveLS(); renderList();
+    toast('✅ Importados: '+nuevos+' nuevos, '+arr.length+' total');
+  } catch(e) { toast('❌ JSON inválido: '+e.message, 'e'); }
+}
+
+function exportarCSV() {
+  var cols = ['id','nombre','telefono','email','ciudad','pipeline','asesor','producto','kg_ultimo','fecha_ultimo','frecuencia'];
+  var rows = [cols.join(',')];
+  clients.forEach(function(c){
+    var st = fsStates[c.id]||{}; var car = fsCarnes[c.id]||{};
+    rows.push(cols.map(function(k){
+      var v = c[k]||st[k]||car[k]||car[k.replace('_','')] || '';
+      return '"'+String(v).replace(/"/g,'""')+'"';
+    }).join(','));
+  });
+  descargar('cyc_clientes.csv', rows.join('\n'), 'text/csv;charset=utf-8;');
+}
+
+function exportarJSON() {
+  var data = clients.map(function(c){
+    return {...c, pipeline:stOf(c), ...(fsStates[c.id]||{}), ...(fsCarnes[c.id]||{}) };
+  });
+  descargar('cyc_clientes.json', JSON.stringify(data,null,2), 'application/json');
+}
+
+function descargar(nombre, contenido, tipo) {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+contenido], {type:tipo}));
+  a.download = nombre; a.click();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  FIREBASE
+// ══════════════════════════════════════════════════════════════════════
+function syncDot(s) {
+  var d=document.getElementById('syncDot'); var l=document.getElementById('syncLbl');
+  if(!d)return;
+  if(s==='ok'){d.style.background='#4CAF50';if(l){l.textContent='Sync';l.style.color='#4CAF50';}}
+  else if(s==='syncing'){d.style.background='#F97316';if(l){l.textContent='Conectando';l.style.color='#F97316';}}
+  else if(s==='error'){d.style.background='#EF4444';if(l){l.textContent='Error';l.style.color='#EF4444';}}
+  else{d.style.background='#555';if(l){l.textContent='Local';l.style.color='#555';}}
+}
+
+function initFirebase() {
+  if (!FB_CONFIG.apiKey || !FB_CONFIG.projectId) { syncDot('off'); return; }
+  try {
+    var app = firebase.apps && firebase.apps.length ? firebase.app() : firebase.initializeApp(FB_CONFIG);
+    db = firebase.firestore(app);
+    syncDot('syncing');
+    subscribeFirestore();
+  } catch(e) { console.error('Firebase error:',e); syncDot('error'); }
+}
+
+function subscribeFirestore() {
+  if (!db) return;
+  db.collection('cyc_states').onSnapshot(function(snap){
+    snap.forEach(function(d){ fsStates[d.id]=d.data(); });
+    saveLS(); renderList(); syncDot('ok');
+  });
+  db.collection('cyc_notes').onSnapshot(function(snap){
+    snap.forEach(function(d){ fsNotes[d.id]=d.data().notas||[]; });
+    saveLS();
+  });
+  db.collection('cyc_segs').onSnapshot(function(snap){
+    snap.forEach(function(d){ fsSegs[d.id]=d.data().segs||[]; });
+    saveLS();
+  });
+  db.collection('cyc_carnes').onSnapshot(function(snap){
+    snap.forEach(function(d){ fsCarnes[d.id]=d.data(); });
+    saveLS();
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  SSE — Eventos del servidor (progreso difusión, QR, WA)
+// ══════════════════════════════════════════════════════════════════════
+var _sseReconnectMs = 2000;
+var _sseInst = null;
+// ID único por pestaña/dispositivo — para ignorar updates propios
+var _deviceId = sessionStorage.getItem('cyc_device_id') || (function(){
+  var id = Math.random().toString(36).slice(2)+Date.now().toString(36);
+  sessionStorage.setItem('cyc_device_id', id);
+  return id;
+})();
+
+// Mezcla datos remotos de otro dispositivo sin perder cambios locales
+function _mergeRemoteData(d) {
+  var changed = false;
+  if (Array.isArray(d.clients) && d.clients.length > 0) {
+    d.clients.forEach(function(rc) {
+      var idx = clients.findIndex(function(lc){ return lc.id === rc.id; });
+      if (idx === -1) { clients.push(rc); changed = true; }
+      // No sobreescribimos clientes locales existentes — el servidor es autoritativo
+      // solo para clientes nuevos
+    });
+  }
+  if (d.states && typeof d.states === 'object') {
+    Object.keys(d.states).forEach(function(cid) {
+      var rs = d.states[cid];
+      var ls = fsStates[cid];
+      // Gana el más reciente
+      if (!ls || !ls.updatedAt || (rs.updatedAt && rs.updatedAt > ls.updatedAt)) {
+        fsStates[cid] = rs;
+        changed = true;
+      }
+    });
+  }
+  if (d.carnes && typeof d.carnes === 'object') {
+    Object.keys(d.carnes).forEach(function(cid) {
+      if (!fsCarnes[cid]) { fsCarnes[cid] = d.carnes[cid]; changed = true; }
+    });
+  }
+  if (changed) {
+    saveLS();
+    renderList();
+    if (currentId) buildDetail(currentId);
+    toast('🔄 Datos sincronizados desde otro dispositivo', 'i');
+  }
+}
+
+function conectarSSE() {
+  if (_sseInst) { try { _sseInst.close(); } catch(_){} }
+  try {
+    var es = new EventSource('/api/eventos');
+    _sseInst = es;
+
+    es.onopen = function() {
+      _sseReconnectMs = 2000; // reset backoff al conectar
+      _setServerDot(true);
+    };
+
+    es.onmessage = function(e) {
+      var d;
+      try { d = JSON.parse(e.data); } catch(_){ return; }
+
+      // WhatsApp QR
+      if (d.tipo === 'qr') {
+        if (d.qr) { document.getElementById('qrImg').src = d.qr; document.getElementById('qrModal').classList.add('show'); }
+        localStorage.setItem('cyc_wa_status','qr_pendiente');
+        renderMasiva();
+      }
+      // WhatsApp conectado (nombre del evento alineado con server v2)
+      if (d.tipo === 'wa_conectado') {
+        document.getElementById('qrModal').classList.remove('show');
+        localStorage.setItem('cyc_wa_status','conectado');
+        toast('✅ WhatsApp conectado');
+        renderMasiva();
+      }
+      // Difusión: inicio → mostrar barra
+      if (d.tipo === 'difusion_inicio') {
+        var wrap = document.getElementById('masivaProgWrap');
+        var log  = document.getElementById('masivaLog');
+        var btnS = document.getElementById('btn-send-masiva');
+        var btnX = document.getElementById('btn-stop-masiva');
+        if (wrap) wrap.style.display = 'block';
+        if (log)  { log.style.display = 'block'; log.innerHTML = ''; }
+        if (btnS) btnS.style.display = 'none';
+        if (btnX) btnX.style.display = 'block';
+      }
+      // Difusión: progreso
+      if (d.tipo === 'difusion_progreso') {
+        var fill = document.getElementById('masivaProgFill');
+        var info = document.getElementById('masivaProgInfo');
+        if (fill) fill.style.width = (d.porcentaje||0)+'%';
+        if (info) info.innerHTML = '<span>'+d.actual+'/'+d.total+'</span><span>✅ '+d.enviados+' · ❌ '+d.fallidos+'</span>';
+      }
+      // Difusión: log individual
+      if (d.tipo === 'difusion_log') {
+        var log = document.getElementById('masivaLog');
+        if (log) {
+          var ok = d.estado==='enviado';
+          log.innerHTML += '<div class="'+(ok?'log-ok':'log-err')+'">'+(ok?'✅':'❌')+' '+escH(d.nombre||d.numero||'')+'</div>';
+          log.scrollTop = log.scrollHeight;
+        }
+      }
+      // Difusión: fin o error
+      if (d.tipo === 'difusion_fin' || d.tipo === 'difusion_error') {
+        resetBotonesEnvio();
+        if (d.tipo === 'difusion_fin') toast('✅ Campaña completada — '+d.enviados+' enviados, '+d.fallidos+' fallidos','s');
+        else toast('❌ Error en campaña: '+(d.error||''),'e');
+      }
+      // Agenda: contacto automático enviado
+      if (d.tipo === 'agenda_enviado') {
+        toast('📤 Contacto enviado a '+escH(d.nombre||d.clienteId)+' ('+d.canal+') · próx: '+d.proximo);
+        // Actualizar cache local
+        if (d.clienteId && fsAgenda[d.clienteId]) {
+          fsAgenda[d.clienteId].ultimo_contacto  = new Date().toISOString().slice(0,10);
+          fsAgenda[d.clienteId].proximo_contacto = d.proximo;
+        }
+        if (document.getElementById('pg-agenda').classList.contains('on')) renderAgenda();
+        if (currentId === d.clienteId) buildDetail(currentId);
+      }
+      // Agenda: error
+      if (d.tipo === 'agenda_error') {
+        toast('❌ Error agenda: '+escH(d.error||d.nombre||''),'e');
+      }
+      // Agenda: ejecución manual completa
+      if (d.tipo === 'agenda_ejecutada') {
+        toast('✅ Ejecución manual: '+d.enviados+' mensajes enviados','s');
+      }
+      // Sincronización multi-dispositivo
+      if (d.tipo === 'data_update' && d._origen !== _deviceId) {
+        _mergeRemoteData(d);
+      }
+    };
+
+    es.onerror = function() {
+      _setServerDot(false);
+      es.close();
+      _sseInst = null;
+      setTimeout(function() {
+        _sseReconnectMs = Math.min(_sseReconnectMs * 2, 30000);
+        conectarSSE();
+      }, _sseReconnectMs);
+    };
+  } catch(_) {
+    _setServerDot(false);
+    setTimeout(conectarSSE, 5000);
+  }
+}
+
+function _setServerDot(ok) {
+  var d = document.getElementById('syncDot');
+  var l = document.getElementById('syncLbl');
+  if (!d) return;
+  // Solo actualiza si no hay Firebase conectado (Firebase controla el dot cuando db existe)
+  if (!db) {
+    d.style.background = ok ? '#4CAF50' : '#555';
+    if (l) { l.textContent = ok ? 'Servidor' : 'Local'; l.style.color = ok ? '#4CAF50' : '#555'; }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════════════════════
+function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escQ(s){ return String(s||'').replace(/'/g,"\\'"); }
+
+var _toastT = null;
+function toast(msg, tipo) {
+  var el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.background = tipo==='e'?'#4A1010':tipo==='s'?'#0A2A0A':'#222';
+  el.classList.add('show');
+  clearTimeout(_toastT);
+  _toastT = setTimeout(function(){ el.classList.remove('show'); }, 3000);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════════════
+function initApp() {
+  initFirebase();
+  _cargarDesdeServidor();           // sincroniza con servidor antes de cargar BBDD
+  cargarBaseDatos().then(function(){ renderList(); });
+  cargarAgendaServidor();
+  conectarSSE();
+  // Registro del Service Worker (PWA — instalar como app)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  }
+}
+
+// ── Carga automática de BASE HORECA desde /clientes.json ──────────────
+async function cargarBaseDatos() {
+  // Si ya hay clientes cargados no reimportar
+  if (clients.length > 0) { renderList(); return; }
+
+  try {
+    const [resC, resE] = await Promise.all([
+      fetch('/clientes.json'),
+      fetch('/extras.json')
+    ]);
+    if (!resC.ok) return;
+
+    const nuevos = await resC.json();
+    const extras = resE.ok ? await resE.json() : {};
+
+    nuevos.forEach(function(c) {
+      if (!clients.find(function(x){ return x.id === c.id; })) {
+        clients.push(c);
+      }
+      // OBSERVACIONES → nota inicial
+      var ex = extras[c.id];
+      if (ex && ex.obs && ex.obs.trim()) {
+        if (!fsNotes[c.id]) fsNotes[c.id] = [];
+        if (!fsNotes[c.id].find(function(n){ return n.txt === ex.obs; })) {
+          fsNotes[c.id].push({ txt: ex.obs, ts: c.fecha_contacto || new Date().toISOString(), autor: 'Importado' });
+        }
+      }
+      // SEGUIMIENTO → seguimiento con fecha de contacto
+      if (ex && ex.seg && ex.seg.trim()) {
+        if (!fsSegs[c.id]) fsSegs[c.id] = [];
+        if (!fsSegs[c.id].find(function(s){ return s.nota === ex.seg; })) {
+          fsSegs[c.id].push({ id: Date.now() + Math.random(), fecha: c.fecha_contacto || new Date().toISOString().slice(0,10), nota: ex.seg, ts: new Date().toISOString() });
+        }
+      }
+    });
+
+    saveLS();
+    renderList();
+    toast('✅ ' + nuevos.length + ' clientes HORECA cargados');
+  } catch(e) {
+    console.log('clientes.json no disponible, usando datos locales');
+  }
+}
+</script>
+</body>
+</html>

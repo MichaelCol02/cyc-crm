@@ -1,0 +1,22 @@
+node_modules/
+.env
+backups/
+*.json.bak
+
+# Datos sensibles — se guardan en Railway Volume o localmente
+agenda.json
+agenda_log.json
+clientes.json
+campaigns.json
+
+# Sesión WhatsApp (Baileys) — se regenera con QR
+auth_info_multi/
+auth_info_baileys/
+*.key
+*.creds.json
+
+# Archivos Excel de la carpeta raíz
+*.xlsx
+
+# Logs
+*.log

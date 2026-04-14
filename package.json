@@ -1,0 +1,23 @@
+{
+  "name": "cyc-crm",
+  "version": "1.0.0",
+  "description": "CRM + Difusión WhatsApp para CYC Carnes",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.88.0",
+    "@hapi/boom": "^10.0.1",
+    "@whiskeysockets/baileys": "^6.7.9",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "nodemailer": "^6.9.13",
+    "node-schedule": "^2.1.1",
+    "pino": "^8.19.0",
+    "qrcode": "^1.5.3",
+    "xlsx": "^0.18.5"
+  }
+}
