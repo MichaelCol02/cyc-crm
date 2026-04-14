@@ -43,8 +43,9 @@ const LOG_FILE      = path.join(DATA_DIR, 'agenda_log.json');
 const CLIENTES_FILE = path.join(DATA_DIR, 'clientes.json');
 const CAMPAIGNS_FILE= path.join(DATA_DIR, 'campaigns.json');
 const BACKUP_DIR    = path.join(DATA_DIR, 'backups');
-if (!fs.existsSync(DATA_DIR))   fs.mkdirSync(DATA_DIR,   { recursive: true });
-if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR, { recursive: true });
+// Render monta /data automáticamente — solo intentamos crear subdirectorios
+try { if (!fs.existsSync(DATA_DIR))   fs.mkdirSync(DATA_DIR,   { recursive: true }); } catch(_) {}
+try { if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR, { recursive: true }); } catch(_) {}
 
 function leerAgenda()     { try { return JSON.parse(fs.readFileSync(AGENDA_FILE,'utf8')); } catch { return {}; } }
 function guardarAgenda(d) { fs.writeFileSync(AGENDA_FILE, JSON.stringify(d,null,2)); }
