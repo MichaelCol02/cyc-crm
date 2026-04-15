@@ -8,10 +8,10 @@ services:
       - key: CYC_PINS
         value: 1111,2222,3333,4444,5555,6666,7777,8888,0000
       - key: DATA_DIR
-        value: /data
+        value: /opt/render/project/src/data
       - key: NODE_ENV
         value: production
     disk:
       name: cyc-data
-      mountPath: /data
+      mountPath: /opt/render/project/src/data
       sizeGB: 1
