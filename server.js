@@ -207,7 +207,9 @@ conectar(
     console.log('✅ WhatsApp conectado');
     notificarSSE({ tipo: 'wa_conectado' });
   }
-);
+).catch(err => {
+  console.error('❌ Error iniciando WhatsApp:', err.message);
+});
 
 // ── Enviar un mensaje individual por WhatsApp ─────────────────────────
 async function enviarWA(numero, texto) {

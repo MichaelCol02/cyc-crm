@@ -33,10 +33,19 @@ let isConnected = false
 
 // ─── Conectar a WhatsApp ─────────────────────────────────────────────────────
 export async function conectar(onQR, onConnected) {
-  const { state, saveCreds } = await useMultiFileAuthState(
-    path.join(__dirname, '../auth')
-  )
-  const { version } = await fetchLatestBaileysVersion()
+  const authDir = process.env.DATA_DIR
+    ? path.join(process.env.DATA_DIR, 'auth')
+    : path.join(__dirname, 'auth')
+
+  const { state, saveCreds } = await useMultiFileAuthState(authDir)
+
+  let version = [2, 3000, 1021030400]
+  try {
+    const latest = await fetchLatestBaileysVersion()
+    if (latest?.version) version = latest.version
+  } catch (_) {
+    console.log('[WA] No se pudo obtener versión WA, usando fallback')
+  }
 
   sock = makeWASocket({
     version,
