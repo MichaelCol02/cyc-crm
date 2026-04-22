@@ -1,0 +1,1402 @@
+[
+  {
+    "id": "cyc_1",
+    "nombre": "OLIVER CREATIVECHEF",
+    "telefono": "3156397563",
+    "pipeline": "inactivo",
+    "fecha_contacto": "2026-02-11"
+  },
+  {
+    "id": "cyc_2",
+    "nombre": "DOMIORIENTE",
+    "telefono": "3118032311",
+    "pipeline": "contactado",
+    "fecha_contacto": "2026-02-11"
+  },
+  {
+    "id": "cyc_3",
+    "nombre": "PISO DIEZ",
+    "telefono": "3152894424",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-02-12"
+  },
+  {
+    "id": "cyc_4",
+    "nombre": "DELICRIOLLOS",
+    "telefono": "3125218986",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-02-13"
+  },
+  {
+    "id": "cyc_5",
+    "nombre": "GRUPO BURGESS SAS",
+    "telefono": "3156246905",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-02-13"
+  },
+  {
+    "id": "cyc_6",
+    "nombre": "RAPIPUNTO",
+    "telefono": "3187449022",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_7",
+    "nombre": "II GATO NEGRO",
+    "telefono": "3171162669",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_8",
+    "nombre": "AGENCIA DE VIAJES ARMONIA TRAVEL",
+    "telefono": "3138328466",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_9",
+    "nombre": "DELICIAS TERESITA",
+    "telefono": "3243497168",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_10",
+    "nombre": "MACONDO",
+    "telefono": "3002080136",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_11",
+    "nombre": "GRUPO RIO",
+    "telefono": "3112668256",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_12",
+    "nombre": "CAFÉ PARA PECADORES",
+    "telefono": "3154227217",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_13",
+    "nombre": "BLEND VENTURA FOOD",
+    "telefono": "3028519286",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_14",
+    "nombre": "JULIANA GOMEZ",
+    "telefono": "3163833813",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_15",
+    "nombre": "HOTELES FLORIDABLANCA",
+    "telefono": "3182657692",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_16",
+    "nombre": "PUBLICISTA",
+    "telefono": "3164079910",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_17",
+    "nombre": "RESTAURANTE THE PING LECHONA",
+    "telefono": "3114426922",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_18",
+    "nombre": "JENGIBRE Y CANELA",
+    "telefono": "3103052966",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_19",
+    "nombre": "PEZCADERIA",
+    "telefono": "3506997230",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_20",
+    "nombre": "RESTAURANTES SABORES",
+    "telefono": "3102892245",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_21",
+    "nombre": "SUMMUIT CARGO",
+    "telefono": "3153429058",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_22",
+    "nombre": "GASTROSHER",
+    "telefono": "3154893835",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_23",
+    "nombre": "JUAN D. HOYOS DISTIBUIDORA",
+    "telefono": "3174871420",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_24",
+    "nombre": "MASTER PRODUCTIONS COMUNICACIONES",
+    "telefono": "3134378099",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_25",
+    "nombre": "LE CREPE BISTRO",
+    "telefono": "3227323794",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_26",
+    "nombre": "RESTAURANTE CASALINS",
+    "telefono": "3108762356",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_27",
+    "nombre": "RESTAURANTE MERCAGAN",
+    "telefono": "3185145165",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_28",
+    "nombre": "JARRI'S S.A.S.",
+    "telefono": "6076363636",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_29",
+    "nombre": "ZEKKEI",
+    "telefono": "3175738913",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_30",
+    "nombre": "ZIRU'S PIZZA S.A.S.",
+    "telefono": "3173630511",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_31",
+    "nombre": "ASADERO DE POLLO EL CACAREO",
+    "telefono": "3153735030",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_32",
+    "nombre": "RESTAURANTE SEÑORA BUCARAMANGA",
+    "telefono": "6076345142",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_33",
+    "nombre": "RESTAURANTE LA BRASA S.A.S",
+    "telefono": "3153733572",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_34",
+    "nombre": "RESTAURANTE SAN MARZANO",
+    "telefono": "3176383230",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_35",
+    "nombre": "BIG PAPA BGA S.A.S.",
+    "telefono": "3146599892",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_36",
+    "nombre": "CARNEROS RESTAURANTE",
+    "telefono": "3213233233",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_37",
+    "nombre": "BURGER LOVERS COLOMBIA S.A.S.",
+    "telefono": "3015381086",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_38",
+    "nombre": "LA COCINA DE PRADA",
+    "telefono": "3183929464",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_39",
+    "nombre": "PESQUERA MAR AZUL",
+    "telefono": "3187082004",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_40",
+    "nombre": "BANANAS GRILL",
+    "telefono": "3177776249",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_41",
+    "nombre": "TOSCANA RESTAURANTE",
+    "telefono": "3133503071",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_42",
+    "nombre": "PECCATI TRATTORIA PIZZERIA",
+    "telefono": "3204499907",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_43",
+    "nombre": "RESTAURANTE VIJAGUAL",
+    "telefono": "3158743705",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_44",
+    "nombre": "MIA NONA",
+    "telefono": "3183441824",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_45",
+    "nombre": "PESCOCENTRO BUCARO",
+    "telefono": "3175005172",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_46",
+    "nombre": "EL MORICHAL",
+    "telefono": "3167443549",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_47",
+    "nombre": "LA FONDA PAISA FLORIDA",
+    "telefono": "3184527692",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_48",
+    "nombre": "BARRIO CAMPESTRE",
+    "telefono": "3103149456",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_49",
+    "nombre": "HOTEL HAMPTON",
+    "telefono": "3165768144",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_50",
+    "nombre": "HOTEL PALONEGRO",
+    "telefono": "3176481382",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_51",
+    "nombre": "HOTEL PRADOS DEL CHICAMOCHA",
+    "telefono": "3180361019",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_52",
+    "nombre": "HOTEL FARALLONES / B/MANGA",
+    "telefono": "3152081113",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_53",
+    "nombre": "HOTEL QUINTA DE CABECERA",
+    "telefono": "3174396235",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_54",
+    "nombre": "SERVICOPETRAN",
+    "telefono": "3138880638",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_55",
+    "nombre": "HOTEL ISLA DORADA BGA",
+    "telefono": "3228730513",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_56",
+    "nombre": "HOTEL SAN FRANCISCO PLAZA REAL",
+    "telefono": "3013751819",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_57",
+    "nombre": "HOTEL MANHATTAN CITY",
+    "telefono": "3185903668",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_58",
+    "nombre": "HOSPEDAJE EL GRAN SANTANDER",
+    "telefono": "3228406505",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_59",
+    "nombre": "HOSTAL ANTIGUO CAMPESTRE",
+    "telefono": "3187886145",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_60",
+    "nombre": "HOSTAL CASA DE HUÉSPEDES LOFT ELITE",
+    "telefono": "3214512493",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_61",
+    "nombre": "CASA LAGO HOTEL BOUTIQUE",
+    "telefono": "3016593237",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_62",
+    "nombre": "HOTEL CHICO REAL BUCARAMANGA",
+    "telefono": "3046076304",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_63",
+    "nombre": "HOTEL CASA MENDOZA",
+    "telefono": "3102546763",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_64",
+    "nombre": "BUSINESS LOFT HOTEL",
+    "telefono": "3163323132",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_65",
+    "nombre": "CASA DE PINOS HOSTAL",
+    "telefono": "3005195794",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_66",
+    "nombre": "HOTEL PALERMO PLAZA BUCARAMANGA",
+    "telefono": "3158682994",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_67",
+    "nombre": "CASA DE HUESPEDES LOS REYES",
+    "telefono": "3125220417",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_68",
+    "nombre": "HOTEL METROPOLITANA PLAZA",
+    "telefono": "3156330142",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_69",
+    "nombre": "HOTEL PLAZUELA REAL",
+    "telefono": "3168300165",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_70",
+    "nombre": "HOTEL 36 VIEW",
+    "telefono": "3163849354",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_71",
+    "nombre": "HOTEL PRADO 34 WEST",
+    "telefono": "3174396235",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_72",
+    "nombre": "HOTEL VILLAMAYOR CABECERA",
+    "telefono": "3182391767",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_73",
+    "nombre": "HOTEL EL LEON DORADO",
+    "telefono": "3143958779",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_74",
+    "nombre": "HOTEL ASTURIAS",
+    "telefono": "3182895356",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_75",
+    "nombre": "HOTEL GIRON CAMPESTRE",
+    "telefono": "3152800231",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_76",
+    "nombre": "GIRON CHILL OUT HOTEL BOUTIQUE",
+    "telefono": "3154753001",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_77",
+    "nombre": "HOTEL CASCADA REAL",
+    "telefono": "3103036092",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_78",
+    "nombre": "HOTEL VALLE DE LOS ANGELES",
+    "telefono": "3164473852",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_79",
+    "nombre": "HOTEL MONACO LEBRIJA.",
+    "telefono": "3164815191",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_80",
+    "nombre": "HOTEL PRADOS DE LA SERRANIA.",
+    "telefono": "3187425699",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_81",
+    "nombre": "HOSPEDAJE Y CAFETERIA PALONEGRO",
+    "telefono": "3143465514",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_82",
+    "nombre": "HOTEL LEBRIJA CONFORT",
+    "telefono": "3185956171",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_83",
+    "nombre": "HOSPEDAJE AQUI ME QUEDO DE LEBRIJA",
+    "telefono": "3164589627",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_84",
+    "nombre": "HOTEL LA PIÑITA DE LEBRIJA",
+    "telefono": "3213502086",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_85",
+    "nombre": "CENTRO RECREACIONAL PALMAS DE RUITOQUE",
+    "telefono": "3164637121",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_86",
+    "nombre": "PREMIUM HOUSE",
+    "telefono": "3105767513",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_87",
+    "nombre": "EL TAMARINDO ECO LODGE/ TRADE ITALICA BUCARAMANGA",
+    "telefono": "3214147273",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_88",
+    "nombre": "HOSTAL LA 200T",
+    "telefono": "3134239512",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_89",
+    "nombre": "CENTRO RECREACIONAL LA MONTAÑA",
+    "telefono": "3153915040",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_90",
+    "nombre": "POSADA VILLA ESPAÑA BONITA",
+    "telefono": "3204213546",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_91",
+    "nombre": "HOSTAL CASA BLANCA CAÑAVERAL",
+    "telefono": "3184842798",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_92",
+    "nombre": "HOSPEDAJE BALCONES DE LA COLINA",
+    "telefono": "3185597819",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_93",
+    "nombre": "HOTEL PRIMAVERA FLORIDABLANCA",
+    "telefono": "3183729578",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_94",
+    "nombre": "POSADA COQUITO",
+    "telefono": "3142780519",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_95",
+    "nombre": "POSADA EL CARRO AMARILLO",
+    "telefono": "3164715728",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_96",
+    "nombre": "LA FONDA FLORIDEÑA",
+    "telefono": "3102135819",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_97",
+    "nombre": "POSADA SANTANDER",
+    "telefono": "3108818304",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_98",
+    "nombre": "POSADA LAS PALMITAS",
+    "telefono": "3157345655",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_99",
+    "nombre": "LA POSADA DE LUCY BT",
+    "telefono": "3184247955",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_100",
+    "nombre": "HOSPEDAJE JIRETH",
+    "telefono": "3003747002",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_101",
+    "nombre": "CASA RAYMA/ WIPA SEMILLA DE ARTESANO",
+    "telefono": "3102414004",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_102",
+    "nombre": "HOSPEDAJE DONDE PAO",
+    "telefono": "3144185450",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_103",
+    "nombre": "POSADA APOSENTO ALTO",
+    "telefono": "3166696597",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_104",
+    "nombre": "HOSTAL RESTAURANTE DON JUAN COLONIAL",
+    "telefono": "3167501322",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_105",
+    "nombre": "HOTEL EL MOLINO PIEDECUESTA",
+    "telefono": "3176194665",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_106",
+    "nombre": "HOTEL QUEDATE AQUI BARICHARA",
+    "telefono": "3185565634",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_107",
+    "nombre": "HOTEL PIEDECUESTA PLAZA",
+    "telefono": "3166701195",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_108",
+    "nombre": "HOTEL PIEDECUESTA",
+    "telefono": "3203657100",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_109",
+    "nombre": "HOSPEDAJE LA MOLIENDA",
+    "telefono": "3186921432",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_110",
+    "nombre": "HOSTAL SAN JUAN PIEDECUESTA",
+    "telefono": "3187713638",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_111",
+    "nombre": "HACIENDA EL ORQUIDEAL",
+    "telefono": "3203709064",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_112",
+    "nombre": "HOSPEDAJE SOL Y LUNA ENSUEÑO",
+    "telefono": "3156672615",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_113",
+    "nombre": "MUSEO-HOSTAL LOS CUROS",
+    "telefono": "3112623673",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_114",
+    "nombre": "LA POSADA CENTRAL PARK/ FLOR_EZ.FRUTAS&+",
+    "telefono": "3156766550",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_115",
+    "nombre": "HOSPEDAJE DON FELIPE",
+    "telefono": "3144431612",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_116",
+    "nombre": "HOSTAL CASAREGUA",
+    "telefono": "3165210626",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_117",
+    "nombre": "HOSPEDAJE LA QUINTA PIEDECUESTA",
+    "telefono": "3153600122",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_118",
+    "nombre": "RANCHO BONANZA",
+    "telefono": "3004982633",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_119",
+    "nombre": "HOTEL LA ALEMANA",
+    "telefono": "3162954527",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_120",
+    "nombre": "FINCA RECREACIONAL LA PAZ",
+    "telefono": "3004430059",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_121",
+    "nombre": "FINCA RECREACIONAL VILLA ISABEL",
+    "telefono": "3115368549",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_122",
+    "nombre": "HOSTAL CASA DORADA DE CAMPO",
+    "telefono": "3144312326",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_123",
+    "nombre": "ESTANCIA LOS REMANSOS",
+    "telefono": "3043946765",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_124",
+    "nombre": "HOTEL VIENTO REAL",
+    "telefono": "3174271093",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_125",
+    "nombre": "HOSTAL COLONIAL LA BATEA",
+    "telefono": "3118316399",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_126",
+    "nombre": "LA CASA DEL SACRISTÁN",
+    "telefono": "3103758337",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_127",
+    "nombre": "HOTEL CASA CLAUSTRO DE ZAPATOCA",
+    "telefono": "3174019146",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_128",
+    "nombre": "LA CARMELINA",
+    "telefono": "3159277144",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_129",
+    "nombre": "HOTEL CASA OASIS",
+    "telefono": "3102926377",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_130",
+    "nombre": "HOSTAL VILLA AMINTA",
+    "telefono": "3013666479",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_131",
+    "nombre": "HOTEL ABADIAS DE ZAPATOCA",
+    "telefono": "3174889266",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_132",
+    "nombre": "CASA AZUL ZAPATOCA",
+    "telefono": "3005427354",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_133",
+    "nombre": "FLORENTINA BY LACARMELINA",
+    "telefono": "3167550610",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_134",
+    "nombre": "LA CASONA ESPACIO BONITO",
+    "telefono": "3053467505",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_135",
+    "nombre": "HOSTAL Y CAFETERIA LENGUERKE",
+    "telefono": "3175159625",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_136",
+    "nombre": "HOSTAL CAPRILANDIA",
+    "telefono": "3182658636",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_137",
+    "nombre": "CASA CAMPESTRE DEL VIENTO HOTEL",
+    "telefono": "3188199965",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_138",
+    "nombre": "HOSTAL DE LA PRADA",
+    "telefono": "3002352633",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_139",
+    "nombre": "LA ESQUINA DE PIEDRA",
+    "telefono": "3225252359",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_140",
+    "nombre": "HOTEL ZAPATOCA",
+    "telefono": "3118216124",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_141",
+    "nombre": "HOTEL - MUSEO CASA DE EJERCICIOS",
+    "telefono": "3132101216",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_142",
+    "nombre": "HOTEL MILLENIUM",
+    "telefono": "3012013428",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_143",
+    "nombre": "HOTEL GHL STYLE",
+    "telefono": "3208311574",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_144",
+    "nombre": "HOTEL SAN SILVESTRE",
+    "telefono": "3102644458",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_145",
+    "nombre": "HOTEL VIZCAYA PLAZA",
+    "telefono": "3106458612",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_146",
+    "nombre": "HOTEL TITANIUM",
+    "telefono": "3013474101",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_147",
+    "nombre": "HOTEL EL OLIMPO",
+    "telefono": "3173696655",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_148",
+    "nombre": "HOTEL PORTAL VICTORIA",
+    "telefono": "3106181675",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_149",
+    "nombre": "HOTEL SAN CARLOS",
+    "telefono": "3108376609",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_150",
+    "nombre": "HOTEL RILUX",
+    "telefono": "3113182879",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_151",
+    "nombre": "RIO COLORS",
+    "telefono": "3118620356",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_152",
+    "nombre": "HOTEL SAN GABRIEL",
+    "telefono": "3205329818",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_153",
+    "nombre": "CASA HOTEL 64",
+    "telefono": "3115394914",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_154",
+    "nombre": "HOTEL SANTUARIO REAL",
+    "telefono": "3174738727",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_155",
+    "nombre": "HOTEL ELITE",
+    "telefono": "3205329819",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_156",
+    "nombre": "HOTEL RUTA DEL SOL",
+    "telefono": "3045971451",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_157",
+    "nombre": "HOTEL COLOMBIA REAL",
+    "telefono": "3143091721",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_158",
+    "nombre": "HOTEL BOUTIQUE PLAZUELA REAL",
+    "telefono": "3184605063",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_159",
+    "nombre": "HOTEL BARRANCABERMEJA PLAZA",
+    "telefono": "3164543669",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_160",
+    "nombre": "HOTEL LA CIUDAD",
+    "telefono": "3004567319",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_161",
+    "nombre": "K12 HOTEL",
+    "telefono": "3202014009",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_162",
+    "nombre": "HOTEL BACHUE",
+    "telefono": "3105788383",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_163",
+    "nombre": "HOTEL OLGA LUCIA",
+    "telefono": "3102779011",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_164",
+    "nombre": "HOTEL SUPER ESTRELLAS",
+    "telefono": "3508501212",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_165",
+    "nombre": "HOTEL CHICAMOCHA",
+    "telefono": "3102037207",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_166",
+    "nombre": "HOTEL HOLIDAY INN",
+    "telefono": "3138172208",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_167",
+    "nombre": "HOTEL DANN CARLTON",
+    "telefono": "3213231218",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_168",
+    "nombre": "PUNTA DIAMANTE \n PREMIUM HOTEL",
+    "telefono": "3205397325",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_169",
+    "nombre": "HOTEL SONESTA",
+    "telefono": "3158201353",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_170",
+    "nombre": "HOTEL LA TRIADA",
+    "telefono": "3156408027",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_171",
+    "nombre": "HOTEL CLUB CAMPESTRE\n  BUCARAMANGA",
+    "telefono": "3123847625",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_172",
+    "nombre": "HOTEL SAN JUAN INTERNACIONAL",
+    "telefono": "3142975253",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_173",
+    "nombre": "HOTEL BGA",
+    "telefono": "3157900454",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_174",
+    "nombre": "HOTEL BARÍ BUCARAMANGA",
+    "telefono": "3203740656",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_175",
+    "nombre": "HOTEL BUENAVISTA",
+    "telefono": "3155027287",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_176",
+    "nombre": "HOTEL ROSELIERE",
+    "telefono": "3188813798",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_177",
+    "nombre": "HOTEL MUNDO GUARIGUA",
+    "telefono": "3045236987",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_178",
+    "nombre": "HOTEL MESÓN DEL CUCHICUTE",
+    "telefono": "3156568486",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_179",
+    "nombre": "HOTEL CIUDAD BONITA",
+    "telefono": "3168326052",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_180",
+    "nombre": "HOTEL LA SERRANIA",
+    "telefono": "3108063118",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_181",
+    "nombre": "HOTEL GUANE",
+    "telefono": "3185022486",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_182",
+    "nombre": "HOTEL D¨LEON",
+    "telefono": "3115455533",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_183",
+    "nombre": "HOTEL RUITTOQUE D¨PRADA",
+    "telefono": "3186322331",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_184",
+    "nombre": "HOTEL MESA DE LOS SANTOS",
+    "telefono": "3165208915",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_185",
+    "nombre": "HOTEL CABECERA COUNTRY",
+    "telefono": "3175005770",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_186",
+    "nombre": "HOTEL ABORIGENES",
+    "telefono": "3137583477",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_187",
+    "nombre": "HOTEL VENTURA",
+    "telefono": "3156415715",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_188",
+    "nombre": "HOTEL PALMERA REAL",
+    "telefono": "3008622815",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_189",
+    "nombre": "HOTEL CASA DE CAMPO",
+    "telefono": "3158314666",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_190",
+    "nombre": "HOTEL PRINCIPE",
+    "telefono": "3002893126",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_191",
+    "nombre": "HOTEL LA PUERTA DEL SOL",
+    "telefono": "3158736897",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_192",
+    "nombre": "HOTEL TOPOWA",
+    "telefono": "3133966164",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_193",
+    "nombre": "DON DAVID SABANA HOTEL",
+    "telefono": "3003169530",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_194",
+    "nombre": "HOTEL EMUNA BIORESORT",
+    "telefono": "3024642737",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_195",
+    "nombre": "GRANJA HOTEL VILLA CRISTINA",
+    "telefono": "3144117665",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_196",
+    "nombre": "HOTEL PAUCHE",
+    "telefono": "3174012137",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_197",
+    "nombre": "HOTEL CACIQUE MATANZÚ",
+    "telefono": "3124318085",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_198",
+    "nombre": "HOTEL SOL Y LUNA",
+    "telefono": "3229505450",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_199",
+    "nombre": "HOTEL HACIENDA LA FE",
+    "telefono": "3204017794",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_200",
+    "nombre": "HOTEL CACIQUE CHALALA",
+    "telefono": "3188270170",
+    "pipeline": "nuevo",
+    "fecha_contacto": ""
+  }
+]

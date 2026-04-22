@@ -8,6 +8,7 @@ agenda.json
 agenda_log.json
 clientes.json
 campaigns.json
+!public/clientes.json
 
 # Sesión WhatsApp (Baileys) — se regenera con QR
 auth_info_multi/
