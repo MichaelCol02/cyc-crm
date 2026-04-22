@@ -14,6 +14,9 @@ import nodemailer     from 'nodemailer';
 import schedule       from 'node-schedule';
 import { conectar, ejecutarDifusion } from './call center.js';
 
+process.on('uncaughtException',  err => console.error('[ERROR] Excepción no capturada:', err.message));
+process.on('unhandledRejection', err => console.error('[ERROR] Promesa rechazada:', err?.message || err));
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app  = express();
 const PORT = process.env.PORT || 3000;

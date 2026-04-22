@@ -2,7 +2,7 @@ services:
   - type: web
     name: cyc-crm
     runtime: node
-    buildCommand: npm install
+    buildCommand: npm ci
     startCommand: npm start
     envVars:
       - key: CYC_PINS
