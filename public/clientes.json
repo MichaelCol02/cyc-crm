@@ -1398,5 +1398,833 @@
     "telefono": "3188270170",
     "pipeline": "nuevo",
     "fecha_contacto": ""
+  },
+  {
+    "id": "cyc_201",
+    "nombre": "DISTRIBUIDORA LA PERFECTA MG SAS",
+    "telefono": "",
+    "ciudad": "Barranquilla",
+    "direccion": "CALLE 84B 38 81",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_202",
+    "nombre": "ESTEVE  ERIC PAUL",
+    "telefono": "",
+    "ciudad": "Barranquilla",
+    "direccion": "CR 52 82 203 AP1301 ED LUCCA 52",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_203",
+    "nombre": "GOMRU INVERSIONES S.A.S.",
+    "telefono": "",
+    "ciudad": "Barranquilla",
+    "direccion": "CL 46 53 51",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_204",
+    "nombre": "RESTAURANTE MEDIO ORIENTE S.A.S.",
+    "telefono": "",
+    "ciudad": "Barranquilla",
+    "direccion": "CR 43 84 B 101",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_205",
+    "nombre": "AMAYA GARCIA LAURA VIVIANA",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "TRANSV ORIENTAL VIA AL CARMEN CASA 2",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_206",
+    "nombre": "AREVALO  MAGOLA",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CR 36 44 48",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_207",
+    "nombre": "ARTESANO HAMBURGUESERÃA SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "AV 89 23 65 DIAMANTE II",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_208",
+    "nombre": "ASOCIACION PARA LA ENSENANZA ASPAEN",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CALLE 71A 55 02",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_209",
+    "nombre": "BELKIS FERNANDA FONSECA",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CARRERA 37 No 52 17 IN 1 cabecera del ll",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_210",
+    "nombre": "CADENA ROJAS OLGA",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CR 5 20 21",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_211",
+    "nombre": "CARVAJAL MARTINEZ RUBEN DARIO",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CR 35 A 51 103",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_212",
+    "nombre": "CASELLES DE CHAPARRO MARY MARGARITA",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "CARRERA 15 2N-06 ZONA REFRESCANTE LA RIO",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_213",
+    "nombre": "DEGODOY SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "Cr 36 52 68",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_214",
+    "nombre": "DUKON VARGAS MARIA DANIELA",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "Carrera 38 # 49-34",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_215",
+    "nombre": "FAJARDO CELIS VALERIA",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 40 31 56",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_216",
+    "nombre": "FERNANDEZ ARDILA GLADYS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 10 10 09 APTO 302",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_217",
+    "nombre": "GARROTERO'S GROUP S.A.S",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "CL 4 6 A 03",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_218",
+    "nombre": "GIL CORZO ALMA LEDY",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "CL 147 22 117 CA 2 CON MIRADOR CAMPESTRE",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_219",
+    "nombre": "GLENN DOMAN - ESCUELA PRECOZ LTDA",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "VDA RIO FRIO HC CHISPACA",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_220",
+    "nombre": "GONZALEZ OLARTE ANDREA JULIANA",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "CRA 4 2A 12 BARRIO TRAPICHE",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_221",
+    "nombre": "GRUPO EL CUERNO SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 47 28 21",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_222",
+    "nombre": "GRUPO GASTRONOMICO DISFRUTAR SAS",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "CL 32 26 03",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_223",
+    "nombre": "GRUPO GASTRORED S.A.S.",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "Cl 88 #21-99",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_224",
+    "nombre": "GUTIERREZ SANABRIA ROBINSON RENE",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CRA 32 N 111A 14",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_225",
+    "nombre": "HERNANDEZ DIAZ LAURA YANITH",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "CL 105 35 32 BRR ALTO VIENTO 1",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_226",
+    "nombre": "HERNANDEZ MORENO CIRO",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "CL 105 35 36",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_227",
+    "nombre": "HERRERA JIMENEZ NICOLE",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CALLE 1 4 19 BARRIO PLAZA DE FERIAS SOCO",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_228",
+    "nombre": "HOTELES CACIQUE INTERNACIONAL SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "TV 93 34 180 CC CACIQUE",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_229",
+    "nombre": "INVERSIONES DUVALSAN SAS",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "KM 1 VEREDA EL PALOMAR LC 2",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_230",
+    "nombre": "INVERSIONES SILVA Y ASOCIADOS S.A.S.",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CARRERA 37 # 53-27 LOCAL 2",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_231",
+    "nombre": "JURADO FORERO CLEOFELINA",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 1 CA 122 VIA CHIMITA",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_232",
+    "nombre": "LA FIGLIA S.A.S.",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "KM 8 VIA PIEDECUESTA RUITOQUE,",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_233",
+    "nombre": "LA RESERVA VINOS Y LICORES LIMITADA",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CR 38 49 33",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_234",
+    "nombre": "MANTIDEL SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 50 27 A 59",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_235",
+    "nombre": "NUÑEZ LOZADA JOSE LUIS",
+    "telefono": "",
+    "ciudad": "Girón",
+    "direccion": "CL 17 26 05 DIAGONAL PARQUE LAS PALOMAS",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_236",
+    "nombre": "ORTIZ ARDILA ANDREA",
+    "telefono": "",
+    "ciudad": "Lebrija",
+    "direccion": "CL 12 No. 5-61 LA POPA",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_237",
+    "nombre": "PATIÑO SILVA JHONARAN ABELLANIR",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "KRA 24 82-22",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_238",
+    "nombre": "PORRAS TORRES NEIDER JULIAN",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "Carrera 25 #45-04",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_239",
+    "nombre": "PULIDO GARZON ARMANDO",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 105 24 86",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_240",
+    "nombre": "ROMERO Y ALBAHACA S.A.S.",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "CL 31 23 81",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_241",
+    "nombre": "SAAVEDRA CASTRO ORIANA LISETH",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 104 F 7 15",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_242",
+    "nombre": "SANDOVAL PEREZ ROSALBA",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "CL 9 5 72 BRR CENTRO",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_243",
+    "nombre": "SILVA PICO WILSON EDUARDO",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 34 25 02 ESQUINA",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_244",
+    "nombre": "SMASH CLUB S.A.S",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CARRERA 47 55 - 11",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_245",
+    "nombre": "SUAREZ MORALES VIVIANA ANDREA",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 33 28 61 LC 1",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_246",
+    "nombre": "SUMINISTROS GASTRONOMICOS GASTROSOL SAS",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "KM 5 RUITOQUE TRES ESQUINAS",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_247",
+    "nombre": "TORRES RODRIGUEZ MARIA GRACIELA",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "CL 1 C 18 64 MZ T",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_248",
+    "nombre": "TOVAR MONTAÑA ANDRES MAURICIO",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "TV 154 17 117 TR 1 AP 1703",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_249",
+    "nombre": "VELANDIA ANGARITA JOSE HERIBERTO",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "DG 28 203 11",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_250",
+    "nombre": "ACEVEDO SILVA ANA ISABEL",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CALLE 14 No 21-02",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_251",
+    "nombre": "ADMINISTRADORA HOTELERA DANN S.A.S",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 47 28 83",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_252",
+    "nombre": "AMAYA  CARMEN FELISA",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CLL 105 N 9 81",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_253",
+    "nombre": "AUTKONOS S.A.S.",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "VIA PIEDECUESTA",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_254",
+    "nombre": "BALLESTEROS RUEDA EMERSON JESUS",
+    "telefono": "",
+    "ciudad": "Girón",
+    "direccion": "CL 10 B # 23A-03 LC 02",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_255",
+    "nombre": "BLANCO ESCOBAR JOHAN MAURICIO",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 49 CR 21 PUESTO #09",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_256",
+    "nombre": "CHACON  OMAR",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 22 13 02",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_257",
+    "nombre": "CHIA RUEDA STEPHANY LISSETH",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "KM 13 VIA PIEDECUESTA LA ESPAÑOLITA VDA",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_258",
+    "nombre": "CIUDAD BONITA GOURMET SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 35 22 01  ANTONIA SANTOS",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_259",
+    "nombre": "CLUB CAMPESTRE DE BUCARAMANGA S.A",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "CRA 21 30 02",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_260",
+    "nombre": "CORPORACION COLEGIO PANAMERICANO",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "CL 34 8 73",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_261",
+    "nombre": "COSECHARTE S.A.S.",
+    "telefono": "",
+    "ciudad": "Girón",
+    "direccion": "KM 4 48 80",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_262",
+    "nombre": "CURE CUISINE S.A.S.",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CR 36 41 42",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_263",
+    "nombre": "G3 HOLDING SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "BODEGA 25",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_264",
+    "nombre": "GALLO MARTINEZ GERSON ALEXANDER",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "VDA EL REVENTON FCA EL LIMONCITO LT 3",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_265",
+    "nombre": "GARCIA LEON JOSE JULIAN",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "CL 8  4-118 BRR CALLEJUELAS CASAS",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_266",
+    "nombre": "GARCIA MAESTRE LINA MARIA",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "Avenida rosita 30-05",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_267",
+    "nombre": "GASTROBARES PEPITO PEREZ SAS",
+    "telefono": "",
+    "ciudad": "Girón",
+    "direccion": "CR 27 29 16 ALAMEDA LAS NIEVES",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_268",
+    "nombre": "GRUPO ABORIGENES",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "calle 196 A 29-82 VILLA DE SAN FRACISCO",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_269",
+    "nombre": "GUARGUATI DELGADO ALICIA",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "KM 13 VIA PIEDECUESTA LA ESPAÑOLITA",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_270",
+    "nombre": "IBAÑEZ FOOD GROUP SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 41 37 15",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_271",
+    "nombre": "INVERSIONES CHIFLAS SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "TV METROPOLITANA 103-57",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_272",
+    "nombre": "INVERSIONES CINNAMON GOURMET S.A.",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CR 38 37 60",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_273",
+    "nombre": "INVERSIONES PENTHOUSE SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 54 35 A 33 P 2",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_274",
+    "nombre": "JEV SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CR 10 41 80",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_275",
+    "nombre": "M4 GROUP S.A.S.",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "FINCA GUAYANA BARRIO EL PALMAR",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_276",
+    "nombre": "MEDINA RODRIGUEZ LINA ROSAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CR 32 74 - 139 PISO B",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_277",
+    "nombre": "MENDIETA PINZON JOSE NORBERTO",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "KM 11",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_278",
+    "nombre": "MUJICA ARCINIEGAS EDUARDO JOSE",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 32 27 85 BARRIO LA AURORA",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_279",
+    "nombre": "PABON VANEGAS FLOR DE MARIA",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "VDA MENSULI LT 4",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_280",
+    "nombre": "PALONEGRO ECOPARQUE S.A.S.",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 44 28 78 AP 1102 TO DEL PALMAR",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_281",
+    "nombre": "PEDRAZA ORTIZ ANDRES FELIPE",
+    "telefono": "",
+    "ciudad": "Piedecuesta",
+    "direccion": "CR 15 10N 65 CC ECO CENTRO LC 45",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_282",
+    "nombre": "PETROCASINOS SA",
+    "telefono": "",
+    "ciudad": "Girón",
+    "direccion": "CALLE 38 32 10",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_283",
+    "nombre": "PROYECTOS CACIQUE SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "TV ORIENTAL 90 189",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_284",
+    "nombre": "PROYECTOS CHIFLAS SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "AV QUEBRADASECA 33 A 100 LC 253",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_285",
+    "nombre": "PROYECTOS EXITO SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CC EXITO DG 15 16 39 LC 206",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_286",
+    "nombre": "PROYECTOS LA FLORIDA SAS",
+    "telefono": "",
+    "ciudad": "Floridablanca",
+    "direccion": "CL 31 A 26 89 CC LA FLORIDA LC 502",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_287",
+    "nombre": "RESTAURANTE LA CASONA LTDA",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CLL 28 NO 28 09 GIRON LAS NIEVES",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_288",
+    "nombre": "SAAVEDRA DIAZ ALEXANDER",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 104F 8 05",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_289",
+    "nombre": "SABOR SALVAJE S.A.S.",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CL 37 23 61",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_290",
+    "nombre": "T&A INVERSIONES S.A.S.",
+    "telefono": "",
+    "ciudad": "Girón",
+    "direccion": "KM 12 VIA LEBRIJA AL LADO DEL PEAJE",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_291",
+    "nombre": "TRILLOS CALDERON GUSTAVO ANDRES",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CRA 33 44 33",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
+  },
+  {
+    "id": "cyc_292",
+    "nombre": "TRILLOS CALDERON HOLDING SAS",
+    "telefono": "",
+    "ciudad": "Bucaramanga",
+    "direccion": "CALLE 54 N 28-42",
+    "pipeline": "nuevo",
+    "fecha_contacto": "2026-04-23"
   }
 ]

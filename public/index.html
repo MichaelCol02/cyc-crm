@@ -1207,9 +1207,22 @@ var TEMPLATES = [
   { id:'carrito', emoji:'🛒', nombre:'Carrito Abandonado', segmento:'todos',
     dia:'Automático 1h después de abandono', hora:'Automático',
     texto:'Hola {nombre}! 🛒 Vimos que dejaste productos en tu carrito de *Carnes y Carnes*.\n\nNo te quedes sin tus cortes favoritos! Completa tu pedido ahora y aprovecha el domicilio a $3.000 en compras desde $60.000.\n\nhttps://carnesycarnes.com/cart' },
+
+  { id:'horeca_contacto', emoji:'🏨', nombre:'Contacto HORECA — Primer acercamiento', segmento:'nuevo, horeca',
+    dia:'Según prospecto', hora:'Horario comercial',
+    texto:'Hola {nombre}! 👋 Le saluda el equipo comercial de *Carnes y Carnes*, distribuidora cárnica premium en Santander.\n\nNos especializamos en atender *restaurantes, hoteles y empresas de catering* con:\n✅ Ganado 100% pastorizado con trazabilidad\n✅ Cortes madurados y porcionados a medida\n✅ Entregas directas en {ciudad}\n✅ Precios de distribuidor\n\n¿Le puedo enviar nuestro portafolio HORECA y coordinar una visita técnica?\n\n📞 +57 318 578 0344' },
+
+  { id:'horeca_recordacion', emoji:'📅', nombre:'Recordación de Pedido HORECA', segmento:'frecuente, horeca',
+    dia:'Según frecuencia', hora:'8:00 AM',
+    texto:'Hola {nombre}! 🥩 Es tiempo de coordinar su *pedido quincenal* de Carnes y Carnes.\n\nRecordamos que su dirección de entrega registrada es:\n📍 *{direccion}*, {ciudad}\n\n¿Qué necesita esta semana? Indíquenos los cortes y cantidades y le confirmamos disponibilidad y precio.\n\n🚚 Despacho directo desde nuestra planta.\n\n📞 +57 318 578 0344' },
+
+  { id:'horeca_promo', emoji:'🎯', nombre:'Activación de Promo — HORECA', segmento:'horeca, inactivo',
+    dia:'Según campaña', hora:'9:00 AM',
+    texto:'Hola {nombre}! 🎯 Tenemos una *promoción exclusiva para negocios* como el suyo en {ciudad}.\n\n🥩 *OFERTA ESPECIAL HORECA — Abril 2026:*\n• 5% adicional en pedidos mayores a 50 kg\n• Cortes personalizados sin costo extra\n• Pago a 15 días disponible para clientes activos\n\nEsta oferta está disponible para entregas en {direccion}.\n\n¿Le interesa? Responda *SÍ* y un asesor le contacta hoy.\n\n📞 +57 318 578 0344 | www.carnesycarnes.com' },
 ];
 var tplSel = null;
 var masivaFiltro = 'todos';
+var masivaFiltroCity = '';
 var masivaStop = false;
 var _masivaInterval = null;
 var MASIVA_DELAY_MIN = parseInt(localStorage.getItem('cyc_delay_min')||'12');
@@ -1232,6 +1245,9 @@ function renderMasiva() {
   var waQR  = (waStatus === 'qr_pendiente');
 
   var base = clients.filter(function(c){
+    var car = fsCarnes[c.id] || {};
+    var ciudad = (car.ciudad || c.ciudad || '').toLowerCase();
+    if (masivaFiltroCity && ciudad.indexOf(masivaFiltroCity.toLowerCase()) < 0) return false;
     if (masivaFiltro === 'todos') return !!c.telefono;
     return stOf(c) === masivaFiltro && !!c.telefono;
   });
@@ -1292,6 +1308,23 @@ function renderMasiva() {
       return '<div class="m-chip'+(on?' sel':'')+'" onclick="masivaFiltro=\''+p[0]+'\';renderMasiva();">'+escH(p[1])+'</div>';
     }).join('')
     +'</div>'
+    +'<div style="margin-top:8px;">'
+    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gr);margin-bottom:5px;">📍 Filtrar por ciudad</div>'
+    +'<div class="filter-chips">'
+    +(function(){
+      var ciudades = {};
+      clients.forEach(function(c){
+        var car = fsCarnes[c.id]||{};
+        var cd = (car.ciudad||c.ciudad||'').trim();
+        if(cd) ciudades[cd] = (ciudades[cd]||0)+1;
+      });
+      var lista = [['','Todas']].concat(Object.entries(ciudades).sort(function(a,b){return b[1]-a[1];}).slice(0,8).map(function(e){return [e[0],e[0]];}));
+      return lista.map(function(p){
+        var on = masivaFiltroCity===p[0];
+        return '<div class="m-chip'+(on?' sel':'')+'" onclick="masivaFiltroCity=\''+escQ(p[0])+'\';renderMasiva();">'+escH(p[1])+'</div>';
+      }).join('');
+    })()
+    +'</div></div>'
     +'<div style="display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:10px;padding:12px;margin-top:8px;">'
     +'<div style="font-size:36px;font-weight:900;color:var(--wa);line-height:1;min-width:46px;text-align:center;">'+base.length+'</div>'
     +'<div><div style="font-weight:700;font-size:13px;">contacto'+( base.length!==1?'s':'')+' listos</div>'
@@ -1394,7 +1427,8 @@ function iniciarMasiva() {
   var contactos = base.map(function(c){
     var car = fsCarnes[c.id] || {};
     return { nombre:c.nombre, whatsapp:c.telefono.replace(/\D/g,'').replace(/^0/,'57'),
-             producto:car.producto||'', kg_ultimo:car.kg_ultimo||'', fecha_ultimo:car.fecha_ultimo||'', ciudad:car.ciudad||c.ciudad||'' };
+             producto:car.producto||'', kg_ultimo:car.kg_ultimo||'', fecha_ultimo:car.fecha_ultimo||'',
+             ciudad:car.ciudad||c.ciudad||'', direccion:car.direccion||c.direccion||'' };
   });
 
   document.getElementById('btn-send-masiva').style.display = 'none';

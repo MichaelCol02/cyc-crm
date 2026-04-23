@@ -111,7 +111,8 @@ function reemplazarVariables(plantilla, cliente) {
     .replace(/\{producto\}/g,     cliente.producto      || 'nuestros productos')
     .replace(/\{kg_ultimo\}/g,    cliente.kg_ultimo     || 'tu pedido anterior')
     .replace(/\{fecha_ultimo\}/g, cliente.fecha_ultimo  || 'la última vez')
-    .replace(/\{ciudad\}/g,       cliente.ciudad        || '')
+    .replace(/\{ciudad\}/g,       cliente.ciudad        || 'tu ciudad')
+    .replace(/\{direccion\}/g,    cliente.direccion     || 'tu dirección registrada')
     .replace(/\{whatsapp\}/g,     cliente.whatsapp      || '')
 }
 
