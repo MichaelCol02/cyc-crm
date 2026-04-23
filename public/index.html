@@ -1247,7 +1247,11 @@ function renderMasiva() {
   var base = clients.filter(function(c){
     var car = fsCarnes[c.id] || {};
     var ciudad = (car.ciudad || c.ciudad || '').toLowerCase();
-    if (masivaFiltroCity && ciudad.indexOf(masivaFiltroCity.toLowerCase()) < 0) return false;
+    if (masivaFiltroCity === 'HORECA') {
+      if (!c.segmento_horeca) return false;
+    } else if (masivaFiltroCity) {
+      if (ciudad.indexOf(masivaFiltroCity.toLowerCase()) < 0) return false;
+    }
     if (masivaFiltro === 'todos') return !!c.telefono;
     return stOf(c) === masivaFiltro && !!c.telefono;
   });
@@ -1318,7 +1322,7 @@ function renderMasiva() {
         var cd = (car.ciudad||c.ciudad||'').trim();
         if(cd) ciudades[cd] = (ciudades[cd]||0)+1;
       });
-      var lista = [['','Todas']].concat(Object.entries(ciudades).sort(function(a,b){return b[1]-a[1];}).slice(0,8).map(function(e){return [e[0],e[0]];}));
+      var lista = [['','Todas'],['HORECA','🏨 HORECA (200)']].concat(Object.entries(ciudades).sort(function(a,b){return b[1]-a[1];}).slice(0,8).map(function(e){return [e[0],e[0]];}));
       return lista.map(function(p){
         var on = masivaFiltroCity===p[0];
         return '<div class="m-chip'+(on?' sel':'')+'" onclick="masivaFiltroCity=\''+escQ(p[0])+'\';renderMasiva();">'+escH(p[1])+'</div>';
