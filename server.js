@@ -24,12 +24,12 @@ const PORT = process.env.PORT || 3000;
 // ── Seguridad: token de sesión ────────────────────────────────────────
 // Se genera al arrancar el servidor. El frontend lo recibe al hacer login
 // y lo adjunta en cada llamada a /api/*
-const CYC_TOKEN = process.env.CYC_SECRET || Math.random().toString(36).slice(2) + Date.now().toString(36);
-const tokensSesion = new Set([CYC_TOKEN]); // conjunto de tokens válidos
-
+const CYC_SECRET = process.env.CYC_SECRET || 'cyccrm_dev';
+// Token válido = cualquier string que empiece con CYC_SECRET
+// Así los tokens sobreviven reinicios del servidor sin necesidad de re-login
 function requireAuth(req, res, next) {
   const tok = req.headers['x-cyc-token'] || req.query._t;
-  if (!tok || !tokensSesion.has(tok)) {
+  if (!tok || !tok.startsWith(CYC_SECRET)) {
     return res.status(401).json({ ok: false, error: 'No autorizado' });
   }
   next();
@@ -360,17 +360,12 @@ app.post('/api/auth/login', (req, res) => {
   if (!pin || !CYC_PINS.includes(String(pin))) {
     return res.status(401).json({ ok: false, error: 'PIN incorrecto' });
   }
-  // Emitir un token de sesión único para este login
-  const tok = CYC_TOKEN + '_' + Date.now().toString(36);
-  tokensSesion.add(tok);
-  // Expirar token tras 8 horas de inactividad (limpieza simple)
-  setTimeout(() => tokensSesion.delete(tok), 8 * 3600 * 1000);
+  // Token = secret + pin + timestamp → válido aunque el servidor reinicie
+  const tok = CYC_SECRET + '_' + String(pin) + '_' + Date.now().toString(36);
   res.json({ ok: true, token: tok });
 });
 
 app.post('/api/auth/logout', (req, res) => {
-  const tok = req.headers['x-cyc-token'];
-  if (tok) tokensSesion.delete(tok);
   res.json({ ok: true });
 });
 
