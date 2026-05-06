@@ -60,9 +60,12 @@ function guardarCampaigns(d) { fs.writeFileSync(CAMPAIGNS_FILE, JSON.stringify(d
 function leerVentas()     { try { return JSON.parse(fs.readFileSync(VENTAS_FILE,'utf8')); }  catch { return []; } }
 function guardarVentas(d) { fs.writeFileSync(VENTAS_FILE, JSON.stringify(d,null,2)); }
 
-const B2C_FILE = path.join(DATA_DIR, 'contactos_b2c.json');
-function leerB2C()     { try { return JSON.parse(fs.readFileSync(B2C_FILE,'utf8')); } catch { return []; } }
-function guardarB2C(d) { fs.writeFileSync(B2C_FILE, JSON.stringify(d,null,2)); }
+const B2C_FILE        = path.join(DATA_DIR, 'contactos_b2c.json');
+const PLANTILLAS_FILE = path.join(DATA_DIR, 'plantillas_custom.json');
+function leerB2C()          { try { return JSON.parse(fs.readFileSync(B2C_FILE,'utf8')); } catch { return []; } }
+function guardarB2C(d)      { fs.writeFileSync(B2C_FILE, JSON.stringify(d,null,2)); }
+function leerPlantillas()   { try { return JSON.parse(fs.readFileSync(PLANTILLAS_FILE,'utf8')); } catch { return []; } }
+function guardarPlantillas(d){ fs.writeFileSync(PLANTILLAS_FILE, JSON.stringify(d,null,2)); }
 
 function agregarLog(item) {
   const log = leerLog();
@@ -76,7 +79,7 @@ function hacerBackup() {
   const dir   = path.join(BACKUP_DIR, fecha);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-  const archivos = [AGENDA_FILE, LOG_FILE, CLIENTES_FILE, CAMPAIGNS_FILE, VENTAS_FILE, B2C_FILE];
+  const archivos = [AGENDA_FILE, LOG_FILE, CLIENTES_FILE, CAMPAIGNS_FILE, VENTAS_FILE, B2C_FILE, PLANTILLAS_FILE];
   let copiados = 0;
   archivos.forEach(f => {
     if (fs.existsSync(f)) {
@@ -974,6 +977,51 @@ app.get('/api/b2c/export.csv', (req, res) => {
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', 'attachment; filename="contactos_wa.csv"');
   res.send('﻿' + csv);
+});
+
+// ── Plantillas personalizadas ─────────────────────────────────────────
+app.get('/api/plantillas', requireAuth, (req, res) => {
+  res.json({ ok: true, plantillas: leerPlantillas() });
+});
+
+app.post('/api/plantillas', requireAuth, (req, res) => {
+  const { emoji, nombre, segmento, texto } = req.body;
+  if (!nombre?.trim() || !texto?.trim()) return res.json({ ok: false, error: 'Nombre y texto requeridos' });
+  const lista = leerPlantillas();
+  const nueva = {
+    id: 'custom_' + Date.now().toString(36),
+    custom: true,
+    emoji: emoji || '💬',
+    nombre: nombre.trim(),
+    segmento: segmento || 'todos',
+    dia: 'Manual',
+    hora: 'Manual',
+    texto: texto.trim()
+  };
+  lista.push(nueva);
+  guardarPlantillas(lista);
+  res.json({ ok: true, plantilla: nueva });
+});
+
+app.put('/api/plantillas/:id', requireAuth, (req, res) => {
+  const lista = leerPlantillas();
+  const idx = lista.findIndex(p => p.id === req.params.id);
+  if (idx < 0) return res.json({ ok: false, error: 'No encontrada' });
+  const { emoji, nombre, segmento, texto } = req.body;
+  if (emoji    !== undefined) lista[idx].emoji    = emoji;
+  if (nombre   !== undefined) lista[idx].nombre   = nombre.trim();
+  if (segmento !== undefined) lista[idx].segmento = segmento;
+  if (texto    !== undefined) lista[idx].texto    = texto.trim();
+  guardarPlantillas(lista);
+  res.json({ ok: true });
+});
+
+app.delete('/api/plantillas/:id', requireAuth, (req, res) => {
+  const lista = leerPlantillas();
+  const nueva = lista.filter(p => p.id !== req.params.id);
+  if (nueva.length === lista.length) return res.json({ ok: false, error: 'No encontrada' });
+  guardarPlantillas(nueva);
+  res.json({ ok: true });
 });
 
 // ── Admin Mike ────────────────────────────────────────────────────────

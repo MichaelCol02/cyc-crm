@@ -318,6 +318,21 @@ select option{background:var(--w2);}
   </div>
 </div>
 
+<!-- TEMPLATE MODAL -->
+<div id="tplModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(4px);z-index:60;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 0;">
+  <div style="background:var(--w);border:1px solid var(--br);border-radius:20px;padding:24px 28px;max-width:520px;width:94%;margin:auto;position:relative;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div id="tplModalTitle" style="font-size:16px;font-weight:900;color:var(--ink2);">💬 Nueva plantilla</div>
+      <button onclick="cerrarTplModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--gr);line-height:1;padding:0;">✕</button>
+    </div>
+    <div id="tplModalBody"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button onclick="guardarTplModal()" style="flex:1;padding:11px;background:var(--g);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">💾 Guardar plantilla</button>
+      <button onclick="cerrarTplModal()" style="padding:11px 16px;background:var(--w2);border:1px solid var(--br2);border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;color:var(--gr);font-family:inherit;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ LEFT NAV SIDEBAR ══ -->
 <nav id="leftnav">
   <div class="nav-brand">
@@ -1676,6 +1691,14 @@ var _masivaInterval = null;
 var _b2cContacts = [];
 var _masivaFuente = 'horeca'; // 'horeca' | 'b2c'
 var _b2cFiltroStage = 'todos';
+var _customTemplates = [];
+function loadCustomTemplates(cb) {
+  apiFetch('/api/plantillas')
+    .then(function(r){ return r.json(); })
+    .then(function(d){ if (d.ok) { _customTemplates = d.plantillas || []; if (cb) cb(); } })
+    .catch(function(){});
+}
+function allTemplates() { return TEMPLATES.concat(_customTemplates); }
 
 function loadB2CContacts(cb) {
   apiFetch('/api/b2c').then(function(r){ return r.json(); }).then(function(d){
@@ -1816,6 +1839,9 @@ function masivaSaveDelay(mn,mx,t){
 function renderMasiva() {
   var pg = document.getElementById('pg-masiva'); if (!pg) return;
   if (!_b2cContacts.length) loadB2CContacts(function(){ pg.querySelector && renderMasivaContent(pg); });
+  if (!_customTemplates.length) {
+    loadCustomTemplates(function(){ renderMasivaContent(pg); });
+  }
   renderMasivaContent(pg);
 }
 
@@ -1871,19 +1897,28 @@ function renderMasivaContent(pg) {
 
     // Paso 1: Plantilla
     +'<div class="masiva-box">'
-    +'<div class="masiva-title">① Elige la campaña</div>'
+    +'<div class="masiva-title" style="justify-content:space-between;">① Elige la plantilla'
+    +'<button onclick="abrirTplModal()" style="padding:5px 12px;background:var(--g);color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">＋ Nueva plantilla</button>'
+    +'</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">'
-    +TEMPLATES.map(function(t){
+    +allTemplates().map(function(t){
       var sel = tplSel===t.id;
+      var editBtns = t.custom
+        ? '<div style="display:flex;gap:4px;margin-top:6px;" onclick="event.stopPropagation();">'
+          +'<button onclick="abrirTplModal(\''+t.id+'\')" style="flex:1;padding:4px;background:var(--w2);border:1px solid var(--br2);border-radius:5px;font-size:10px;cursor:pointer;font-family:inherit;color:var(--ink2);">✏️ Editar</button>'
+          +'<button onclick="eliminarTpl(\''+t.id+'\')" style="padding:4px 8px;background:#ef444420;border:1px solid #ef4444;border-radius:5px;font-size:10px;cursor:pointer;font-family:inherit;color:#ef4444;">🗑️</button>'
+          +'</div>'
+        : '';
       return '<div class="tpl-card'+(sel?' sel':'')+'" onclick="tplSel=\''+t.id+'\';renderMasiva();" style="padding:10px;">'
-        +'<div class="tpl-name">'+t.emoji+' '+escH(t.nombre)+'</div>'
+        +'<div class="tpl-name">'+t.emoji+' '+escH(t.nombre)+(t.custom?'<span style="margin-left:4px;font-size:9px;background:var(--gp);color:var(--g);border-radius:4px;padding:1px 5px;">custom</span>':'')+'</div>'
         +'<div style="font-size:9px;color:var(--gr);margin:2px 0;">👥 '+escH(t.segmento)+' · 📅 '+escH(t.dia)+'</div>'
         +'<div class="tpl-prev">'+escH(t.texto.replace(/\*/g,'').slice(0,70))+'…</div>'
+        +editBtns
         +'</div>';
     }).join('')
     +'</div>'
     +(tplSel?(function(){
-      var tpl = TEMPLATES.find(function(t){return t.id===tplSel;});
+      var tpl = allTemplates().find(function(t){return t.id===tplSel;});
       if (!tpl) return '';
       return '<div style="background:var(--bg);border-radius:8px;padding:12px;margin-top:8px;">'
         +'<div style="font-size:10px;color:var(--gr);margin-bottom:6px;display:flex;gap:12px;">'
@@ -1943,7 +1978,7 @@ function renderMasivaContent(pg) {
     +'<div style="display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:10px;padding:12px;margin-top:8px;">'
     +'<div style="font-size:36px;font-weight:900;color:var(--wa);line-height:1;min-width:46px;text-align:center;">'+base.length+'</div>'
     +'<div><div style="font-weight:700;font-size:13px;">contacto'+(base.length!==1?'s':'')+' listos ('+ (_masivaFuente==='b2c'?'Contactos WA':'HORECA')+')</div>'
-    +'<div style="font-size:11px;color:var(--gr);margin-top:2px;">'+(tplSel?'✅ Plantilla: '+escH((TEMPLATES.find(function(t){return t.id===tplSel;})||{nombre:'?'}).nombre):'⚠️ Selecciona una plantilla')+'</div>'
+    +'<div style="font-size:11px;color:var(--gr);margin-top:2px;">'+(tplSel?'✅ Plantilla: '+escH((allTemplates().find(function(t){return t.id===tplSel;})||{nombre:'?'}).nombre):'⚠️ Selecciona una plantilla')+'</div>'
     +(base.length>0?'<div style="font-size:10px;color:var(--gr);margin-top:2px;">'+base.slice(0,4).map(function(c){return escH((c.nombre||c.name||'?').split(' ')[0]);}).join(', ')+(base.length>4?' y '+(base.length-4)+' más':'')+'</div>':'')
     +'</div></div></div>'
 
@@ -2080,7 +2115,7 @@ function mostrarQR() {
 }
 
 function iniciarMasiva() {
-  var tpl = TEMPLATES.find(function(t){ return t.id===tplSel; });
+  var tpl = allTemplates().find(function(t){ return t.id===tplSel; });
   if (!tpl) return toast('Elige una plantilla','e');
 
   var contactos;
@@ -2258,7 +2293,7 @@ function abrirCampModal(idx) {
   }
 
   var tplOptions = '<option value="">— Mensaje personalizado —</option>'
-    + TEMPLATES.map(function(t){ return '<option value="'+t.id+'"'+(tplId===t.id?' selected':'')+'>'+t.emoji+' '+escH(t.nombre)+'</option>'; }).join('');
+    + allTemplates().map(function(t){ return '<option value="'+t.id+'"'+(tplId===t.id?' selected':'')+'>'+t.emoji+' '+escH(t.nombre)+'</option>'; }).join('');
 
   b.innerHTML =
     // Nombre
@@ -2388,7 +2423,7 @@ function guardarCampModal() {
   var tplId = (document.getElementById('cm-tpl')||{}).value || '';
   var texto = '';
   if (tplId) {
-    var tplObj = TEMPLATES.find(function(t){ return t.id===tplId; });
+    var tplObj = allTemplates().find(function(t){ return t.id===tplId; });
     texto = tplObj ? tplObj.texto : '';
   } else {
     texto = (document.getElementById('cm-texto')||{}).value || '';
@@ -2731,6 +2766,81 @@ function renderConfig() {
     +'</div>'
 
     +'</div>';
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  PLANTILLAS PERSONALIZADAS
+// ══════════════════════════════════════════════════════════════════════
+var _tplEditId = null;
+function abrirTplModal(id) {
+  _tplEditId = id || null;
+  var tpl = id ? allTemplates().find(function(t){ return t.id===id; }) : null;
+  var m = document.getElementById('tplModal'); if (!m) return;
+  var b = document.getElementById('tplModalBody'); if (!b) return;
+  var title = document.getElementById('tplModalTitle');
+  if (title) title.textContent = id ? '✏️ Editar plantilla' : '💬 Nueva plantilla';
+
+  var emojis = ['💬','🥩','🎉','💥','👋','🎁','🔥','📦','⭐','🍖','🏆','📣','💰','🚀','🛒'];
+  b.innerHTML =
+    '<div class="field"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Emoji</label>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">'
+    +emojis.map(function(e){
+      var sel = (tpl?tpl.emoji:_tplEmoji||'💬') === e;
+      return '<div onclick="document.getElementById(\'tm-emoji\').value=\''+e+'\';document.querySelectorAll(\'.emoji-opt\').forEach(function(x){x.style.background=\'var(--w2)\';x.style.borderColor=\'var(--br2)\';});this.style.background=\'var(--gp)\';this.style.borderColor=\'var(--g)\';" class="emoji-opt" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:7px;cursor:pointer;font-size:16px;border:2px solid '+(sel?'var(--g)':'var(--br2)')+';background:'+(sel?'var(--gp)':'var(--w2)')+';">'+e+'</div>';
+    }).join('')
+    +'<input id="tm-emoji" type="hidden" value="'+(tpl?escH(tpl.emoji):'💬')+'">'
+    +'</div></div>'
+
+    +'<div class="field" style="margin-top:10px;"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Nombre de la plantilla</label>'
+    +'<input id="tm-nombre" type="text" value="'+(tpl?escH(tpl.nombre):'')+'" placeholder="Ej: Promo de cumpleaños" style="width:100%;box-sizing:border-box;"></div>'
+
+    +'<div class="field" style="margin-top:10px;"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Segmento / audiencia</label>'
+    +'<input id="tm-segmento" type="text" value="'+(tpl?escH(tpl.segmento):'todos')+'" placeholder="Ej: VIP, frecuente, todos" style="width:100%;box-sizing:border-box;"></div>'
+
+    +'<div class="field" style="margin-top:10px;"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Mensaje</label>'
+    +'<div style="font-size:10px;color:var(--gr);margin-bottom:4px;">Usa <code style="background:var(--bg);padding:1px 4px;border-radius:3px;">{nombre}</code> para personalizar con el nombre del cliente.</div>'
+    +'<textarea id="tm-texto" rows="7" placeholder="Hola {nombre}! 🥩 Tenemos una oferta especial para ti..." style="width:100%;box-sizing:border-box;font-size:13px;line-height:1.6;resize:vertical;">'+(tpl?escH(tpl.texto):'')+'</textarea></div>';
+
+  m.style.display = 'flex';
+}
+function cerrarTplModal() {
+  var m = document.getElementById('tplModal');
+  if (m) m.style.display = 'none';
+  _tplEditId = null;
+}
+function guardarTplModal() {
+  var emoji    = (document.getElementById('tm-emoji')||{}).value || '💬';
+  var nombre   = ((document.getElementById('tm-nombre')||{}).value || '').trim();
+  var segmento = ((document.getElementById('tm-segmento')||{}).value || '').trim() || 'todos';
+  var texto    = ((document.getElementById('tm-texto')||{}).value || '').trim();
+  if (!nombre) { toast('Escribe un nombre para la plantilla','e'); return; }
+  if (!texto)  { toast('El mensaje no puede estar vacío','e'); return; }
+
+  var url    = _tplEditId ? '/api/plantillas/'+_tplEditId : '/api/plantillas';
+  var method = _tplEditId ? 'PUT' : 'POST';
+  apiFetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: JSON.stringify({ emoji, nombre, segmento, texto }) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (!d.ok) { toast(d.error||'Error al guardar','e'); return; }
+      cerrarTplModal();
+      loadCustomTemplates(function(){ renderMasiva(); });
+      toast(_tplEditId?'Plantilla actualizada':'Plantilla creada','ok');
+    })
+    .catch(function(){ toast('Error de conexión','e'); });
+}
+function eliminarTpl(id) {
+  var tpl = allTemplates().find(function(t){ return t.id===id; });
+  if (!tpl || !tpl.custom) { toast('Solo se pueden eliminar plantillas personalizadas','e'); return; }
+  if (!confirm('¿Eliminar la plantilla "'+tpl.nombre+'"?')) return;
+  apiFetch('/api/plantillas/'+id, { method:'DELETE', headers:{'Content-Type':'application/json'}, body:'{}' })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (!d.ok) { toast(d.error||'Error','e'); return; }
+      if (tplSel === id) tplSel = '';
+      loadCustomTemplates(function(){ renderMasiva(); });
+      toast('Plantilla eliminada','ok');
+    })
+    .catch(function(){ toast('Error de conexión','e'); });
 }
 
 // ══════════════════════════════════════════════════════════════════════
