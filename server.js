@@ -203,6 +203,44 @@ setInterval(() => {
 // ══════════════════════════════════════════════════════════════════════
 //  WHATSAPP
 // ══════════════════════════════════════════════════════════════════════
+// ── Auto-importar contactos de WA al conectarse ───────────────────────
+function autoImportarContactosWA() {
+  const contactsFile = path.join(DATA_DIR, 'auth', 'contacts.json');
+  try {
+    if (!fs.existsSync(contactsFile)) return;
+    const raw = JSON.parse(fs.readFileSync(contactsFile, 'utf8'));
+    const existing   = leerB2C();
+    const existPhones = new Set(existing.map(c => c.phone));
+    const nuevos = [];
+    const batch  = Date.now().toString(36);
+    for (const [jid, data] of Object.entries(raw)) {
+      if (!jid || jid.includes('@g.us') || jid.includes('broadcast') || jid.includes('status@')) continue;
+      const phone = jid.split('@')[0].replace(/\D/g, '');
+      if (!phone || phone.length < 7 || existPhones.has(phone)) continue;
+      const name = data.name || data.pushName || data.verifiedName || phone;
+      nuevos.push({
+        id:        batch + '_' + Math.random().toString(36).slice(2, 6),
+        name:      String(name).trim() || phone,
+        phone,
+        city:      '',
+        stage:     'pending',
+        source:    'wa_auto',
+        importedAt: new Date().toISOString(),
+      });
+      existPhones.add(phone);
+    }
+    if (nuevos.length) {
+      guardarB2C([...existing, ...nuevos]);
+      console.log(`[AUTO-IMPORT] ✅ ${nuevos.length} contactos importados de WhatsApp`);
+      notificarSSE({ tipo: 'b2c_update', total: existing.length + nuevos.length, nuevos: nuevos.length });
+    } else {
+      console.log('[AUTO-IMPORT] Sin contactos nuevos que importar');
+    }
+  } catch (err) {
+    console.error('[AUTO-IMPORT] Error:', err.message);
+  }
+}
+
 console.log('🔌 Iniciando conexión WhatsApp...');
 conectar(
   async (qr) => {
@@ -216,6 +254,8 @@ conectar(
     qrBase64    = null;
     console.log('✅ WhatsApp conectado');
     notificarSSE({ tipo: 'wa_conectado' });
+    // Auto-importar contactos 90s después de conectar (tiempo para que Baileys sincronice)
+    setTimeout(autoImportarContactosWA, 90000);
   }
 ).catch(err => {
   console.error('❌ Error iniciando WhatsApp:', err.message);
@@ -357,16 +397,28 @@ function calcularProximo(desde, frecuencia) {
 // ══════════════════════════════════════════════════════════════════════
 
 // ── Auth (no requiere token — es el punto de entrada) ─────────────────
-const CYC_PINS = (process.env.CYC_PINS || '1234,admin').split(',').map(p => p.trim());
+const CYC_PINS    = (process.env.CYC_PINS || '1234,admin').split(',').map(p => p.trim());
+const ADMIN_PIN   = process.env.ADMIN_PIN || '2000';
+const ADMIN_PFX   = CYC_SECRET + '_ADMIN_';
+
+function requireAdmin(req, res, next) {
+  const tok = req.headers['x-cyc-token'] || req.query._t;
+  if (!tok || !tok.startsWith(ADMIN_PFX)) {
+    return res.status(403).json({ ok: false, error: 'Acceso denegado' });
+  }
+  next();
+}
 
 app.post('/api/auth/login', (req, res) => {
   const { pin } = req.body;
-  if (!pin || !CYC_PINS.includes(String(pin))) {
+  const pinStr = String(pin || '');
+  const esAdmin = pinStr === ADMIN_PIN;
+  if (!esAdmin && !CYC_PINS.includes(pinStr)) {
     return res.status(401).json({ ok: false, error: 'PIN incorrecto' });
   }
-  // Token = secret + pin + timestamp → válido aunque el servidor reinicie
-  const tok = CYC_SECRET + '_' + String(pin) + '_' + Date.now().toString(36);
-  res.json({ ok: true, token: tok });
+  const pfx = esAdmin ? ADMIN_PFX : (CYC_SECRET + '_');
+  const tok  = pfx + pinStr + '_' + Date.now().toString(36);
+  res.json({ ok: true, token: tok, isAdmin: esAdmin });
 });
 
 app.post('/api/auth/logout', (req, res) => {
@@ -922,6 +974,36 @@ app.get('/api/b2c/export.csv', (req, res) => {
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', 'attachment; filename="contactos_wa.csv"');
   res.send('﻿' + csv);
+});
+
+// ── Admin Mike ────────────────────────────────────────────────────────
+app.get('/api/admin/contactos', requireAdmin, (req, res) => {
+  const lista = leerB2C();
+  // Estadísticas por fecha de importación
+  const porFecha = {};
+  lista.forEach(c => {
+    const dia = (c.importedAt || c.createdAt || '').slice(0, 10) || 'sin fecha';
+    porFecha[dia] = (porFecha[dia] || 0) + 1;
+  });
+  const porFuente = {};
+  lista.forEach(c => { porFuente[c.source || 'manual'] = (porFuente[c.source || 'manual'] || 0) + 1; });
+  res.json({ ok: true, total: lista.length, contactos: lista, porFecha, porFuente });
+});
+
+app.get('/api/admin/export.csv', requireAdmin, (req, res) => {
+  const lista = leerB2C();
+  const csv = 'Nombre,Telefono,Ciudad,Etapa,Fuente,Fecha\n' +
+    lista.map(c =>
+      `"${(c.name||'').replace(/"/g,'""')}","${c.phone}","${(c.city||'').replace(/"/g,'""')}","${c.stage||''}","${c.source||''}","${(c.importedAt||c.createdAt||'').slice(0,10)}"`
+    ).join('\n');
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="admin_contactos_wa.csv"');
+  res.send('﻿' + csv);
+});
+
+app.delete('/api/admin/contactos', requireAdmin, (req, res) => {
+  guardarB2C([]);
+  res.json({ ok: true });
 });
 
 // ── Start — red local (WiFi) + protección por PIN ─────────────────────
