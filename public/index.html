@@ -2785,7 +2785,7 @@ function abrirTplModal(id) {
     '<div class="field"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Emoji</label>'
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">'
     +emojis.map(function(e){
-      var sel = (tpl?tpl.emoji:_tplEmoji||'💬') === e;
+      var sel = (tpl?tpl.emoji:'💬') === e;
       return '<div onclick="document.getElementById(\'tm-emoji\').value=\''+e+'\';document.querySelectorAll(\'.emoji-opt\').forEach(function(x){x.style.background=\'var(--w2)\';x.style.borderColor=\'var(--br2)\';});this.style.background=\'var(--gp)\';this.style.borderColor=\'var(--g)\';" class="emoji-opt" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:7px;cursor:pointer;font-size:16px;border:2px solid '+(sel?'var(--g)':'var(--br2)')+';background:'+(sel?'var(--gp)':'var(--w2)')+';">'+e+'</div>';
     }).join('')
     +'<input id="tm-emoji" type="hidden" value="'+(tpl?escH(tpl.emoji):'💬')+'">'
@@ -2818,7 +2818,7 @@ function guardarTplModal() {
 
   var url    = _tplEditId ? '/api/plantillas/'+_tplEditId : '/api/plantillas';
   var method = _tplEditId ? 'PUT' : 'POST';
-  apiFetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: JSON.stringify({ emoji, nombre, segmento, texto }) })
+  apiFetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: JSON.stringify({ emoji: emoji, nombre: nombre, segmento: segmento, texto: texto }) })
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (!d.ok) { toast(d.error||'Error al guardar','e'); return; }
