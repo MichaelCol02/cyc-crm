@@ -45,6 +45,7 @@ const AGENDA_FILE   = path.join(DATA_DIR, 'agenda.json');
 const LOG_FILE      = path.join(DATA_DIR, 'agenda_log.json');
 const CLIENTES_FILE = path.join(DATA_DIR, 'clientes.json');
 const CAMPAIGNS_FILE= path.join(DATA_DIR, 'campaigns.json');
+const VENTAS_FILE   = path.join(DATA_DIR, 'ventas.json');
 const BACKUP_DIR    = path.join(DATA_DIR, 'backups');
 // Render monta /data automáticamente — solo intentamos crear subdirectorios
 try { if (!fs.existsSync(DATA_DIR))   fs.mkdirSync(DATA_DIR,   { recursive: true }); } catch(_) {}
@@ -56,6 +57,8 @@ function leerLog()        { try { return JSON.parse(fs.readFileSync(LOG_FILE,'ut
 function leerClientes()   { try { return JSON.parse(fs.readFileSync(CLIENTES_FILE,'utf8')); } catch { return { clients:[], states:{}, carnes:{} }; } }
 function leerCampaigns()  { try { return JSON.parse(fs.readFileSync(CAMPAIGNS_FILE,'utf8')); } catch { return []; } }
 function guardarCampaigns(d) { fs.writeFileSync(CAMPAIGNS_FILE, JSON.stringify(d,null,2)); }
+function leerVentas()     { try { return JSON.parse(fs.readFileSync(VENTAS_FILE,'utf8')); }  catch { return []; } }
+function guardarVentas(d) { fs.writeFileSync(VENTAS_FILE, JSON.stringify(d,null,2)); }
 
 function agregarLog(item) {
   const log = leerLog();
@@ -69,7 +72,7 @@ function hacerBackup() {
   const dir   = path.join(BACKUP_DIR, fecha);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-  const archivos = [AGENDA_FILE, LOG_FILE, CLIENTES_FILE, CAMPAIGNS_FILE];
+  const archivos = [AGENDA_FILE, LOG_FILE, CLIENTES_FILE, CAMPAIGNS_FILE, VENTAS_FILE];
   let copiados = 0;
   archivos.forEach(f => {
     if (fs.existsSync(f)) {
@@ -579,6 +582,81 @@ app.post('/api/sync-clientes', (req, res) => {
 
 app.get('/api/sync-clientes', (req, res) => {
   res.json({ ok: true, ...leerClientes() });
+});
+
+// ── Ventas / Pedidos ─────────────────────────────────────────────────
+app.get('/api/ventas', (req, res) => {
+  const ventas = leerVentas();
+  const { mes } = req.query; // YYYY-MM
+  const filtradas = mes ? ventas.filter(v => (v.fecha||'').startsWith(mes)) : ventas;
+  res.json({ ok: true, ventas: filtradas });
+});
+
+app.post('/api/ventas', (req, res) => {
+  const { clienteId, clienteNombre, asesor, canal, estadoPago, items, notas } = req.body;
+  if (!Array.isArray(items) || !items.length)
+    return res.status(400).json({ ok: false, error: 'items requerido' });
+  const ventas = leerVentas();
+  const total  = items.reduce((s, it) => s + (Number(it.subtotal) || 0), 0);
+  const venta  = {
+    id:            'vta_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+    fecha:         new Date().toISOString().slice(0, 10),
+    clienteId:     clienteId  || '',
+    clienteNombre: clienteNombre || '',
+    asesor:        asesor     || '',
+    canal:         canal      || 'call_center',
+    estadoPago:    estadoPago || 'pagado',
+    items:         items,
+    total:         total,
+    notas:         notas      || '',
+    creado:        new Date().toISOString(),
+  };
+  ventas.unshift(venta);
+  guardarVentas(ventas.slice(0, 5000)); // máx 5000 registros
+  notificarSSE({ tipo: 'venta_nueva', venta });
+  res.json({ ok: true, venta });
+});
+
+app.delete('/api/ventas/:id', (req, res) => {
+  const ventas = leerVentas();
+  const idx = ventas.findIndex(v => v.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ ok: false, error: 'No encontrada' });
+  ventas.splice(idx, 1);
+  guardarVentas(ventas);
+  res.json({ ok: true });
+});
+
+app.get('/api/ventas/kpis', (req, res) => {
+  const ventas = leerVentas();
+  const mesActual = new Date().toISOString().slice(0, 7);
+  const mesPasado = (() => {
+    const d = new Date(); d.setMonth(d.getMonth() - 1);
+    return d.toISOString().slice(0, 7);
+  })();
+  const ventasMes = ventas.filter(v => (v.fecha||'').startsWith(mesActual));
+  const ventasAnt = ventas.filter(v => (v.fecha||'').startsWith(mesPasado));
+  const sumTotal  = arr => arr.reduce((s, v) => s + (Number(v.total)||0), 0);
+  const countPend = ventas.filter(v => v.estadoPago === 'pendiente').length;
+
+  // Top productos del mes
+  const prodMap = {};
+  ventasMes.forEach(v => (v.items||[]).forEach(it => {
+    prodMap[it.nombre] = (prodMap[it.nombre] || 0) + (Number(it.subtotal)||0);
+  }));
+  const topProds = Object.entries(prodMap).sort((a,b)=>b[1]-a[1]).slice(0,5)
+    .map(([nombre, total]) => ({ nombre, total }));
+
+  res.json({
+    ok: true,
+    mes: mesActual,
+    ventasMes:     ventasMes.length,
+    ingresosMes:   sumTotal(ventasMes),
+    ventasAnt:     ventasAnt.length,
+    ingresosAnt:   sumTotal(ventasAnt),
+    totalVentas:   ventas.length,
+    pendientes:    countPend,
+    topProds,
+  });
 });
 
 // ── Campañas automáticas ──────────────────────────────────────────────
