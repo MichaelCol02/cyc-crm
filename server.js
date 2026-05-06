@@ -36,6 +36,35 @@ function requireAuth(req, res, next) {
 }
 
 app.use(express.json({ limit: '10mb' }));
+
+// ── Cabeceras de seguridad ────────────────────────────────────────────
+app.use((req, res, next) => {
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none';");
+  next();
+});
+
+// ── Bloqueo de archivos sensibles sin token ───────────────────────────
+// clientes.json y extras.json son usados internamente pero no deben
+// ser accesibles directamente desde el navegador sin autenticación.
+const ARCHIVOS_PROTEGIDOS = ['/clientes.json', '/extras.json'];
+app.use((req, res, next) => {
+  const ruta = req.path.toLowerCase();
+  if (ARCHIVOS_PROTEGIDOS.some(a => ruta === a || ruta.endsWith(a))) {
+    const tok = req.headers['x-cyc-token'] || req.query._t;
+    if (!tok || !tok.startsWith(CYC_SECRET)) {
+      registrarIntento(req, 'acceso_directo_bloqueado', ruta);
+      return res.status(403).send('403 Forbidden');
+    }
+  }
+  next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ── Persistencia ──────────────────────────────────────────────────────
@@ -61,11 +90,27 @@ function leerVentas()     { try { return JSON.parse(fs.readFileSync(VENTAS_FILE,
 function guardarVentas(d) { fs.writeFileSync(VENTAS_FILE, JSON.stringify(d,null,2)); }
 
 const B2C_FILE        = path.join(DATA_DIR, 'contactos_b2c.json');
-const PLANTILLAS_FILE = path.join(DATA_DIR, 'plantillas_custom.json');
+const PLANTILLAS_FILE   = path.join(DATA_DIR, 'plantillas_custom.json');
+const DOWNLOAD_LOG_FILE = path.join(DATA_DIR, 'download_log.json');
 function leerB2C()          { try { return JSON.parse(fs.readFileSync(B2C_FILE,'utf8')); } catch { return []; } }
 function guardarB2C(d)      { fs.writeFileSync(B2C_FILE, JSON.stringify(d,null,2)); }
 function leerPlantillas()   { try { return JSON.parse(fs.readFileSync(PLANTILLAS_FILE,'utf8')); } catch { return []; } }
 function guardarPlantillas(d){ fs.writeFileSync(PLANTILLAS_FILE, JSON.stringify(d,null,2)); }
+
+function registrarIntento(req, tipo, recurso) {
+  try {
+    const log = (() => { try { return JSON.parse(fs.readFileSync(DOWNLOAD_LOG_FILE,'utf8')); } catch { return []; } })();
+    log.unshift({
+      ts:      new Date().toISOString(),
+      tipo,
+      recurso: recurso || '?',
+      ip:      req.ip || req.socket?.remoteAddress || 'unknown',
+      ua:      (req.headers['user-agent'] || '').slice(0, 100),
+    });
+    if (log.length > 1000) log.length = 1000;
+    fs.writeFileSync(DOWNLOAD_LOG_FILE, JSON.stringify(log, null, 2));
+  } catch(_) {}
+}
 
 function agregarLog(item) {
   const log = leerLog();
@@ -442,8 +487,9 @@ app.post('/api/auth/logout', (req, res) => {
   res.json({ ok: true });
 });
 
-// ── Memoria (backup completo descargable) ─────────────────────────────
-app.get('/api/memoria', requireAuth, (req, res) => {
+// ── Memoria (backup completo descargable — solo admin) ────────────────
+app.get('/api/memoria', requireAdmin, (req, res) => {
+  registrarIntento(req, 'descarga_memoria', '/api/memoria');
   const memoria = {
     exportado:  new Date().toISOString(),
     version:    '2.0',
@@ -463,7 +509,8 @@ app.get('/api/memoria', requireAuth, (req, res) => {
 });
 
 // ── Backup manual ──────────────────────────────────────────────────────
-app.post('/api/backup', requireAuth, (req, res) => {
+app.post('/api/backup', requireAdmin, (req, res) => {
+  registrarIntento(req, 'backup_manual', '/api/backup');
   const result = hacerBackup();
   res.json({ ok: true, ...result });
 });
@@ -1002,7 +1049,8 @@ app.delete('/api/b2c/:id', (req, res) => {
   res.json({ ok: true });
 });
 
-app.get('/api/b2c/export.csv', (req, res) => {
+app.get('/api/b2c/export.csv', requireAdmin, (req, res) => {
+  registrarIntento(req, 'descarga_b2c_csv', '/api/b2c/export.csv');
   const lista = leerB2C();
   const csv = 'Nombre,Telefono,Ciudad,Etapa\n' +
     lista.map(c =>
@@ -1073,6 +1121,7 @@ app.get('/api/admin/contactos', requireAdmin, (req, res) => {
 });
 
 app.get('/api/admin/export.csv', requireAdmin, (req, res) => {
+  registrarIntento(req, 'descarga_admin_csv', '/api/admin/export.csv');
   const lista = leerB2C();
   const csv = 'Nombre,Telefono,Ciudad,Etapa,Fuente,Fecha\n' +
     lista.map(c =>
@@ -1081,6 +1130,13 @@ app.get('/api/admin/export.csv', requireAdmin, (req, res) => {
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', 'attachment; filename="admin_contactos_wa.csv"');
   res.send('﻿' + csv);
+});
+
+app.get('/api/admin/descargas', requireAdmin, (req, res) => {
+  try {
+    const log = JSON.parse(fs.readFileSync(DOWNLOAD_LOG_FILE, 'utf8'));
+    res.json({ ok: true, log });
+  } catch { res.json({ ok: true, log: [] }); }
 });
 
 app.delete('/api/admin/contactos', requireAdmin, (req, res) => {

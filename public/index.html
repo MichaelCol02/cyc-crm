@@ -252,6 +252,15 @@ select option{background:var(--w2);}
 }
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 
+/* ═══ PROTECCIÓN DE DATOS ══════════════════════════════ */
+/* Impide selección visual de datos sensibles */
+.client-list,.detail-panel,.sec,.tpl-card,.seg-item,
+#admin-table,#b2c-table,.ventas-table{
+  -webkit-user-select:none;-moz-user-select:none;user-select:none;
+}
+/* Impide arrastre de texto/imágenes */
+img,a{-webkit-user-drag:none;user-drag:none;}
+
 /* ═══ VENTAS ═════════════════════════════════════════ */
 .vta-table{width:100%;border-collapse:collapse;font-size:12px;}
 .vta-table th{text-align:left;padding:7px 10px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--gr);border-bottom:2px solid var(--br);}
@@ -474,6 +483,41 @@ select option{background:var(--w2);}
 
 <script>
 'use strict';
+
+// ══════════════════════════════════════════════════════════════════════
+//  PROTECCIÓN DEL SISTEMA
+// ══════════════════════════════════════════════════════════════════════
+(function() {
+  // Bloquear menú contextual (clic derecho)
+  document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
+
+  // Bloquear atajos de teclado que permiten ver/copiar el código o guardar
+  document.addEventListener('keydown', function(e) {
+    var c = e.keyCode || e.which;
+    // F12 (DevTools), Ctrl+U (ver código fuente), Ctrl+S (guardar),
+    // Ctrl+Shift+I (inspector), Ctrl+Shift+J (consola), Ctrl+Shift+C (inspector)
+    if (c === 123) { e.preventDefault(); return false; }                          // F12
+    if (e.ctrlKey && c === 85)  { e.preventDefault(); return false; }            // Ctrl+U
+    if (e.ctrlKey && c === 83)  { e.preventDefault(); return false; }            // Ctrl+S
+    if (e.ctrlKey && e.shiftKey && (c === 73 || c === 74 || c === 67)) {
+      e.preventDefault(); return false;                                           // Ctrl+Shift+I/J/C
+    }
+  });
+
+  // Advertencia en consola para disuadir
+  var _w = [
+    '%c⛔ SISTEMA PROTEGIDO — CYC Carnes y Carnes',
+    'color:#FF6B35;font-size:18px;font-weight:900;',
+    '\n%cEste es un sistema privado. Cualquier intento de copiar o extraer',
+    'color:#fff;font-size:13px;',
+    '\n%cdatos sin autorización queda registrado y puede tener consecuencias legales.',
+    'color:#ef4444;font-size:13px;font-weight:700;'
+  ];
+  console.log.apply(console, _w);
+  // Sobrescribir console.clear para que el mensaje persista
+  var _origClear = console.clear.bind(console);
+  console.clear = function() { _origClear(); console.log.apply(console, _w); };
+})();
 
 // ══════════════════════════════════════════════════════════════════════
 //  CONFIG FIREBASE (editar en ⚙️ Config o acá directamente)
@@ -1850,6 +1894,7 @@ function handleB2CCSV(input) {
 }
 
 function exportarB2CCSV() {
+  if (!_isAdmin) { toast('Solo el administrador puede exportar bases de datos','e'); return; }
   if (!_b2cContacts.length) { toast('Sin contactos para exportar','e'); return; }
   var tok = sessionStorage.getItem('cyc_token')||'';
   window.open('/api/b2c/export.csv?_t='+encodeURIComponent(tok), '_blank');
@@ -2785,9 +2830,9 @@ function renderConfig() {
     +'<div class="sec" style="margin-bottom:12px;">'
     +'<div class="sec-l">🔒 Backup y seguridad</div>'
     +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">'
-    +'<button class="btn-save" onclick="hacerBackupAhora()">💾 Hacer backup ahora</button>'
+    +(_isAdmin ? '<button class="btn-save" onclick="hacerBackupAhora()">💾 Hacer backup ahora</button>' : '')
     +'<button class="btn-save" style="background:var(--br2);color:var(--ink2);" onclick="verBackups()">📂 Ver backups</button>'
-    +'<button class="btn-save" style="background:#1565C0;" onclick="descargarMemoria()">🧠 Descargar Memoria</button>'
+    +(_isAdmin ? '<button class="btn-save" style="background:#1565C0;" onclick="descargarMemoria()">🧠 Descargar Memoria</button>' : '')
     +'</div>'
     +'<div id="backup-info" style="font-size:11px;color:var(--gr);"></div>'
     +'<div style="margin-top:8px;font-size:11px;color:var(--gr);line-height:1.8;">'
@@ -2805,13 +2850,19 @@ function renderConfig() {
     +'<button class="btn-save" onclick="importarClientes()" style="margin-top:6px;">📥 Importar</button>'
     +'</div>'
 
-    // Exportar
-    +'<div class="sec" style="margin-bottom:12px;">'
-    +'<div class="sec-l">Exportar datos</div>'
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap;">'
-    +'<button class="btn-save" onclick="exportarCSV()">📊 Exportar CSV</button>'
-    +'<button class="btn-save" style="background:var(--bl);" onclick="exportarJSON()">📋 Exportar JSON</button>'
-    +'</div></div>'
+    // Exportar (solo admin)
+    +(_isAdmin
+      ? '<div class="sec" style="margin-bottom:12px;">'
+        +'<div class="sec-l">Exportar datos <span style="background:#FF6B35;color:#fff;font-size:9px;border-radius:4px;padding:1px 6px;margin-left:6px;">Solo Admin</span></div>'
+        +'<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+        +'<button class="btn-save" onclick="exportarCSV()">📊 Exportar CSV</button>'
+        +'<button class="btn-save" style="background:var(--bl);" onclick="exportarJSON()">📋 Exportar JSON</button>'
+        +'</div></div>'
+      : '<div class="sec" style="margin-bottom:12px;">'
+        +'<div class="sec-l">Exportar datos</div>'
+        +'<div style="background:var(--bg);border-radius:8px;padding:12px;font-size:12px;color:var(--gr);">🔒 Las exportaciones de datos requieren autorización del administrador.</div>'
+        +'</div>'
+    )
 
     // Empresa
     +'<div class="sec">'
@@ -2959,6 +3010,10 @@ function renderAdmin() {
     + ' style="flex:1;min-width:180px;padding:8px 12px;border:1px solid var(--br2);border-radius:8px;background:var(--w2);color:var(--ink2);font-size:12px;font-family:inherit;">'
     + '</div>'
     + '<div id="admin-table"></div>'
+    + '<div style="margin-top:24px;">'
+    + '<div style="font-size:11px;font-weight:800;color:var(--gr);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">🔍 Registro de accesos y descargas</div>'
+    + '<div id="admin-download-log" style="font-size:11px;color:var(--gr);">Cargando...</div>'
+    + '</div>'
     + '</div>';
   apiFetch('/api/admin/contactos')
     .then(function(r){ return r.json(); })
@@ -2969,6 +3024,26 @@ function renderAdmin() {
       _renderAdminTable('');
     })
     .catch(function(){ document.getElementById('admin-stats').innerHTML='<span style="color:var(--rd);">⚠️ Error de conexión</span>'; });
+  // Cargar log de descargas
+  apiFetch('/api/admin/descargas')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var el = document.getElementById('admin-download-log'); if (!el) return;
+      if (!d.ok || !d.log || !d.log.length) { el.textContent = 'Sin registros aún.'; return; }
+      var tipoColors = { descarga_b2c_csv:'#25d366', descarga_admin_csv:'#25d366', descarga_memoria:'#1565C0', backup_manual:'#FF6B35', acceso_directo_bloqueado:'#ef4444' };
+      el.innerHTML = '<div style="background:var(--w2);border:1px solid var(--br2);border-radius:10px;overflow:hidden;">'
+        + d.log.slice(0,50).map(function(r, i){
+          var ts = new Date(r.ts).toLocaleString('es-CO',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+          var color = tipoColors[r.tipo] || 'var(--gr)';
+          return '<div style="display:grid;grid-template-columns:100px 160px 1fr;gap:8px;padding:7px 12px;'+(i%2===0?'background:var(--w2)':'background:var(--bg)')+';border-bottom:1px solid var(--br);align-items:center;">'
+            +'<span style="font-size:10px;color:var(--gr);">'+ts+'</span>'
+            +'<span style="padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;color:#fff;background:'+color+';width:fit-content;">'+escH(r.tipo)+'</span>'
+            +'<span style="font-size:10px;color:var(--gr);">IP: '+escH(r.ip)+'</span>'
+            +'</div>';
+        }).join('')
+        + '</div>';
+    })
+    .catch(function(){ var el = document.getElementById('admin-download-log'); if (el) el.textContent = '—'; });
 }
 function _renderAdminStats() {
   var el = document.getElementById('admin-stats'); if (!el) return;
@@ -3104,6 +3179,7 @@ function importarClientes() {
 }
 
 function exportarCSV() {
+  if (!_isAdmin) { toast('Solo el administrador puede exportar bases de datos','e'); return; }
   var cols = ['id','nombre','telefono','email','ciudad','pipeline','asesor','producto','kg_ultimo','fecha_ultimo','frecuencia'];
   var rows = [cols.join(',')];
   clients.forEach(function(c){
@@ -3117,8 +3193,9 @@ function exportarCSV() {
 }
 
 function exportarJSON() {
+  if (!_isAdmin) { toast('Solo el administrador puede exportar bases de datos','e'); return; }
   var data = clients.map(function(c){
-    return {...c, pipeline:stOf(c), ...(fsStates[c.id]||{}), ...(fsCarnes[c.id]||{}) };
+    return Object.assign({}, c, { pipeline: stOf(c) }, fsStates[c.id]||{}, fsCarnes[c.id]||{});
   });
   descargar('cyc_clientes.json', JSON.stringify(data,null,2), 'application/json');
 }
