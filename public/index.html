@@ -218,15 +218,18 @@ select option{background:var(--w2);}
 
 /* ═══ LOGIN ══════════════════════════════════════════ */
 #login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100;flex-direction:column;gap:16px;background-image:radial-gradient(ellipse at 50% 0%,rgba(255,107,53,.06) 0%,transparent 60%);}
-.login-box{background:var(--w);border:1px solid var(--br);border-radius:20px;padding:36px;text-align:center;min-width:320px;box-shadow:0 24px 60px rgba(0,0,0,.5);}
-.login-title{font-size:24px;font-weight:900;color:var(--g);margin-bottom:4px;}
-.login-sub{font-size:12px;color:var(--gr);margin-bottom:24px;}
+.login-box{background:var(--w);border:1px solid var(--br);border-radius:20px;padding:32px;text-align:center;min-width:320px;max-width:380px;width:90%;box-shadow:0 24px 60px rgba(0,0,0,.5);}
+.login-title{font-size:22px;font-weight:900;color:var(--g);margin-bottom:4px;}
+.login-sub{font-size:12px;color:var(--gr);margin-bottom:20px;}
 .pin-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:18px;}
 .pin-inp{width:52px;height:60px;font-size:24px;font-weight:800;text-align:center;background:var(--w2);border:2px solid var(--br2);border-radius:12px;color:var(--ink);outline:none;font-family:inherit;transition:all .15s;}
 .pin-inp:focus{border-color:var(--g);box-shadow:0 0 0 3px var(--gp);}
 .btn-login{width:100%;padding:13px;background:var(--g);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 4px 14px rgba(255,107,53,.35);}
 .btn-login:hover{opacity:.88;transform:translateY(-1px);}
-.login-err{color:var(--rd);font-size:12px;min-height:18px;margin-top:8px;}
+.login-err{color:var(--rd);font-size:12px;min-height:18px;margin-top:6px;}
+.role-card{border:2px solid var(--br2);border-radius:13px;padding:14px 10px;cursor:pointer;transition:all .15s;background:var(--w2);}
+.role-card:hover{border-color:var(--g);background:var(--gp);transform:translateY(-2px);}
+.role-card.on{border-color:var(--g);background:var(--gp);}
 
 /* ═══ QR MODAL ═══════════════════════════════════════ */
 #qrModal{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:50;}
@@ -278,9 +281,39 @@ select option{background:var(--w2);}
 
 <!-- LOGIN -->
 <div id="login">
-  <div class="login-box">
+  <!-- Paso 1: Selección de área -->
+  <div class="login-box" id="login-step1">
     <div class="login-title">🥩 CYC Carnes</div>
-    <div class="login-sub">CRM Comercial — Ingresa tu PIN de acceso</div>
+    <div class="login-sub">CRM Comercial — Selecciona tu área de trabajo</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="role-card" onclick="seleccionarRol('foodservice','🥩','Food Service','Clientes HORECA')">
+        <div style="font-size:28px;margin-bottom:6px;">🥩</div>
+        <div style="font-weight:800;font-size:13px;color:var(--ink2);">Food Service</div>
+        <div style="font-size:10px;color:var(--gr);margin-top:2px;">Clientes HORECA</div>
+      </div>
+      <div class="role-card" onclick="seleccionarRol('callcenter','📞','Call Center','Contactos B2C')">
+        <div style="font-size:28px;margin-bottom:6px;">📞</div>
+        <div style="font-weight:800;font-size:13px;color:var(--ink2);">Call Center</div>
+        <div style="font-size:10px;color:var(--gr);margin-top:2px;">Contactos B2C</div>
+      </div>
+      <div class="role-card" onclick="seleccionarRol('puntosventa','🏪','Puntos de Venta','Registro de ventas')">
+        <div style="font-size:28px;margin-bottom:6px;">🏪</div>
+        <div style="font-weight:800;font-size:13px;color:var(--ink2);">Puntos de Venta</div>
+        <div style="font-size:10px;color:var(--gr);margin-top:2px;">Registro de ventas</div>
+      </div>
+      <div class="role-card" onclick="seleccionarRol('pautas','📣','Pautas','Campañas y difusión')">
+        <div style="font-size:28px;margin-bottom:6px;">📣</div>
+        <div style="font-weight:800;font-size:13px;color:var(--ink2);">Pautas</div>
+        <div style="font-size:10px;color:var(--gr);margin-top:2px;">Campañas y difusión</div>
+      </div>
+    </div>
+  </div>
+  <!-- Paso 2: PIN -->
+  <div class="login-box" id="login-step2" style="display:none;">
+    <button onclick="volverRoles()" style="background:none;border:none;color:var(--gr);cursor:pointer;font-size:12px;margin-bottom:14px;font-family:inherit;display:block;">← Cambiar área</button>
+    <div id="login-role-ico" style="font-size:36px;margin-bottom:6px;"></div>
+    <div class="login-title" id="login-role-name"></div>
+    <div class="login-sub">Ingresa tu PIN de 4 dígitos</div>
     <div class="pin-inputs">
       <input class="pin-inp" maxlength="1" type="password" id="p0" oninput="pinNext(0)">
       <input class="pin-inp" maxlength="1" type="password" id="p1" oninput="pinNext(1)">
@@ -288,7 +321,7 @@ select option{background:var(--w2);}
       <input class="pin-inp" maxlength="1" type="password" id="p3" oninput="pinNext(3)">
     </div>
     <div class="login-err" id="pinErr"></div>
-    <button class="btn-login" onclick="checkPin()">Entrar al CRM</button>
+    <button class="btn-login" onclick="checkPin()">Entrar</button>
   </div>
 </div>
 
@@ -456,20 +489,17 @@ var FB_CONFIG = JSON.parse(localStorage.getItem('cyc_fb_config') || 'null') || {
 //  PERFILES / LOGIN
 // ══════════════════════════════════════════════════════════════════════
 var PERFILES = {
-  'mike':   { pin: '1111', rol: 'vendedor', nombre: 'Mike'   },
-  'pipe':   { pin: '2222', rol: 'vendedor', nombre: 'Pipe'   },
-  'kelly':  { pin: '3333', rol: 'vendedor', nombre: 'Kelly'  },
-  'pao':    { pin: '4444', rol: 'vendedor', nombre: 'Pao'    },
-  'yomi':   { pin: '5555', rol: 'vendedor', nombre: 'Yomi'   },
-  'anita':  { pin: '6666', rol: 'vendedor', nombre: 'Anita'  },
-  'silvi':  { pin: '7777', rol: 'vendedor', nombre: 'Silvi'  },
-  'juanjo': { pin: '8888', rol: 'vendedor', nombre: 'JuanJO' },
-  'admin':  { pin: '0000', rol: 'admin',    nombre: 'Admin'  },
-  'admin_mike': { pin: '2000', rol: 'superadmin', nombre: 'Mike 🔐' },
+  'foodservice':  { pin: '1001', rol: 'foodservice',  nombre: 'Food Service',    emoji: '🥩', tabs: ['clientes','stats','masiva','agenda','bot','config'] },
+  'callcenter':   { pin: '2002', rol: 'callcenter',   nombre: 'Call Center',     emoji: '📞', tabs: ['stats','masiva','bot','config'] },
+  'puntosventa':  { pin: '3003', rol: 'puntosventa',  nombre: 'Puntos de Venta', emoji: '🏪', tabs: ['ventas','stats','config'] },
+  'pautas':       { pin: '4004', rol: 'pautas',       nombre: 'Pautas',          emoji: '📣', tabs: ['stats','masiva','config'] },
+  'admin_mike': { pin: '2000', rol: 'superadmin', nombre: 'Admin Mike', emoji: '🔐', tabs: ['clientes','stats','ventas','masiva','agenda','bot','config','admin'] },
 };
-var session   = null;
-var _isAdmin  = sessionStorage.getItem('cyc_is_admin') === '1';
-var _apiToken = sessionStorage.getItem('cyc_token') || null;
+var session      = null;
+var _isAdmin     = sessionStorage.getItem('cyc_is_admin') === '1';
+var _apiToken    = sessionStorage.getItem('cyc_token') || null;
+var _loginPerfil = null;
+var _userTabs    = JSON.parse(sessionStorage.getItem('cyc_tabs') || 'null');
 
 // Helper: fetch con token de autenticación incluido automáticamente
 function apiFetch(url, opts) {
@@ -479,57 +509,120 @@ function apiFetch(url, opts) {
   return fetch(url, opts);
 }
 
+// ── Login flow ──────────────────────────────────────────────────────────
+function seleccionarRol(perfil, ico, nombre, sub) {
+  _loginPerfil = perfil;
+  document.getElementById('login-step1').style.display = 'none';
+  var s2 = document.getElementById('login-step2');
+  s2.style.display = '';
+  document.getElementById('login-role-ico').textContent  = ico;
+  document.getElementById('login-role-name').textContent = nombre;
+  [0,1,2,3].forEach(function(i){ document.getElementById('p'+i).value=''; });
+  document.getElementById('pinErr').textContent = '';
+  document.getElementById('p0').focus();
+}
+function volverRoles() {
+  _loginPerfil = null;
+  document.getElementById('login-step2').style.display = 'none';
+  document.getElementById('login-step1').style.display = '';
+}
 function pinNext(i) {
   var v = document.getElementById('p'+i).value;
   if (v && i < 3) document.getElementById('p'+(i+1)).focus();
   if (i === 3 && v) checkPin();
 }
 function checkPin() {
-  var pin = [0,1,2,3].map(function(i){ return document.getElementById('p'+i).value; }).join('');
-  var match = Object.entries(PERFILES).find(function(e){ return e[1].pin === pin; });
-  if (!match) {
-    document.getElementById('pinErr').textContent = 'PIN incorrecto';
-    [0,1,2,3].forEach(function(i){ document.getElementById('p'+i).value=''; });
-    document.getElementById('p0').focus();
-    setTimeout(function(){ document.getElementById('pinErr').textContent=''; }, 2000);
-    return;
-  }
-  session = { id: match[0], ...match[1] };
-  // Obtener token del servidor
+  var pin    = [0,1,2,3].map(function(i){ return document.getElementById('p'+i).value; }).join('');
+  var perfil = _loginPerfil || 'foodservice';
+  var errEl  = document.getElementById('pinErr');
+
   apiFetch('/api/auth/login', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ pin: pin })
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pin: pin, perfil: perfil })
   }).then(function(r){ return r.json(); }).then(function(d){
-    if (d.ok) {
-      _apiToken = d.token;
-      _isAdmin  = !!d.isAdmin;
-      sessionStorage.setItem('cyc_token', d.token);
-      sessionStorage.setItem('cyc_is_admin', d.isAdmin ? '1' : '0');
-      _mostrarTabAdmin(_isAdmin);
+    if (!d.ok) {
+      errEl.textContent = 'PIN incorrecto';
+      [0,1,2,3].forEach(function(i){ document.getElementById('p'+i).value=''; });
+      document.getElementById('p0').focus();
+      setTimeout(function(){ errEl.textContent=''; }, 2000);
+      return;
     }
-  }).catch(function(){}); // Si el servidor no responde, funciona igual (modo offline)
-  sessionStorage.setItem('cyc_session', JSON.stringify(session));
-  document.getElementById('login').style.display = 'none';
-  initApp();
+    _apiToken = d.token;
+    _isAdmin  = !!d.isAdmin;
+    _userTabs = d.tabs || null;
+    var rolId = d.isAdmin ? 'admin_mike' : perfil;
+    session   = Object.assign({ id: rolId }, PERFILES[rolId] || PERFILES['foodservice']);
+    sessionStorage.setItem('cyc_token',    d.token);
+    sessionStorage.setItem('cyc_is_admin', d.isAdmin ? '1' : '0');
+    sessionStorage.setItem('cyc_session',  JSON.stringify(session));
+    sessionStorage.setItem('cyc_tabs',     JSON.stringify(d.tabs || null));
+    aplicarTabs(_userTabs);
+    document.getElementById('login').style.display = 'none';
+    initApp();
+  }).catch(function(){
+    // Modo offline: validar localmente
+    var match = Object.entries(PERFILES).find(function(e){ return e[1].pin === pin; });
+    if (!match) {
+      errEl.textContent = 'PIN incorrecto (sin conexión)';
+      [0,1,2,3].forEach(function(i){ document.getElementById('p'+i).value=''; });
+      document.getElementById('p0').focus();
+      setTimeout(function(){ errEl.textContent=''; }, 2000);
+      return;
+    }
+    session = Object.assign({ id: match[0] }, match[1]);
+    _isAdmin = match[1].rol === 'superadmin';
+    _userTabs = match[1].tabs || null;
+    sessionStorage.setItem('cyc_session', JSON.stringify(session));
+    sessionStorage.setItem('cyc_is_admin', _isAdmin ? '1' : '0');
+    sessionStorage.setItem('cyc_tabs', JSON.stringify(_userTabs));
+    aplicarTabs(_userTabs);
+    document.getElementById('login').style.display = 'none';
+    initApp();
+  });
+}
+
+// Aplica visibilidad de tabs según el rol
+function aplicarTabs(tabs) {
+  var todos = ['clientes','stats','ventas','masiva','agenda','bot','config','admin'];
+  todos.forEach(function(t) {
+    var el = document.getElementById('tab-'+t);
+    if (!el) return;
+    var visible = !tabs || tabs.indexOf(t) !== -1;
+    el.style.display = visible ? '' : 'none';
+  });
+  // Ir al primer tab visible si el actual no lo está
+  var pgs = document.querySelectorAll('.page.on');
+  if (pgs.length) {
+    var pgId = pgs[0].id.replace('pg-','');
+    if (tabs && tabs.indexOf(pgId) === -1) {
+      var first = tabs[0];
+      var firstTab = document.getElementById('tab-'+first);
+      if (firstTab) firstTab.click();
+    }
+  }
 }
 function _mostrarTabAdmin(show) {
   var tab = document.getElementById('tab-admin');
   if (tab) tab.style.display = show ? '' : 'none';
 }
+
 // Restaurar sesión si ya había ingresado (survives F5)
 (function(){
   try {
     var s = sessionStorage.getItem('cyc_session');
     if (s) {
-      session = JSON.parse(s);
-      _isAdmin = sessionStorage.getItem('cyc_is_admin') === '1';
-      document.getElementById('login').style.display='none';
-      _mostrarTabAdmin(_isAdmin);
+      session   = JSON.parse(s);
+      _isAdmin  = sessionStorage.getItem('cyc_is_admin') === '1';
+      _userTabs = JSON.parse(sessionStorage.getItem('cyc_tabs') || 'null');
+      document.getElementById('login').style.display = 'none';
+      aplicarTabs(_userTabs);
       initApp();
       return;
     }
   } catch(_) {}
-  document.getElementById('p0').focus();
+  // Sin sesión: mostrar paso 1
+  document.getElementById('login-step1').style.display = '';
+  document.getElementById('login-step2').style.display = 'none';
 })();
 
 // ══════════════════════════════════════════════════════════════════════
@@ -2694,6 +2787,7 @@ function renderConfig() {
     +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">'
     +'<button class="btn-save" onclick="hacerBackupAhora()">💾 Hacer backup ahora</button>'
     +'<button class="btn-save" style="background:var(--br2);color:var(--ink2);" onclick="verBackups()">📂 Ver backups</button>'
+    +'<button class="btn-save" style="background:#1565C0;" onclick="descargarMemoria()">🧠 Descargar Memoria</button>'
     +'</div>'
     +'<div id="backup-info" style="font-size:11px;color:var(--gr);"></div>'
     +'<div style="margin-top:8px;font-size:11px;color:var(--gr);line-height:1.8;">'
@@ -2941,6 +3035,11 @@ function adminBorrarTodo() {
       else toast(d.error||'Error al borrar','e');
     })
     .catch(function(){ toast('Error de conexión','e'); });
+}
+
+function descargarMemoria() {
+  var tok = sessionStorage.getItem('cyc_token') || '';
+  window.open('/api/memoria?_t=' + encodeURIComponent(tok), '_blank');
 }
 
 function hacerBackupAhora() {
@@ -3260,12 +3359,11 @@ function toast(msg, tipo) {
 // ══════════════════════════════════════════════════════════════════════
 function initApp() {
   var u = document.getElementById('nav-user');
-  if (u && session) u.textContent = session.nombre;
+  if (u && session) u.textContent = (session.emoji||'') + ' ' + session.nombre;
   initFirebase();
-  _cargarDesdeServidor();           // sincroniza con servidor antes de cargar BBDD
+  _cargarDesdeServidor();
   cargarBaseDatos().then(function(){ renderList(); });
   cargarAgendaServidor();
-  // Badge ventas pendientes
   apiFetch('/api/ventas/kpis').then(function(r){return r.json();}).then(function(d){
     if(!d.ok) return;
     _statsKpis = d;
@@ -3273,10 +3371,44 @@ function initApp() {
     if(badge && d.pendientes>0){ badge.textContent=d.pendientes; badge.style.display=''; }
   }).catch(function(){});
   conectarSSE();
-  // Registro del Service Worker (PWA — instalar como app)
+  loadCustomTemplates(function(){});
+  _iniciarAutoSync();
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(function(){});
   }
+}
+
+// ── Auto-sync ──────────────────────────────────────────────────────────
+var _syncInterval = null;
+function _iniciarAutoSync() {
+  if (_syncInterval) clearInterval(_syncInterval);
+  _syncInterval = setInterval(syncApp, 120000); // cada 2 min
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) syncApp();
+  });
+}
+function syncApp() {
+  // Refrescar KPIs y ventas
+  apiFetch('/api/ventas/kpis').then(function(r){return r.json();}).then(function(d){
+    if (!d.ok) return;
+    _statsKpis = d;
+    var pgs = document.querySelector('.page.on');
+    if (pgs && pgs.id === 'pg-stats') renderStats();
+    var badge = document.getElementById('ventasBadge');
+    if (badge && d.pendientes > 0) { badge.textContent = d.pendientes; badge.style.display = ''; }
+    else if (badge) badge.style.display = 'none';
+  }).catch(function(){});
+  // Refrescar B2C si estamos en masiva
+  var pgM = document.getElementById('pg-masiva');
+  if (pgM && pgM.classList.contains('on')) {
+    loadB2CContacts(function(){ renderMasivaContent(pgM); });
+  }
+  // Refrescar ventas si estamos ahí
+  var pgV = document.getElementById('pg-ventas');
+  if (pgV && pgV.classList.contains('on')) cargarVentas();
+  // Refrescar agenda si estamos ahí
+  var pgA = document.getElementById('pg-agenda');
+  if (pgA && pgA.classList.contains('on')) cargarAgendaServidor();
 }
 
 // ── Carga automática de BASE HORECA desde /clientes.json ──────────────

@@ -399,10 +399,17 @@ function calcularProximo(desde, frecuencia) {
 //  ENDPOINTS
 // ══════════════════════════════════════════════════════════════════════
 
-// ── Auth (no requiere token — es el punto de entrada) ─────────────────
-const CYC_PINS    = (process.env.CYC_PINS || '1234,admin').split(',').map(p => p.trim());
-const ADMIN_PIN   = process.env.ADMIN_PIN || '2000';
-const ADMIN_PFX   = CYC_SECRET + '_ADMIN_';
+// ── Auth / Roles ──────────────────────────────────────────────────────
+const ADMIN_PIN = process.env.ADMIN_PIN || '2000';
+const ADMIN_PFX = CYC_SECRET + '_ADMIN_';
+
+const ROLES_MAP = {
+  foodservice: { pin: process.env.PIN_FOODSERVICE || '1001', tabs: ['clientes','stats','masiva','agenda','bot','config'] },
+  callcenter:  { pin: process.env.PIN_CALLCENTER  || '2002', tabs: ['stats','masiva','bot','config'] },
+  puntosventa: { pin: process.env.PIN_PUNTOSVENTA || '3003', tabs: ['ventas','stats','config'] },
+  pautas:      { pin: process.env.PIN_PAUTAS      || '4004', tabs: ['stats','masiva','config'] },
+};
+const ADMIN_TABS = ['clientes','stats','ventas','masiva','agenda','bot','config','admin'];
 
 function requireAdmin(req, res, next) {
   const tok = req.headers['x-cyc-token'] || req.query._t;
@@ -413,19 +420,46 @@ function requireAdmin(req, res, next) {
 }
 
 app.post('/api/auth/login', (req, res) => {
-  const { pin } = req.body;
-  const pinStr = String(pin || '');
+  const { pin, perfil } = req.body;
+  const pinStr  = String(pin || '');
   const esAdmin = pinStr === ADMIN_PIN;
-  if (!esAdmin && !CYC_PINS.includes(pinStr)) {
-    return res.status(401).json({ ok: false, error: 'PIN incorrecto' });
+
+  if (!esAdmin) {
+    const rolCfg = ROLES_MAP[perfil];
+    if (!rolCfg || rolCfg.pin !== pinStr) {
+      return res.status(401).json({ ok: false, error: 'PIN incorrecto' });
+    }
   }
-  const pfx = esAdmin ? ADMIN_PFX : (CYC_SECRET + '_');
+
+  const rol  = esAdmin ? 'superadmin' : (perfil || 'foodservice');
+  const tabs = esAdmin ? ADMIN_TABS : (ROLES_MAP[perfil]?.tabs || ADMIN_TABS);
+  const pfx  = esAdmin ? ADMIN_PFX : (CYC_SECRET + '_');
   const tok  = pfx + pinStr + '_' + Date.now().toString(36);
-  res.json({ ok: true, token: tok, isAdmin: esAdmin });
+  res.json({ ok: true, token: tok, isAdmin: esAdmin, rol, tabs });
 });
 
 app.post('/api/auth/logout', (req, res) => {
   res.json({ ok: true });
+});
+
+// ── Memoria (backup completo descargable) ─────────────────────────────
+app.get('/api/memoria', requireAuth, (req, res) => {
+  const memoria = {
+    exportado:  new Date().toISOString(),
+    version:    '2.0',
+    sistema:    'CYC CRM — Carnes y Carnes',
+    clientes:   leerClientes(),
+    campaigns:  leerCampaigns(),
+    ventas:     leerVentas(),
+    b2c:        leerB2C(),
+    plantillas: leerPlantillas(),
+    agenda:     leerAgenda(),
+    log:        leerLog(),
+  };
+  const fecha = new Date().toISOString().slice(0,10);
+  res.setHeader('Content-Disposition', `attachment; filename="memoria_cyc_${fecha}.json"`);
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.send(JSON.stringify(memoria, null, 2));
 });
 
 // ── Backup manual ──────────────────────────────────────────────────────
