@@ -217,19 +217,73 @@ select option{background:var(--w2);}
 #toast.show{opacity:1;}
 
 /* ═══ LOGIN ══════════════════════════════════════════ */
-#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100;flex-direction:column;gap:16px;background-image:radial-gradient(ellipse at 50% 0%,rgba(255,107,53,.06) 0%,transparent 60%);}
-.login-box{background:var(--w);border:1px solid var(--br);border-radius:20px;padding:32px;text-align:center;min-width:320px;max-width:380px;width:90%;box-shadow:0 24px 60px rgba(0,0,0,.5);}
-.login-title{font-size:22px;font-weight:900;color:var(--g);margin-bottom:4px;}
-.login-sub{font-size:12px;color:var(--gr);margin-bottom:20px;}
-.pin-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:18px;}
-.pin-inp{width:52px;height:60px;font-size:24px;font-weight:800;text-align:center;background:var(--w2);border:2px solid var(--br2);border-radius:12px;color:var(--ink);outline:none;font-family:inherit;transition:all .15s;}
-.pin-inp:focus{border-color:var(--g);box-shadow:0 0 0 3px var(--gp);}
-.btn-login{width:100%;padding:13px;background:var(--g);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 4px 14px rgba(255,107,53,.35);}
-.btn-login:hover{opacity:.88;transform:translateY(-1px);}
-.login-err{color:var(--rd);font-size:12px;min-height:18px;margin-top:6px;}
-.role-card{border:2px solid var(--br2);border-radius:13px;padding:14px 10px;cursor:pointer;transition:all .15s;background:var(--w2);}
-.role-card:hover{border-color:var(--g);background:var(--gp);transform:translateY(-2px);}
-.role-card.on{border-color:var(--g);background:var(--gp);}
+#login{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  background:#090e1a;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255,107,53,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(255,107,53,.07) 0%, transparent 55%);
+  overflow-y:auto;padding:20px 0;
+}
+.login-panel{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:24px;
+  padding:36px 32px 28px;
+  width:100%;max-width:420px;
+  box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,107,53,.08);
+  backdrop-filter:blur(12px);
+}
+.login-brand{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+.login-brand-ico{width:48px;height:48px;background:linear-gradient(135deg,#FF6B35,#e85a25);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;box-shadow:0 4px 16px rgba(255,107,53,.4);}
+.login-brand-name{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.3px;line-height:1.1;}
+.login-brand-sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px;font-weight:500;}
+.login-section-lbl{font-size:10px;font-weight:800;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;}
+.login-roles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+.role-card{
+  border:1.5px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:14px 10px 12px;
+  cursor:pointer;transition:all .18s;
+  background:rgba(255,255,255,.04);
+  text-align:center;position:relative;
+}
+.role-card:hover{border-color:rgba(255,107,53,.5);background:rgba(255,107,53,.08);transform:translateY(-2px);}
+.role-card.on{border-color:#FF6B35;background:rgba(255,107,53,.13);box-shadow:0 0 0 3px rgba(255,107,53,.18);}
+.role-card-ico{font-size:26px;margin-bottom:6px;line-height:1;}
+.role-card-name{font-size:12px;font-weight:800;color:#fff;line-height:1.2;}
+.role-card-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:3px;}
+.role-card .rc-check{
+  position:absolute;top:8px;right:8px;width:16px;height:16px;
+  background:#FF6B35;border-radius:50%;display:none;
+  align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:900;
+}
+.role-card.on .rc-check{display:flex;}
+.login-pin-area{
+  background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:18px 16px 16px;
+  transition:all .2s;
+}
+.login-pin-area.active{border-color:rgba(255,107,53,.35);background:rgba(255,107,53,.06);}
+.login-pin-who{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;min-height:20px;}
+.login-pin-hint{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:14px;}
+.pin-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:14px;}
+.pin-inp{
+  width:54px;height:62px;font-size:26px;font-weight:900;text-align:center;
+  background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.1);
+  border-radius:14px;color:#fff;outline:none;font-family:inherit;transition:all .15s;
+}
+.pin-inp:focus{border-color:#FF6B35;background:rgba(255,107,53,.1);box-shadow:0 0 0 3px rgba(255,107,53,.2);}
+.btn-login{
+  width:100%;padding:13px;
+  background:linear-gradient(135deg,#FF6B35,#e55a25);
+  color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;
+  cursor:pointer;font-family:inherit;transition:all .15s;
+  box-shadow:0 4px 16px rgba(255,107,53,.4);letter-spacing:.3px;
+}
+.btn-login:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,107,53,.5);}
+.btn-login:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+.login-err{color:#fc8181;font-size:12px;min-height:16px;margin-top:8px;font-weight:600;text-align:center;}
 
 /* ═══ QR MODAL ═══════════════════════════════════════ */
 #qrModal{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:50;}
@@ -290,47 +344,60 @@ img,a{-webkit-user-drag:none;user-drag:none;}
 
 <!-- LOGIN -->
 <div id="login">
-  <!-- Paso 1: Selección de área -->
-  <div class="login-box" id="login-step1">
-    <div class="login-title">🥩 CYC Carnes</div>
-    <div class="login-sub">CRM Comercial — Selecciona tu área de trabajo</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <div class="role-card" onclick="seleccionarRol('foodservice','🥩','Food Service','Clientes HORECA')">
-        <div style="font-size:28px;margin-bottom:6px;">🥩</div>
-        <div style="font-weight:800;font-size:13px;color:var(--ink2);">Food Service</div>
-        <div style="font-size:10px;color:var(--gr);margin-top:2px;">Clientes HORECA</div>
-      </div>
-      <div class="role-card" onclick="seleccionarRol('callcenter','📞','Call Center','Contactos B2C')">
-        <div style="font-size:28px;margin-bottom:6px;">📞</div>
-        <div style="font-weight:800;font-size:13px;color:var(--ink2);">Call Center</div>
-        <div style="font-size:10px;color:var(--gr);margin-top:2px;">Contactos B2C</div>
-      </div>
-      <div class="role-card" onclick="seleccionarRol('puntosventa','🏪','Puntos de Venta','Registro de ventas')">
-        <div style="font-size:28px;margin-bottom:6px;">🏪</div>
-        <div style="font-weight:800;font-size:13px;color:var(--ink2);">Puntos de Venta</div>
-        <div style="font-size:10px;color:var(--gr);margin-top:2px;">Registro de ventas</div>
-      </div>
-      <div class="role-card" onclick="seleccionarRol('pautas','📣','Pautas','Campañas y difusión')">
-        <div style="font-size:28px;margin-bottom:6px;">📣</div>
-        <div style="font-weight:800;font-size:13px;color:var(--ink2);">Pautas</div>
-        <div style="font-size:10px;color:var(--gr);margin-top:2px;">Campañas y difusión</div>
+  <div class="login-panel">
+
+    <!-- Brand -->
+    <div class="login-brand">
+      <div class="login-brand-ico">🥩</div>
+      <div>
+        <div class="login-brand-name">CYC Carnes y Carnes</div>
+        <div class="login-brand-sub">CRM Comercial · Bucaramanga</div>
       </div>
     </div>
-  </div>
-  <!-- Paso 2: PIN -->
-  <div class="login-box" id="login-step2" style="display:none;">
-    <button onclick="volverRoles()" style="background:none;border:none;color:var(--gr);cursor:pointer;font-size:12px;margin-bottom:14px;font-family:inherit;display:block;">← Cambiar área</button>
-    <div id="login-role-ico" style="font-size:36px;margin-bottom:6px;"></div>
-    <div class="login-title" id="login-role-name"></div>
-    <div class="login-sub">Ingresa tu PIN de 4 dígitos</div>
-    <div class="pin-inputs">
-      <input class="pin-inp" maxlength="1" type="password" id="p0" oninput="pinNext(0)">
-      <input class="pin-inp" maxlength="1" type="password" id="p1" oninput="pinNext(1)">
-      <input class="pin-inp" maxlength="1" type="password" id="p2" oninput="pinNext(2)">
-      <input class="pin-inp" maxlength="1" type="password" id="p3" oninput="pinNext(3)">
+
+    <!-- Selección de perfil -->
+    <div class="login-section-lbl">Selecciona tu área</div>
+    <div class="login-roles">
+      <div class="role-card" id="rc-foodservice" onclick="seleccionarRol('foodservice','🥩','Food Service','Clientes HORECA')">
+        <div class="rc-check">✓</div>
+        <div class="role-card-ico">🥩</div>
+        <div class="role-card-name">Food Service</div>
+        <div class="role-card-sub">Clientes HORECA</div>
+      </div>
+      <div class="role-card" id="rc-callcenter" onclick="seleccionarRol('callcenter','📞','Call Center','Contactos B2C')">
+        <div class="rc-check">✓</div>
+        <div class="role-card-ico">📞</div>
+        <div class="role-card-name">Call Center</div>
+        <div class="role-card-sub">Contactos B2C</div>
+      </div>
+      <div class="role-card" id="rc-puntosventa" onclick="seleccionarRol('puntosventa','🏪','Puntos de Venta','Registro de ventas')">
+        <div class="rc-check">✓</div>
+        <div class="role-card-ico">🏪</div>
+        <div class="role-card-name">Puntos de Venta</div>
+        <div class="role-card-sub">Registro de ventas</div>
+      </div>
+      <div class="role-card" id="rc-pautas" onclick="seleccionarRol('pautas','📣','Pautas','Campañas y difusión')">
+        <div class="rc-check">✓</div>
+        <div class="role-card-ico">📣</div>
+        <div class="role-card-name">Pautas</div>
+        <div class="role-card-sub">Campañas y difusión</div>
+      </div>
     </div>
-    <div class="login-err" id="pinErr"></div>
-    <button class="btn-login" onclick="checkPin()">Entrar</button>
+
+    <!-- PIN entry -->
+    <div class="login-pin-area" id="login-pin-area">
+      <div class="login-pin-who" id="login-role-name">← Selecciona tu área de trabajo</div>
+      <div class="login-pin-hint">PIN de 4 dígitos</div>
+      <div class="pin-inputs">
+        <input class="pin-inp" maxlength="1" type="password" id="p0" oninput="pinNext(0)" disabled>
+        <input class="pin-inp" maxlength="1" type="password" id="p1" oninput="pinNext(1)" disabled>
+        <input class="pin-inp" maxlength="1" type="password" id="p2" oninput="pinNext(2)" disabled>
+        <input class="pin-inp" maxlength="1" type="password" id="p3" oninput="pinNext(3)" disabled>
+      </div>
+      <button class="btn-login" id="btn-login-enter" onclick="checkPin()" disabled>Selecciona un área</button>
+      <div class="login-err" id="pinErr"></div>
+    </div>
+
   </div>
 </div>
 
@@ -556,19 +623,25 @@ function apiFetch(url, opts) {
 // ── Login flow ──────────────────────────────────────────────────────────
 function seleccionarRol(perfil, ico, nombre, sub) {
   _loginPerfil = perfil;
-  document.getElementById('login-step1').style.display = 'none';
-  var s2 = document.getElementById('login-step2');
-  s2.style.display = '';
-  document.getElementById('login-role-ico').textContent  = ico;
-  document.getElementById('login-role-name').textContent = nombre;
-  [0,1,2,3].forEach(function(i){ document.getElementById('p'+i).value=''; });
+  // Resaltar tarjeta seleccionada
+  ['foodservice','callcenter','puntosventa','pautas'].forEach(function(r) {
+    var el = document.getElementById('rc-'+r);
+    if (el) el.classList.toggle('on', r === perfil);
+  });
+  // Activar panel PIN
+  var area = document.getElementById('login-pin-area');
+  if (area) area.classList.add('active');
+  var lbl = document.getElementById('login-role-name');
+  if (lbl) lbl.textContent = ico + '  ' + nombre;
+  // Habilitar inputs y botón
+  [0,1,2,3].forEach(function(i){ var el=document.getElementById('p'+i); el.value=''; el.disabled=false; });
+  var btn = document.getElementById('btn-login-enter');
+  if (btn) { btn.disabled=false; btn.textContent='Entrar'; }
   document.getElementById('pinErr').textContent = '';
   document.getElementById('p0').focus();
 }
 function volverRoles() {
   _loginPerfil = null;
-  document.getElementById('login-step2').style.display = 'none';
-  document.getElementById('login-step1').style.display = '';
 }
 function pinNext(i) {
   var v = document.getElementById('p'+i).value;
@@ -664,9 +737,6 @@ function _mostrarTabAdmin(show) {
       return;
     }
   } catch(_) {}
-  // Sin sesión: mostrar paso 1
-  document.getElementById('login-step1').style.display = '';
-  document.getElementById('login-step2').style.display = 'none';
 })();
 
 // ══════════════════════════════════════════════════════════════════════
