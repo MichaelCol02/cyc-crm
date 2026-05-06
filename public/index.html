@@ -295,10 +295,11 @@ select option{background:var(--w2);}
 <!-- QR MODAL -->
 <div id="qrModal">
   <div class="qr-box">
-    <div style="font-weight:800;margin-bottom:14px;font-size:15px;">📱 Vincula WhatsApp</div>
-    <img id="qrImg" src="" alt="QR">
-    <div style="font-size:11px;color:var(--gr);margin-top:12px;line-height:1.6;">WhatsApp → Dispositivos vinculados<br>→ Vincular dispositivo → Escanear</div>
-    <button onclick="document.getElementById('qrModal').classList.remove('show')" style="margin-top:14px;padding:8px 20px;background:var(--w2);border:1px solid var(--br2);border-radius:9px;color:var(--ink2);cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;">Cerrar</button>
+    <div style="font-weight:800;margin-bottom:10px;font-size:15px;">📱 Vincula WhatsApp</div>
+    <div id="qrSpinner" style="width:200px;height:200px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:40px;animation:pulse 1.2s infinite;">⏳</div>
+    <img id="qrImg" src="" alt="QR" style="display:none;">
+    <div id="qrStatus" style="font-size:11px;color:var(--gr);margin-top:12px;line-height:1.6;min-height:32px;">Generando QR...</div>
+    <button onclick="cerrarQRModal()" style="margin-top:12px;padding:8px 20px;background:var(--w2);border:1px solid var(--br2);border-radius:9px;color:var(--ink2);cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;">Cerrar</button>
   </div>
 </div>
 
@@ -1636,6 +1637,135 @@ var masivaFiltro = 'todos';
 var masivaFiltroCity = '';
 var masivaStop = false;
 var _masivaInterval = null;
+var _b2cContacts = [];
+var _masivaFuente = 'horeca'; // 'horeca' | 'b2c'
+var _b2cFiltroStage = 'todos';
+
+function loadB2CContacts(cb) {
+  apiFetch('/api/b2c').then(function(r){ return r.json(); }).then(function(d){
+    _b2cContacts = d.contactos || [];
+    if (cb) cb();
+  }).catch(function(){ if (cb) cb(); });
+}
+
+function importarContactosWA() {
+  var btn = document.getElementById('btn-import-wa');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Importando...'; }
+  apiFetch('/api/wa-contacts').then(function(r){ return r.json(); }).then(function(d){
+    if (!d.contactos || !d.contactos.length) {
+      toast('Sin contactos en WhatsApp. Conecta primero y espera a que sincronice (puede tomar 1–2 min)','e');
+      if (btn) { btn.disabled = false; btn.textContent = '📥 Importar de WA'; }
+      return;
+    }
+    return apiFetch('/api/b2c/importar', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ contactos: d.contactos })
+    }).then(function(r){ return r.json(); }).then(function(res){
+      loadB2CContacts(function(){ renderMasiva(); });
+      toast('✅ '+res.importados+' contactos importados · '+res.total+' en total','s');
+    });
+  }).catch(function(e){ toast('Error: '+e.message,'e'); })
+  .finally(function(){
+    if (btn) { btn.disabled = false; btn.textContent = '📥 Importar de WA'; }
+  });
+}
+
+function handleB2CCSV(input) {
+  var file = input.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var lines = e.target.result.split('\n').filter(function(l){ return l.trim(); });
+    var header = lines[0].toLowerCase().split(',').map(function(h){ return h.trim().replace(/['"]/g,''); });
+    var iName  = Math.max(header.indexOf('nombre'), header.indexOf('name'));
+    var iPhone = Math.max(header.indexOf('telefono'), header.indexOf('phone'), header.indexOf('whatsapp'));
+    var iCity  = Math.max(header.indexOf('ciudad'), header.indexOf('city'));
+    if (iPhone < 0) { toast('El CSV debe tener columna "telefono" o "phone"','e'); return; }
+    var contactos = lines.slice(1).map(function(row){
+      var cols = row.split(',').map(function(c){ return c.trim().replace(/^"|"$/g,''); });
+      return { phone: cols[iPhone]||'', name: iName>=0?(cols[iName]||''):'', city: iCity>=0?(cols[iCity]||''):'' };
+    }).filter(function(c){ return c.phone && c.phone.replace(/\D/g,'').length >= 7; });
+    apiFetch('/api/b2c/importar', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ contactos: contactos.map(function(c){ return Object.assign({}, c, {source:'csv'}); }) })
+    }).then(function(r){ return r.json(); }).then(function(d){
+      loadB2CContacts(function(){ renderMasiva(); });
+      toast('✅ '+d.importados+' contactos importados del CSV','s');
+    }).catch(function(){ toast('Error al importar CSV','e'); });
+  };
+  reader.readAsText(file, 'utf-8');
+  input.value = '';
+}
+
+function exportarB2CCSV() {
+  if (!_b2cContacts.length) { toast('Sin contactos para exportar','e'); return; }
+  var tok = localStorage.getItem('cyc_token')||'';
+  window.open('/api/b2c/export.csv?_t='+encodeURIComponent(tok), '_blank');
+}
+
+function borrarTodosB2C() {
+  if (!confirm('¿Borrar todos los '+_b2cContacts.length+' contactos B2C? No se puede deshacer.')) return;
+  apiFetch('/api/b2c/todos', { method:'DELETE' }).then(function(){
+    _b2cContacts = [];
+    renderMasiva();
+    toast('Contactos eliminados');
+  });
+}
+
+function _renderB2CSection() {
+  var stageLabels = {todos:'Todos',pending:'Pendiente',contacted:'Contactado',interested:'Interesado',quoted:'Cotizado',won:'Convertido',lost:'No interesa'};
+  var stageColors = {pending:'#fbbf24',contacted:'#60a5fa',interested:'#f97316',quoted:'#a78bfa',won:'#22c55e',lost:'#ef4444'};
+  var counts = {todos:_b2cContacts.length,pending:0,contacted:0,interested:0,quoted:0,won:0,lost:0};
+  _b2cContacts.forEach(function(c){ if (counts[c.stage]!==undefined) counts[c.stage]++; });
+
+  var filtered = _b2cFiltroStage === 'todos'
+    ? _b2cContacts
+    : _b2cContacts.filter(function(c){ return c.stage === _b2cFiltroStage; });
+
+  var html = '<div class="masiva-box">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">'
+    +'<div class="masiva-title" style="margin-bottom:0;">📱 Contactos WA / B2C — <b>'+_b2cContacts.length+'</b> total</div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;">'
+    +'<button id="btn-import-wa" onclick="importarContactosWA()" style="padding:6px 11px;background:#25d366;color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📥 Importar de WA</button>'
+    +'<label style="padding:6px 11px;background:var(--w2);border:1px solid var(--br2);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;color:var(--ink2);">📊 CSV<input type="file" accept=".csv" onchange="handleB2CCSV(this)" style="display:none;"></label>'
+    +(_b2cContacts.length?'<button onclick="exportarB2CCSV()" style="padding:6px 11px;background:var(--w2);border:1px solid var(--br2);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;color:var(--ink2);">⬇️ Exportar</button>'
+    +'<button onclick="borrarTodosB2C()" style="padding:6px 11px;background:#ef444420;border:1px solid #ef4444;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;color:#ef4444;">🗑️ Limpiar</button>':'')
+    +'</div></div>';
+
+  if (!_b2cContacts.length) {
+    html += '<p style="font-size:12px;color:var(--gr);text-align:center;padding:16px 0;">Sin contactos. Conecta WhatsApp y usa <b>Importar de WA</b>, o sube un CSV.</p>';
+  } else {
+    // Stage chips
+    html += '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;">'
+      +Object.keys(stageLabels).map(function(s){
+        var active = _b2cFiltroStage === s;
+        var color = stageColors[s] || 'var(--brand)';
+        return '<div onclick="b2cFiltrarStage(\''+s+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid '+(active?color:'var(--br2)')+';background:'+(active?color+'22':'var(--bg)')+';color:'+(active?color:'var(--gr)')+';">'+stageLabels[s]+' <span style="opacity:.7;">('+counts[s]+')</span></div>';
+      }).join('')
+    +'</div>';
+    // Contact rows (max 50)
+    html += '<div style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;">'
+      +filtered.slice(0,50).map(function(c){
+        var sc = stageColors[c.stage]||'#888';
+        return '<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--bg);border-radius:7px;">'
+          +'<div style="width:28px;height:28px;border-radius:50%;background:'+sc+'33;color:'+sc+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">'+(c.name||'?')[0].toUpperCase()+'</div>'
+          +'<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escH(c.name||'—')+'</div>'
+          +'<div style="font-size:10px;color:var(--gr);">+'+c.phone+(c.city?' · '+escH(c.city):'')+'</div></div>'
+          +'<div style="font-size:10px;padding:2px 7px;border-radius:10px;background:'+sc+'18;color:'+sc+';flex-shrink:0;">'+stageLabels[c.stage||'pending']+'</div>'
+          +'</div>';
+      }).join('')
+    +(filtered.length>50?'<p style="font-size:10px;color:var(--gr);text-align:center;padding:6px;">Mostrando 50 de '+filtered.length+'. Exporta para ver todos.</p>':'')
+    +'</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function b2cFiltrarStage(stage) {
+  _b2cFiltroStage = stage;
+  renderMasiva();
+}
 var MASIVA_DELAY_MIN = parseInt(localStorage.getItem('cyc_delay_min')||'12');
 var MASIVA_DELAY_MAX = parseInt(localStorage.getItem('cyc_delay_max')||'25');
 var MASIVA_TANDA     = parseInt(localStorage.getItem('cyc_tanda')||'30');
@@ -1649,29 +1779,45 @@ function masivaSaveDelay(mn,mx,t){
 
 function renderMasiva() {
   var pg = document.getElementById('pg-masiva'); if (!pg) return;
+  if (!_b2cContacts.length) loadB2CContacts(function(){ pg.querySelector && renderMasivaContent(pg); });
+  renderMasivaContent(pg);
+}
 
+function renderMasivaContent(pg) {
   // Estado WhatsApp
   var waStatus = localStorage.getItem('cyc_wa_status') || 'desconectado';
   var waOk  = (waStatus === 'conectado');
   var waQR  = (waStatus === 'qr_pendiente');
-
-  var base = clients.filter(function(c){
-    var car = fsCarnes[c.id] || {};
-    var ciudad = (car.ciudad || c.ciudad || '').toLowerCase();
-    if (masivaFiltroCity === 'HORECA') {
-      if (!c.segmento_horeca) return false;
-    } else if (masivaFiltroCity) {
-      if (ciudad.indexOf(masivaFiltroCity.toLowerCase()) < 0) return false;
-    }
-    if (masivaFiltro === 'todos') return !!c.telefono;
-    return stOf(c) === masivaFiltro && !!c.telefono;
-  });
-
   var waDotClass = waOk ? 'wa-conectado' : (waQR ? 'wa-qr' : 'wa-desconectado');
   var waMsj = waOk ? '✅ Conectado' : (waQR ? '📱 QR pendiente — escanea el código' : '❌ Desconectado');
   var waSub = waOk ? 'Listo para enviar mensajes' : (waQR ? 'Abre WhatsApp → Dispositivos vinculados → Vincular dispositivo' : 'Haz clic en Verificar para comprobar estado, o en Ver QR para vincular WhatsApp');
 
+  var base = [];
+  if (_masivaFuente === 'b2c') {
+    base = _b2cContacts.filter(function(c){
+      var p = (c.phone||'').replace(/\D/g,'');
+      if (!p || p.length < 7) return false;
+      if (masivaFiltro !== 'todos') return c.stage === masivaFiltro;
+      return true;
+    });
+  } else {
+    base = clients.filter(function(c){
+      var car = fsCarnes[c.id] || {};
+      var ciudad = (car.ciudad || c.ciudad || '').toLowerCase();
+      if (masivaFiltroCity === 'HORECA') {
+        if (!c.segmento_horeca) return false;
+      } else if (masivaFiltroCity) {
+        if (ciudad.indexOf(masivaFiltroCity.toLowerCase()) < 0) return false;
+      }
+      if (masivaFiltro === 'todos') return !!c.telefono;
+      return stOf(c) === masivaFiltro && !!c.telefono;
+    });
+  }
+
   pg.innerHTML='<div style="max-width:680px;margin:0 auto;width:100%;">'
+
+    // Sección Contactos B2C
+    +_renderB2CSection()
 
     // Estado WA
     +'<div class="masiva-box">'
@@ -1714,37 +1860,55 @@ function renderMasiva() {
     })():'')
     +'</div>'
 
-    // Paso 2: Filtros
+    // Paso 2: Destinatarios
     +'<div class="masiva-box">'
     +'<div class="masiva-title">② Destinatarios</div>'
-    +'<div class="filter-chips">'
-    +[['todos','Todos'],['nuevo','Nuevos'],['pedido_activo','Con pedido'],['regular','Ocasionales'],['frecuente','Frecuentes'],['vip','VIP'],['distribuidor','Distribuidores'],['inactivo','Inactivos']].map(function(p){
-      var on = masivaFiltro===p[0];
-      return '<div class="m-chip'+(on?' sel':'')+'" onclick="masivaFiltro=\''+p[0]+'\';renderMasiva();">'+escH(p[1])+'</div>';
-    }).join('')
+
+    // Toggle HORECA vs B2C
+    +'<div style="display:flex;gap:8px;margin-bottom:12px;">'
+    +'<div onclick="_masivaFuente=\'horeca\';masivaFiltro=\'todos\';renderMasiva();" style="flex:1;text-align:center;padding:8px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;border:2px solid '+(_masivaFuente==='horeca'?'var(--g)':'var(--br2)')+';background:'+(_masivaFuente==='horeca'?'var(--gp)':'var(--bg)')+';color:'+(_masivaFuente==='horeca'?'var(--g)':'var(--gr)')+';"><div>🏨 HORECA</div><div style="font-size:10px;font-weight:400;">'+clients.filter(function(c){return !!c.telefono;}).length+' clientes</div></div>'
+    +'<div onclick="_masivaFuente=\'b2c\';masivaFiltro=\'todos\';renderMasiva();" style="flex:1;text-align:center;padding:8px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;border:2px solid '+(_masivaFuente==='b2c'?'#25d366':'var(--br2)')+';background:'+(_masivaFuente==='b2c'?'#25d36618':'var(--bg)')+';color:'+(_masivaFuente==='b2c'?'#25d366':'var(--gr)')+';"><div>📱 Contactos WA</div><div style="font-size:10px;font-weight:400;">'+_b2cContacts.length+' contactos</div></div>'
     +'</div>'
-    +'<div style="margin-top:8px;">'
-    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gr);margin-bottom:5px;">📍 Filtrar por ciudad</div>'
-    +'<div class="filter-chips">'
-    +(function(){
-      var ciudades = {};
-      clients.forEach(function(c){
-        var car = fsCarnes[c.id]||{};
-        var cd = (car.ciudad||c.ciudad||'').trim();
-        if(cd) ciudades[cd] = (ciudades[cd]||0)+1;
-      });
-      var lista = [['','Todas'],['HORECA','🏨 HORECA (200)']].concat(Object.entries(ciudades).sort(function(a,b){return b[1]-a[1];}).slice(0,8).map(function(e){return [e[0],e[0]];}));
-      return lista.map(function(p){
-        var on = masivaFiltroCity===p[0];
-        return '<div class="m-chip'+(on?' sel':'')+'" onclick="masivaFiltroCity=\''+escQ(p[0])+'\';renderMasiva();">'+escH(p[1])+'</div>';
-      }).join('');
-    })()
-    +'</div></div>'
+
+    // Filtros según fuente
+    +(_masivaFuente==='b2c'
+      ? '<div class="filter-chips">'
+        +[['todos','Todos'],['pending','Pendiente'],['contacted','Contactado'],['interested','Interesado'],['quoted','Cotizado'],['won','Convertido'],['lost','No interesa']].map(function(p){
+            var on = masivaFiltro===p[0];
+            return '<div class="m-chip'+(on?' sel':'')+'" onclick="masivaFiltro=\''+p[0]+'\';renderMasiva();">'+escH(p[1])+'</div>';
+          }).join('')
+        +'</div>'
+      : '<div class="filter-chips">'
+        +[['todos','Todos'],['nuevo','Nuevos'],['pedido_activo','Con pedido'],['regular','Ocasionales'],['frecuente','Frecuentes'],['vip','VIP'],['distribuidor','Distribuidores'],['inactivo','Inactivos']].map(function(p){
+            var on = masivaFiltro===p[0];
+            return '<div class="m-chip'+(on?' sel':'')+'" onclick="masivaFiltro=\''+p[0]+'\';renderMasiva();">'+escH(p[1])+'</div>';
+          }).join('')
+        +'</div>'
+        +'<div style="margin-top:8px;">'
+        +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gr);margin-bottom:5px;">📍 Filtrar por ciudad</div>'
+        +'<div class="filter-chips">'
+        +(function(){
+          var ciudades = {};
+          clients.forEach(function(c){
+            var car = fsCarnes[c.id]||{};
+            var cd = (car.ciudad||c.ciudad||'').trim();
+            if(cd) ciudades[cd] = (ciudades[cd]||0)+1;
+          });
+          var lista = [['','Todas'],['HORECA','🏨 HORECA (200)']].concat(Object.entries(ciudades).sort(function(a,b){return b[1]-a[1];}).slice(0,8).map(function(e){return [e[0],e[0]];}));
+          return lista.map(function(p){
+            var on = masivaFiltroCity===p[0];
+            return '<div class="m-chip'+(on?' sel':'')+'" onclick="masivaFiltroCity=\''+escQ(p[0])+'\';renderMasiva();">'+escH(p[1])+'</div>';
+          }).join('');
+        })()
+        +'</div></div>'
+    )
+
+    // Contador de contactos listos
     +'<div style="display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:10px;padding:12px;margin-top:8px;">'
     +'<div style="font-size:36px;font-weight:900;color:var(--wa);line-height:1;min-width:46px;text-align:center;">'+base.length+'</div>'
-    +'<div><div style="font-weight:700;font-size:13px;">contacto'+( base.length!==1?'s':'')+' listos</div>'
+    +'<div><div style="font-weight:700;font-size:13px;">contacto'+(base.length!==1?'s':'')+' listos ('+ (_masivaFuente==='b2c'?'Contactos WA':'HORECA')+')</div>'
     +'<div style="font-size:11px;color:var(--gr);margin-top:2px;">'+(tplSel?'✅ Plantilla: '+escH((TEMPLATES.find(function(t){return t.id===tplSel;})||{nombre:'?'}).nombre):'⚠️ Selecciona una plantilla')+'</div>'
-    +(base.length>0?'<div style="font-size:10px;color:var(--gr);margin-top:2px;">'+base.slice(0,4).map(function(c){return escH(c.nombre.split(' ')[0]);}).join(', ')+(base.length>4?' y '+(base.length-4)+' más':'')+'</div>':'')
+    +(base.length>0?'<div style="font-size:10px;color:var(--gr);margin-top:2px;">'+base.slice(0,4).map(function(c){return escH((c.nombre||c.name||'?').split(' ')[0]);}).join(', ')+(base.length>4?' y '+(base.length-4)+' más':'')+'</div>':'')
     +'</div></div></div>'
 
     // Paso 3: Enviar
@@ -1816,35 +1980,99 @@ function verificarWA() {
     .catch(function(){ toast('⚠️ Servidor no responde — intenta recargar la página', 'e'); });
 }
 
+var _qrPollTimer = null;
+
+function cerrarQRModal() {
+  document.getElementById('qrModal').classList.remove('show');
+  if (_qrPollTimer) { clearInterval(_qrPollTimer); _qrPollTimer = null; }
+}
+
 function mostrarQR() {
-  apiFetch('/api/qr')
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.ok) {
-        document.getElementById('qrImg').src = d.qr;
-        document.getElementById('qrModal').classList.add('show');
-      } else {
-        toast(d.msg === 'ya_conectado' ? '✅ WhatsApp ya está conectado' : '⚠️ QR no disponible', 'e');
-      }
-    })
-    .catch(function(){ toast('⚠️ Servidor no responde','e'); });
+  var modal    = document.getElementById('qrModal');
+  var img      = document.getElementById('qrImg');
+  var spinner  = document.getElementById('qrSpinner');
+  var statusEl = document.getElementById('qrStatus');
+
+  modal.classList.add('show');
+  img.style.display = 'none';
+  img.src = '';
+  if (spinner)  spinner.style.display  = 'flex';
+  if (statusEl) statusEl.textContent   = 'Generando QR...';
+  if (_qrPollTimer) { clearInterval(_qrPollTimer); _qrPollTimer = null; }
+
+  function cargarQR() {
+    apiFetch('/api/qr')
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d.ok) {
+          img.src = d.qr;
+          img.style.display = 'block';
+          if (spinner)  spinner.style.display = 'none';
+          if (statusEl) statusEl.innerHTML = 'Abre WhatsApp → <b>Dispositivos vinculados</b> → <b>Vincular dispositivo</b><br><span style="color:#fbbf24;">⚠️ El QR expira en ~60 seg</span>';
+          // Polling: verifica conexión cada 6s durante 2 min
+          var polls = 0;
+          _qrPollTimer = setInterval(function(){
+            polls++;
+            apiFetch('/api/status').then(function(r){ return r.json(); }).then(function(s){
+              if (s.whatsapp === 'conectado') {
+                clearInterval(_qrPollTimer); _qrPollTimer = null;
+                cerrarQRModal();
+                localStorage.setItem('cyc_wa_status','conectado');
+                renderMasiva();
+                toast('✅ WhatsApp conectado exitosamente','s');
+              } else if (polls >= 20) {
+                clearInterval(_qrPollTimer); _qrPollTimer = null;
+                if (statusEl) statusEl.textContent = 'QR expirado — cierra y vuelve a intentar';
+              }
+            }).catch(function(){});
+          }, 6000);
+        } else if (d.msg === 'ya_conectado') {
+          cerrarQRModal();
+          localStorage.setItem('cyc_wa_status','conectado');
+          renderMasiva();
+          toast('✅ WhatsApp ya está conectado','s');
+        } else {
+          if (statusEl) statusEl.textContent = 'Servidor generando QR… reintentando en 8 segundos';
+          if (spinner) spinner.style.display = 'flex';
+          setTimeout(cargarQR, 8000);
+        }
+      })
+      .catch(function(){ toast('⚠️ Servidor no responde','e'); });
+  }
+
+  cargarQR();
 }
 
 function iniciarMasiva() {
   var tpl = TEMPLATES.find(function(t){ return t.id===tplSel; });
   if (!tpl) return toast('Elige una plantilla','e');
-  var base = clients.filter(function(c){
-    if (masivaFiltro==='todos') return !!c.telefono;
-    return stOf(c)===masivaFiltro && !!c.telefono;
-  });
-  if (!base.length) return toast('Sin contactos','e');
 
-  var contactos = base.map(function(c){
-    var car = fsCarnes[c.id] || {};
-    return { nombre:c.nombre, whatsapp:c.telefono.replace(/\D/g,'').replace(/^0/,'57'),
-             producto:car.producto||'', kg_ultimo:car.kg_ultimo||'', fecha_ultimo:car.fecha_ultimo||'',
-             ciudad:car.ciudad||c.ciudad||'', direccion:car.direccion||c.direccion||'' };
-  });
+  var contactos;
+  if (_masivaFuente === 'b2c') {
+    var baseB2C = _b2cContacts.filter(function(c){
+      var p = (c.phone||'').replace(/\D/g,'');
+      if (!p || p.length < 7) return false;
+      if (masivaFiltro !== 'todos') return c.stage === masivaFiltro;
+      return true;
+    });
+    if (!baseB2C.length) return toast('Sin contactos WA seleccionados. Importa contactos primero.','e');
+    contactos = baseB2C.map(function(c){
+      return { nombre: c.name || c.phone, whatsapp: c.phone.replace(/\D/g,'').replace(/^0/,'57'),
+               producto:'', kg_ultimo:'', fecha_ultimo:'', ciudad:c.city||'', direccion:'' };
+    });
+  } else {
+    var baseH = clients.filter(function(c){
+      if (masivaFiltro==='todos') return !!c.telefono;
+      return stOf(c)===masivaFiltro && !!c.telefono;
+    });
+    if (!baseH.length) return toast('Sin contactos','e');
+    contactos = baseH.map(function(c){
+      var car = fsCarnes[c.id] || {};
+      return { nombre:c.nombre, whatsapp:c.telefono.replace(/\D/g,'').replace(/^0/,'57'),
+               producto:car.producto||'', kg_ultimo:car.kg_ultimo||'', fecha_ultimo:car.fecha_ultimo||'',
+               ciudad:car.ciudad||c.ciudad||'', direccion:car.direccion||c.direccion||'' };
+    });
+  }
 
   document.getElementById('btn-send-masiva').style.display = 'none';
   document.getElementById('btn-stop-masiva').style.display = 'block';

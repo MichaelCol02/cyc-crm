@@ -60,6 +60,10 @@ function guardarCampaigns(d) { fs.writeFileSync(CAMPAIGNS_FILE, JSON.stringify(d
 function leerVentas()     { try { return JSON.parse(fs.readFileSync(VENTAS_FILE,'utf8')); }  catch { return []; } }
 function guardarVentas(d) { fs.writeFileSync(VENTAS_FILE, JSON.stringify(d,null,2)); }
 
+const B2C_FILE = path.join(DATA_DIR, 'contactos_b2c.json');
+function leerB2C()     { try { return JSON.parse(fs.readFileSync(B2C_FILE,'utf8')); } catch { return []; } }
+function guardarB2C(d) { fs.writeFileSync(B2C_FILE, JSON.stringify(d,null,2)); }
+
 function agregarLog(item) {
   const log = leerLog();
   log.unshift({ ...item, ts: new Date().toISOString() });
@@ -72,7 +76,7 @@ function hacerBackup() {
   const dir   = path.join(BACKUP_DIR, fecha);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-  const archivos = [AGENDA_FILE, LOG_FILE, CLIENTES_FILE, CAMPAIGNS_FILE, VENTAS_FILE];
+  const archivos = [AGENDA_FILE, LOG_FILE, CLIENTES_FILE, CAMPAIGNS_FILE, VENTAS_FILE, B2C_FILE];
   let copiados = 0;
   archivos.forEach(f => {
     if (fs.existsSync(f)) {
@@ -799,6 +803,90 @@ function getLanIP() {
 function notificarDataUpdate(data) {
   notificarSSE({ tipo: 'data_update', ...data });
 }
+
+// ── Contactos WA (del auth de Baileys) ───────────────────────────────
+app.get('/api/wa-contacts', (req, res) => {
+  const contactsFile = path.join(DATA_DIR, 'auth', 'contacts.json');
+  try {
+    if (!fs.existsSync(contactsFile)) {
+      return res.json({ ok: true, contactos: [], msg: 'Conecta WhatsApp primero' });
+    }
+    const raw = JSON.parse(fs.readFileSync(contactsFile, 'utf8'));
+    const contactos = [];
+    for (const [jid, data] of Object.entries(raw)) {
+      if (!jid || jid.includes('@g.us') || jid.includes('broadcast') || jid.includes('status@')) continue;
+      const phone = jid.split('@')[0].replace(/\D/g, '');
+      if (!phone || phone.length < 7) continue;
+      const name = data.name || data.pushName || data.verifiedName || phone;
+      contactos.push({ phone, name: String(name).trim() || phone });
+    }
+    res.json({ ok: true, contactos, total: contactos.length });
+  } catch (err) {
+    res.json({ ok: true, contactos: [], error: err.message });
+  }
+});
+
+// ── Contactos B2C (base importada de WA o CSV) ────────────────────────
+app.get('/api/b2c', (req, res) => {
+  res.json({ ok: true, contactos: leerB2C() });
+});
+
+app.post('/api/b2c/importar', (req, res) => {
+  const { contactos } = req.body;
+  if (!Array.isArray(contactos)) return res.json({ ok: false, error: 'Datos inválidos' });
+  const existing = leerB2C();
+  const existingPhones = new Set(existing.map(c => c.phone));
+  const nuevos = contactos
+    .filter(c => {
+      const p = String(c.phone || '').replace(/\D/g, '');
+      return p.length >= 7 && !existingPhones.has(p);
+    })
+    .map(c => ({
+      id: Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+      name: String(c.name || c.phone || '').trim(),
+      phone: String(c.phone || '').replace(/\D/g, ''),
+      city:  c.city  || '',
+      stage: 'pending',
+      source: c.source || 'whatsapp',
+      createdAt: new Date().toISOString()
+    }));
+  const todos = [...existing, ...nuevos];
+  guardarB2C(todos);
+  notificarSSE({ tipo: 'b2c_update', total: todos.length });
+  res.json({ ok: true, importados: nuevos.length, total: todos.length });
+});
+
+app.put('/api/b2c/:id', (req, res) => {
+  const lista = leerB2C();
+  const idx = lista.findIndex(c => c.id === req.params.id);
+  if (idx < 0) return res.json({ ok: false, error: 'No encontrado' });
+  ['name', 'city', 'stage', 'notes'].forEach(k => {
+    if (req.body[k] !== undefined) lista[idx][k] = req.body[k];
+  });
+  guardarB2C(lista);
+  res.json({ ok: true });
+});
+
+app.delete('/api/b2c/todos', (req, res) => {
+  guardarB2C([]);
+  res.json({ ok: true });
+});
+
+app.delete('/api/b2c/:id', (req, res) => {
+  guardarB2C(leerB2C().filter(c => c.id !== req.params.id));
+  res.json({ ok: true });
+});
+
+app.get('/api/b2c/export.csv', (req, res) => {
+  const lista = leerB2C();
+  const csv = 'Nombre,Telefono,Ciudad,Etapa\n' +
+    lista.map(c =>
+      `"${(c.name || '').replace(/"/g, '""')}","${c.phone}","${(c.city || '').replace(/"/g, '""')}","${c.stage || ''}"`
+    ).join('\n');
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="contactos_wa.csv"');
+  res.send('﻿' + csv);
+});
 
 // ── Start — red local (WiFi) + protección por PIN ─────────────────────
 app.listen(PORT, '0.0.0.0', () => {
