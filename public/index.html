@@ -303,6 +303,21 @@ select option{background:var(--w2);}
   </div>
 </div>
 
+<!-- CAMPAIGN MODAL -->
+<div id="campModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(4px);z-index:60;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 0;">
+  <div style="background:var(--w);border:1px solid var(--br);border-radius:20px;padding:24px 28px;max-width:520px;width:94%;margin:auto;position:relative;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div style="font-size:16px;font-weight:900;color:var(--ink2);">📅 Campaña automática</div>
+      <button onclick="cerrarCampModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--gr);line-height:1;padding:0;">✕</button>
+    </div>
+    <div id="campModalBody"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button onclick="guardarCampModal()" style="flex:1;padding:11px;background:var(--wa);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">💾 Guardar campaña</button>
+      <button onclick="cerrarCampModal()" style="padding:11px 16px;background:var(--w2);border:1px solid var(--br2);border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;color:var(--gr);font-family:inherit;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ LEFT NAV SIDEBAR ══ -->
 <nav id="leftnav">
   <div class="nav-brand">
@@ -2102,54 +2117,294 @@ function _guardarCfgMasiva() {
   toast('✅ Ajustes guardados: '+mn+'–'+mx+'s · tanda '+ta);
 }
 
+// ── Campañas automáticas ─────────────────────────────────────────────────────
 var _campaigns = null;
-var CAMP_DEFAULTS = [
-  { id:'oferta_semanal',  nombre:'Oferta Semanal',           dia:'lun', hora:8,  segmentos:['frecuente','regular'], texto: TEMPLATES.find(function(t){return t.id==='oferta_semanal';})||{texto:''}, activa:false, delayMin:12, delayMax:25, tanda:30 },
-  { id:'box_familiar',    nombre:'BOX Familiar',             dia:'vie', hora:11, segmentos:['frecuente','vip'],     texto: TEMPLATES.find(function(t){return t.id==='box_familiar';})||{texto:''},    activa:false, delayMin:12, delayMax:25, tanda:30 },
-  { id:'parrilla',        nombre:'Promo Parrillera',         dia:'jue', hora:17, segmentos:['todos'],               texto: TEMPLATES.find(function(t){return t.id==='parrilla';})||{texto:''},        activa:false, delayMin:12, delayMax:25, tanda:30 },
-  { id:'fitness',         nombre:'Línea Muscular / Fitness', dia:'mar', hora:10, segmentos:['fitness','nuevo'],     texto: TEMPLATES.find(function(t){return t.id==='fitness';})||{texto:''},         activa:false, delayMin:12, delayMax:25, tanda:30 },
-].map(function(c){ if (c.texto && c.texto.texto) c.texto = c.texto.texto; return c; });
+var _campEditIdx = -1; // -1 = nueva campaña
+
+var DIAS_LABEL = {lun:'Lunes',mar:'Martes',mie:'Miércoles',jue:'Jueves',vie:'Viernes',sab:'Sábado',dom:'Domingo'};
+var DIAS_LIST  = ['lun','mar','mie','jue','vie','sab','dom'];
 
 function renderCampaigns() {
   var el = document.getElementById('masivaCampBody'); if (!el) return;
-  el.innerHTML = '<div style="font-size:11px;color:var(--gr);margin:8px 0 6px;">El servidor ejecuta automáticamente las campañas habilitadas en el día/hora configurado (hora Colombia). Los clientes se sincronizan automáticamente al guardar.</div><div id="camp-list">⏳ Cargando...</div>';
-  apiFetch('/api/campaigns').then(function(r){return r.json();}).then(function(d){
-    if (d.ok) { _campaigns = d.campaigns.length ? d.campaigns : JSON.parse(JSON.stringify(CAMP_DEFAULTS)); }
-    else _campaigns = JSON.parse(JSON.stringify(CAMP_DEFAULTS));
+  el.innerHTML = '<div id="camp-list" style="min-height:40px;">⏳ Cargando...</div>';
+  apiFetch('/api/campaigns').then(function(r){ return r.json(); }).then(function(d){
+    _campaigns = (d.ok && d.campaigns.length) ? d.campaigns : [];
     _renderCampList();
-  }).catch(function(){ _campaigns = JSON.parse(JSON.stringify(CAMP_DEFAULTS)); _renderCampList(); });
+  }).catch(function(){ _campaigns = []; _renderCampList(); });
 }
 
-var DIAS_LABEL = {lun:'Lunes',mar:'Martes',mie:'Miércoles',jue:'Jueves',vie:'Viernes',sab:'Sábado',dom:'Domingo'};
 function _renderCampList() {
   var el = document.getElementById('camp-list'); if (!el) return;
-  el.innerHTML = (_campaigns||[]).map(function(c, i){
-    var hLabel = (c.hora < 12 ? c.hora+':00 AM' : (c.hora===12?'12:00 PM':(c.hora-12)+':00 PM'));
-    return '<div style="background:var(--bg);border-radius:10px;padding:10px;margin-bottom:8px;display:flex;gap:10px;align-items:center;">'
-      +'<label style="cursor:pointer;display:flex;align-items:center;gap:6px;">'
-      +'<input type="checkbox" '+(c.activa?'checked':'')+' onchange="_toggleCamp('+i+',this.checked)" style="width:16px;height:16px;accent-color:var(--wa);">'
-      +'<span style="font-size:12px;font-weight:700;">'+escH(c.nombre)+'</span>'
-      +'</label>'
-      +'<span style="font-size:10px;color:var(--gr);">📅 '+escH(DIAS_LABEL[c.dia]||c.dia)+' '+hLabel+'</span>'
-      +'<span style="font-size:10px;color:var(--ink2);">👥 '+escH((c.segmentos||[]).join(', '))+'</span>'
-      +'<span style="margin-left:auto;width:8px;height:8px;border-radius:50%;background:'+(c.activa?'var(--wa)':'#555')+';display:inline-block;"></span>'
-      +'</div>';
-  }).join('')
-  +'<button class="btn-save" style="margin-top:6px;width:100%;" onclick="_guardarCampaigns()">💾 Guardar configuración de campañas</button>';
+  var html = '<div style="font-size:11px;color:var(--gr);margin-bottom:10px;">El servidor ejecuta automáticamente las campañas activas en el día y hora configurados (hora Colombia).</div>';
+
+  if (!_campaigns || !_campaigns.length) {
+    html += '<p style="font-size:12px;color:var(--gr);text-align:center;padding:12px 0;">Sin campañas — crea una con el botón de abajo.</p>';
+  } else {
+    html += _campaigns.map(function(c, i){
+      var hLabel = c.hora < 12 ? c.hora+':00 AM' : (c.hora===12 ? '12:00 PM' : (c.hora-12)+':00 PM');
+      var fuente = c.fuente === 'b2c' ? '📱 WA' : '🏨 HORECA';
+      var segStr = (c.segmentos||['todos']).join(', ');
+      return '<div style="background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">'
+        // toggle activo
+        +'<label style="cursor:pointer;display:flex;align-items:center;gap:6px;flex-shrink:0;">'
+        +'<input type="checkbox" '+(c.activa?'checked':'')+' onchange="_toggleCamp('+i+',this.checked)" style="width:16px;height:16px;accent-color:var(--wa);">'
+        +'</label>'
+        // info
+        +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:13px;font-weight:800;color:var(--ink2);">'+escH(c.nombre||'Sin nombre')+'</div>'
+        +'<div style="font-size:10px;color:var(--gr);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap;">'
+        +'<span>📅 '+escH(DIAS_LABEL[c.dia]||c.dia||'—')+' '+hLabel+'</span>'
+        +'<span>'+fuente+' · '+escH(segStr)+'</span>'
+        +'<span style="color:'+(c.activa?'#4ade80':'#888')+';">'+(c.activa?'● Activa':'○ Pausada')+'</span>'
+        +(c.ultima_ejecucion?'<span>Última: '+(c.ultima_ejecucion.slice(0,10))+'</span>':'')
+        +'</div></div>'
+        // acciones
+        +'<div style="display:flex;gap:6px;flex-shrink:0;">'
+        +'<button onclick="abrirCampModal('+i+')" style="padding:5px 10px;background:var(--w2);border:1px solid var(--br2);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;color:var(--ink2);">✏️ Editar</button>'
+        +'<button onclick="eliminarCamp('+i+')" style="padding:5px 10px;background:#ef444418;border:1px solid #ef4444;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;color:#ef4444;">🗑️</button>'
+        +'</div>'
+        +'</div>';
+    }).join('');
+  }
+
+  html += '<button onclick="abrirCampModal(-1)" style="margin-top:6px;width:100%;padding:10px;background:var(--wa);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;">+ Nueva campaña automática</button>';
+  el.innerHTML = html;
 }
 
 function _toggleCamp(i, val) {
-  if (_campaigns && _campaigns[i]) _campaigns[i].activa = val;
+  if (!_campaigns || !_campaigns[i]) return;
+  _campaigns[i].activa = val;
+  _guardarCampaigns();
 }
 
 function _guardarCampaigns() {
-  if (!_campaigns) return;
   apiFetch('/api/campaigns', {
     method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ campaigns: _campaigns })
-  }).then(function(r){return r.json();}).then(function(d){
-    toast(d.ok ? '✅ Campañas guardadas — el servidor las ejecutará automáticamente' : '❌ '+d.error, d.ok?'s':'e');
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if (!d.ok) toast('❌ '+d.error, 'e');
   }).catch(function(){ toast('⚠️ Servidor no responde','e'); });
+}
+
+function eliminarCamp(i) {
+  if (!_campaigns || !_campaigns[i]) return;
+  var nombre = _campaigns[i].nombre;
+  if (!confirm('¿Eliminar la campaña "'+nombre+'"?')) return;
+  _campaigns.splice(i, 1);
+  _guardarCampaigns();
+  _renderCampList();
+  toast('Campaña eliminada');
+}
+
+// ── Modal Crear / Editar campaña ─────────────────────────────────────────────
+function abrirCampModal(idx) {
+  _campEditIdx = idx;
+  var camp = (idx >= 0 && _campaigns && _campaigns[idx]) ? _campaigns[idx] : null;
+
+  var m = document.getElementById('campModal'); if (!m) return;
+  var b = document.getElementById('campModalBody'); if (!b) return;
+
+  var dias    = ['lun','mar','mie','jue','vie','sab','dom'];
+  var diasLbl = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+
+  // Valores actuales o defaults
+  var nombre   = camp ? camp.nombre   : '';
+  var activa   = camp ? !!camp.activa : false;
+  var dia      = camp ? (camp.dia    || 'lun') : 'lun';
+  var hora     = camp ? (camp.hora   !== undefined ? camp.hora : 9) : 9;
+  var fuente   = camp ? (camp.fuente || 'horeca') : 'horeca';
+  var segs     = camp ? (camp.segmentos || ['todos']) : ['todos'];
+  var tplId    = camp ? (camp.tplId  || '') : '';
+  var texto    = camp ? (camp.texto  || '') : '';
+  var delayMin = camp ? (camp.delayMin || 12) : 12;
+  var delayMax = camp ? (camp.delayMax || 25) : 25;
+  var tanda    = camp ? (camp.tanda  || 30) : 30;
+
+  var horasOptions = '';
+  for (var h=0; h<24; h++) {
+    var lbl = h===0?'12:00 AM': h<12?(h+':00 AM'): h===12?'12:00 PM':((h-12)+':00 PM');
+    horasOptions += '<option value="'+h+'"'+(h===hora?' selected':'')+'>'+lbl+'</option>';
+  }
+
+  var segsHOREC = [['todos','Todos'],['nuevo','Nuevos'],['pedido_activo','Con pedido'],['regular','Ocasionales'],['frecuente','Frecuentes'],['vip','VIP'],['distribuidor','Distribuidores'],['inactivo','Inactivos']];
+  var segsB2C   = [['todos','Todos'],['pending','Pendiente'],['contacted','Contactado'],['interested','Interesado'],['quoted','Cotizado'],['won','Convertido'],['lost','No interesa']];
+
+  function chipsSeg(lista) {
+    return lista.map(function(p){
+      var sel = segs.indexOf(p[0]) >= 0;
+      return '<div class="m-chip'+(sel?' sel':'')+'" style="font-size:11px;" onclick="campToggleSeg(\''+p[0]+'\')">'+(sel?'✓ ':'')+escH(p[1])+'</div>';
+    }).join('');
+  }
+
+  var tplOptions = '<option value="">— Mensaje personalizado —</option>'
+    + TEMPLATES.map(function(t){ return '<option value="'+t.id+'"'+(tplId===t.id?' selected':'')+'>'+t.emoji+' '+escH(t.nombre)+'</option>'; }).join('');
+
+  b.innerHTML =
+    // Nombre
+    '<div class="field"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Nombre de la campaña</label>'
+    +'<input id="cm-nombre" type="text" value="'+escH(nombre)+'" placeholder="Ej: Promo fin de semana" style="width:100%;box-sizing:border-box;"></div>'
+
+    // Activa
+    +'<label style="display:flex;align-items:center;gap:8px;margin-bottom:14px;cursor:pointer;">'
+    +'<input id="cm-activa" type="checkbox" '+(activa?'checked':'')+' style="width:16px;height:16px;accent-color:var(--wa);">'
+    +'<span style="font-size:13px;font-weight:700;">Campaña activa (se ejecutará automáticamente)</span>'
+    +'</label>'
+
+    // Día y hora
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+    +'<div class="field"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Día de envío</label>'
+    +'<select id="cm-dia" style="width:100%;">'
+    +dias.map(function(d,i){ return '<option value="'+d+'"'+(d===dia?' selected':'')+'>'+diasLbl[i]+'</option>'; }).join('')
+    +'</select></div>'
+    +'<div class="field"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Hora (Colombia)</label>'
+    +'<select id="cm-hora" style="width:100%;">'+horasOptions+'</select></div>'
+    +'</div>'
+
+    // Fuente de contactos
+    +'<div class="field"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Fuente de contactos</label>'
+    +'<div style="display:flex;gap:8px;">'
+    +'<div id="cfuente-horeca" onclick="campSetFuente(\'horeca\')" style="flex:1;text-align:center;padding:8px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;border:2px solid '+(fuente==='horeca'?'var(--g)':'var(--br2)')+';background:'+(fuente==='horeca'?'var(--gp)':'var(--bg)')+';color:'+(fuente==='horeca'?'var(--g)':'var(--gr)')+';">🏨 HORECA</div>'
+    +'<div id="cfuente-b2c"   onclick="campSetFuente(\'b2c\')"   style="flex:1;text-align:center;padding:8px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;border:2px solid '+(fuente==='b2c'?'#25d366':'var(--br2)')+';background:'+(fuente==='b2c'?'#25d36618':'var(--bg)')+';color:'+(fuente==='b2c'?'#25d366':'var(--gr)')+';">📱 Contactos WA</div>'
+    +'</div></div>'
+
+    // Segmentos
+    +'<div class="field"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Segmentos de destinatarios</label>'
+    +'<div id="camp-segs-chips" class="filter-chips">'+chipsSeg(fuente==='b2c'?segsB2C:segsHOREC)+'</div></div>'
+
+    // Plantilla
+    +'<div class="field"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Plantilla de mensaje</label>'
+    +'<select id="cm-tpl" style="width:100%;" onchange="campTplChange(this.value)">'+tplOptions+'</select></div>'
+
+    // Texto personalizado
+    +'<div class="field" id="cm-texto-wrap" style="'+(tplId?'display:none':'')+'"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Texto del mensaje</label>'
+    +'<div style="font-size:10px;color:var(--gr);margin-bottom:4px;">Variables: <code>{nombre}</code> <code>{ciudad}</code> <code>{producto}</code> <code>{direccion}</code></div>'
+    +'<textarea id="cm-texto" rows="5" placeholder="Hola {nombre}! ..." style="width:100%;box-sizing:border-box;background:var(--w2);border:1px solid var(--br2);border-radius:8px;padding:10px;font-size:12px;color:var(--ink2);font-family:inherit;resize:vertical;">'+escH(texto)+'</textarea></div>'
+
+    // Ajustes de envío
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">'
+    +'<div class="field"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Delay mín (seg)</label>'
+    +'<input id="cm-dmin" type="number" min="3" max="59" value="'+delayMin+'" style="width:100%;"></div>'
+    +'<div class="field"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Delay máx (seg)</label>'
+    +'<input id="cm-dmax" type="number" min="5" max="120" value="'+delayMax+'" style="width:100%;"></div>'
+    +'<div class="field"><label style="font-size:11px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.5px;">Tanda (msgs)</label>'
+    +'<input id="cm-tanda" type="number" min="5" max="200" value="'+tanda+'" style="width:100%;"></div>'
+    +'</div>'
+
+    +'<div style="font-size:10px;color:var(--gr);margin-top:-6px;margin-bottom:10px;">⚠️ Máx. 200 msgs/día para evitar bloqueo. Recomendado: 12–30s, tanda 30.</div>';
+
+  // Guardamos fuente y segs en el scope del modal
+  m._fuente = fuente;
+  m._segs   = segs.slice();
+
+  m.style.display = 'flex';
+}
+
+function cerrarCampModal() {
+  var m = document.getElementById('campModal');
+  if (m) m.style.display = 'none';
+}
+
+// Exponer al scope global para los onclick inline del modal
+window._campModalSegs   = [];
+window._campModalFuente = 'horeca';
+
+function campToggleSeg(val) {
+  var m = document.getElementById('campModal');
+  if (!m) return;
+  var segs = m._segs;
+  if (val === 'todos') {
+    m._segs = ['todos'];
+  } else {
+    var idx = segs.indexOf('todos');
+    if (idx >= 0) segs.splice(idx, 1);
+    idx = segs.indexOf(val);
+    if (idx >= 0) segs.splice(idx, 1);
+    else segs.push(val);
+    if (!segs.length) segs.push('todos');
+  }
+  // Refrescar chips
+  var fuenteActual = m._fuente;
+  var segsHOREC = [['todos','Todos'],['nuevo','Nuevos'],['pedido_activo','Con pedido'],['regular','Ocasionales'],['frecuente','Frecuentes'],['vip','VIP'],['distribuidor','Distribuidores'],['inactivo','Inactivos']];
+  var segsB2C   = [['todos','Todos'],['pending','Pendiente'],['contacted','Contactado'],['interested','Interesado'],['quoted','Cotizado'],['won','Convertido'],['lost','No interesa']];
+  var lista = fuenteActual === 'b2c' ? segsB2C : segsHOREC;
+  var chips = document.getElementById('camp-segs-chips'); if (!chips) return;
+  chips.innerHTML = lista.map(function(p){
+    var sel = m._segs.indexOf(p[0]) >= 0;
+    return '<div class="m-chip'+(sel?' sel':'')+'" style="font-size:11px;" onclick="campToggleSeg(\''+p[0]+'\')">'+(sel?'✓ ':'')+escH(p[1])+'</div>';
+  }).join('');
+}
+
+function campSetFuente(f) {
+  var m = document.getElementById('campModal'); if (!m) return;
+  m._fuente = f;
+  m._segs = ['todos'];
+  // Toggle visual
+  var hBtn = document.getElementById('cfuente-horeca');
+  var bBtn = document.getElementById('cfuente-b2c');
+  if (hBtn) { hBtn.style.borderColor = f==='horeca'?'var(--g)':'var(--br2)'; hBtn.style.background = f==='horeca'?'var(--gp)':'var(--bg)'; hBtn.style.color = f==='horeca'?'var(--g)':'var(--gr)'; }
+  if (bBtn) { bBtn.style.borderColor = f==='b2c'?'#25d366':'var(--br2)'; bBtn.style.background = f==='b2c'?'#25d36618':'var(--bg)'; bBtn.style.color = f==='b2c'?'#25d366':'var(--gr)'; }
+  // Refrescar chips de segmento
+  var segsHOREC = [['todos','Todos'],['nuevo','Nuevos'],['pedido_activo','Con pedido'],['regular','Ocasionales'],['frecuente','Frecuentes'],['vip','VIP'],['distribuidor','Distribuidores'],['inactivo','Inactivos']];
+  var segsB2C   = [['todos','Todos'],['pending','Pendiente'],['contacted','Contactado'],['interested','Interesado'],['quoted','Cotizado'],['won','Convertido'],['lost','No interesa']];
+  var lista = f === 'b2c' ? segsB2C : segsHOREC;
+  var chips = document.getElementById('camp-segs-chips'); if (!chips) return;
+  chips.innerHTML = lista.map(function(p){
+    var sel = m._segs.indexOf(p[0]) >= 0;
+    return '<div class="m-chip'+(sel?' sel':'')+'" style="font-size:11px;" onclick="campToggleSeg(\''+p[0]+'\')">'+(sel?'✓ ':'')+escH(p[1])+'</div>';
+  }).join('');
+}
+
+function campTplChange(tplId) {
+  var wrap = document.getElementById('cm-texto-wrap');
+  if (wrap) wrap.style.display = tplId ? 'none' : '';
+}
+
+function guardarCampModal() {
+  var m = document.getElementById('campModal'); if (!m) return;
+  var nombre = (document.getElementById('cm-nombre')||{}).value || '';
+  if (!nombre.trim()) { toast('Escribe un nombre para la campaña','e'); return; }
+
+  var tplId = (document.getElementById('cm-tpl')||{}).value || '';
+  var texto = '';
+  if (tplId) {
+    var tplObj = TEMPLATES.find(function(t){ return t.id===tplId; });
+    texto = tplObj ? tplObj.texto : '';
+  } else {
+    texto = (document.getElementById('cm-texto')||{}).value || '';
+    if (!texto.trim()) { toast('Escribe el texto del mensaje o elige una plantilla','e'); return; }
+  }
+
+  var camp = {
+    id:        (_campEditIdx >= 0 && _campaigns[_campEditIdx]) ? _campaigns[_campEditIdx].id : ('camp_'+Date.now().toString(36)),
+    nombre:    nombre.trim(),
+    activa:    !!(document.getElementById('cm-activa')||{}).checked,
+    dia:       (document.getElementById('cm-dia')||{}).value || 'lun',
+    hora:      parseInt((document.getElementById('cm-hora')||{}).value || '9'),
+    fuente:    m._fuente || 'horeca',
+    segmentos: (m._segs && m._segs.length) ? m._segs : ['todos'],
+    tplId:     tplId,
+    texto:     texto,
+    delayMin:  parseInt((document.getElementById('cm-dmin')||{}).value || '12'),
+    delayMax:  parseInt((document.getElementById('cm-dmax')||{}).value || '25'),
+    tanda:     parseInt((document.getElementById('cm-tanda')||{}).value || '30'),
+    ultima_ejecucion: (_campEditIdx >= 0 && _campaigns && _campaigns[_campEditIdx]) ? _campaigns[_campEditIdx].ultima_ejecucion : null
+  };
+
+  if (isNaN(camp.hora) || camp.hora<0 || camp.hora>23) { toast('Hora inválida','e'); return; }
+  if (camp.delayMin < 3) { toast('Delay mínimo: 3 seg','e'); return; }
+  if (camp.delayMax <= camp.delayMin) { toast('Delay máx debe ser mayor al mín','e'); return; }
+
+  if (!_campaigns) _campaigns = [];
+  if (_campEditIdx >= 0 && _campaigns[_campEditIdx]) {
+    _campaigns[_campEditIdx] = camp;
+  } else {
+    _campaigns.push(camp);
+  }
+
+  _guardarCampaigns();
+  cerrarCampModal();
+  _renderCampList();
+  toast('✅ Campaña guardada');
 }
 
 function detenerMasiva() {

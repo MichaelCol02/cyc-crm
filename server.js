@@ -670,37 +670,73 @@ app.post('/api/campaigns', (req, res) => {
   res.json({ ok: true, total: campaigns.length });
 });
 
+app.put('/api/campaigns/:id', (req, res) => {
+  const lista = leerCampaigns();
+  const idx = lista.findIndex(c => c.id === req.params.id);
+  if (idx < 0) return res.json({ ok: false, error: 'No encontrada' });
+  lista[idx] = { ...lista[idx], ...req.body, id: req.params.id };
+  guardarCampaigns(lista);
+  res.json({ ok: true });
+});
+
+app.delete('/api/campaigns/:id', (req, res) => {
+  guardarCampaigns(leerCampaigns().filter(c => c.id !== req.params.id));
+  res.json({ ok: true });
+});
+
 // ── Ejecutar campaña automática ────────────────────────────────────────
 async function ejecutarCampanaAuto(campana) {
   if (difusionActiva) { console.log(`[CAMPAIGN] Difusión activa — ${campana.nombre} pospuesta`); return; }
   if (!waConectado)   { console.log(`[CAMPAIGN] WA desconectado — ${campana.nombre} omitida`); return; }
 
-  const { clients, carnes } = leerClientes();
-  if (!clients.length) { console.log(`[CAMPAIGN] Sin clientes sincronizados — ejecuta una sincronización desde el CRM`); return; }
+  const segmentos = campana.segmentos || ['todos'];
+  let contactos = [];
 
-  // Filtrar por segmento
-  const segmentos = (campana.segmentos || ['todos']);
-  const base = clients.filter(c => {
-    if (!c.telefono) return false;
-    if (segmentos.includes('todos')) return true;
-    const car = carnes[c.id] || {};
-    const pipeline = c.pipeline || 'nuevo';
-    return segmentos.some(s => s === pipeline || s === car.segmento);
-  });
-
-  if (!base.length) { console.log(`[CAMPAIGN] ${campana.nombre}: sin contactos para segmentos ${segmentos.join(',')}`); return; }
-
-  const contactos = base.map(c => {
-    const car = carnes[c.id] || {};
-    return {
-      nombre:      c.nombre || '',
-      whatsapp:    c.telefono.replace(/\D/g,'').replace(/^0/,'57'),
-      producto:    (car.productos&&car.productos.length) ? car.productos[0] : (car.producto||''),
-      kg_ultimo:   car.kg_ultimo || '',
-      fecha_ultimo:car.fecha_ultimo || '',
-      ciudad:      car.ciudad || c.ciudad || '',
-    };
-  });
+  if (campana.fuente === 'b2c') {
+    // Fuente: contactos B2C importados
+    const b2c = leerB2C();
+    if (!b2c.length) { console.log(`[CAMPAIGN] ${campana.nombre}: sin contactos B2C`); return; }
+    const base = b2c.filter(c => {
+      const p = String(c.phone || '').replace(/\D/g, '');
+      if (!p || p.length < 7) return false;
+      if (segmentos.includes('todos')) return true;
+      return segmentos.includes(c.stage || 'pending');
+    });
+    if (!base.length) { console.log(`[CAMPAIGN] ${campana.nombre}: sin contactos B2C para segmentos ${segmentos.join(',')}`); return; }
+    contactos = base.map(c => ({
+      nombre:       c.name || c.phone,
+      whatsapp:     String(c.phone).replace(/\D/g,'').replace(/^0/,'57'),
+      producto:     '',
+      kg_ultimo:    '',
+      fecha_ultimo: '',
+      ciudad:       c.city || '',
+      direccion:    '',
+    }));
+  } else {
+    // Fuente: clientes HORECA
+    const { clients, carnes } = leerClientes();
+    if (!clients.length) { console.log(`[CAMPAIGN] Sin clientes HORECA — sincroniza desde el CRM`); return; }
+    const base = clients.filter(c => {
+      if (!c.telefono) return false;
+      if (segmentos.includes('todos')) return true;
+      const car = carnes[c.id] || {};
+      const pipeline = c.pipeline || 'nuevo';
+      return segmentos.some(s => s === pipeline || s === car.segmento);
+    });
+    if (!base.length) { console.log(`[CAMPAIGN] ${campana.nombre}: sin contactos para segmentos ${segmentos.join(',')}`); return; }
+    contactos = base.map(c => {
+      const car = carnes[c.id] || {};
+      return {
+        nombre:       c.nombre || '',
+        whatsapp:     c.telefono.replace(/\D/g,'').replace(/^0/,'57'),
+        producto:     (car.productos&&car.productos.length) ? car.productos[0] : (car.producto||''),
+        kg_ultimo:    car.kg_ultimo || '',
+        fecha_ultimo: car.fecha_ultimo || '',
+        ciudad:       car.ciudad || c.ciudad || '',
+        direccion:    car.direccion || c.direccion || '',
+      };
+    });
+  }
 
   console.log(`\n[CAMPAIGN] 🚀 ${campana.nombre} → ${contactos.length} contactos`);
   difusionActiva = true;
