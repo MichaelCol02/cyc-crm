@@ -1669,7 +1669,7 @@ function renderMasiva() {
 
   var waDotClass = waOk ? 'wa-conectado' : (waQR ? 'wa-qr' : 'wa-desconectado');
   var waMsj = waOk ? '✅ Conectado' : (waQR ? '📱 QR pendiente — escanea el código' : '❌ Desconectado');
-  var waSub = waOk ? 'Listo para enviar mensajes' : (waQR ? 'Abre WhatsApp → Dispositivos vinculados → Vincular dispositivo' : 'Ejecuta npm start en la carpeta CYC');
+  var waSub = waOk ? 'Listo para enviar mensajes' : (waQR ? 'Abre WhatsApp → Dispositivos vinculados → Vincular dispositivo' : 'Haz clic en Verificar para comprobar estado, o en Ver QR para vincular WhatsApp');
 
   pg.innerHTML='<div style="max-width:680px;margin:0 auto;width:100%;">'
 
@@ -1683,7 +1683,7 @@ function renderMasiva() {
     +'<button onclick="verificarWA()" style="margin-left:auto;padding:6px 12px;background:'+(waOk?'var(--br2)':'var(--wa)')+';color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">'+(waOk?'🔄 Refrescar':'Verificar')+'</button>'
     +'</div>'
     +(waQR?'<button onclick="mostrarQR()" style="margin-top:8px;padding:8px 16px;background:#C62828;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;">📷 Ver código QR para escanear</button>':'')
-    +(!waOk&&!waQR?'<div style="background:var(--bg);border-radius:8px;padding:10px;font-size:11px;color:var(--gr);margin-top:6px;">Abre una terminal en la carpeta CYC y ejecuta <code style="background:#222;padding:2px 6px;border-radius:4px;color:#EEE;">npm start</code></div>':'')
+    +(!waOk&&!waQR?'<button onclick="mostrarQR()" style="margin-top:8px;padding:8px 16px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;">📷 Vincular WhatsApp — Ver código QR</button>':'')
     +(waOk?'<button onclick="mostrarQR()" style="margin-top:6px;padding:5px 12px;background:var(--w2);border:1px solid var(--br2);border-radius:7px;font-size:11px;cursor:pointer;color:var(--gr);font-family:inherit;">📷 Ver QR</button>':'')
     +'</div>'
 
@@ -1811,9 +1811,9 @@ function verificarWA() {
       var ok = d.whatsapp === 'conectado';
       localStorage.setItem('cyc_wa_status', ok ? 'conectado' : 'desconectado');
       renderMasiva();
-      toast(ok ? '✅ WhatsApp conectado' : '❌ Sin conexión — ¿está corriendo npm start?', ok ? 's' : 'e');
+      toast(ok ? '✅ WhatsApp conectado' : '❌ Desconectado — usa "Ver QR" para vincular', ok ? 's' : 'e');
     })
-    .catch(function(){ toast('⚠️ Servidor no responde. Ejecuta npm start primero.', 'e'); });
+    .catch(function(){ toast('⚠️ Servidor no responde — intenta recargar la página', 'e'); });
 }
 
 function mostrarQR() {
