@@ -57,6 +57,41 @@ export async function conectar(onQR, onConnected) {
 
   sock.ev.on('creds.update', saveCreds)
 
+  // Guardar contactos a disco para que /api/wa-contacts los sirva
+  const contactsFile = path.join(authDir, 'contacts.json')
+  function _leerContactos() {
+    try { return JSON.parse(fs.readFileSync(contactsFile, 'utf8')); } catch(_) { return {}; }
+  }
+  function _guardarContactos(data) {
+    try { fs.writeFileSync(contactsFile, JSON.stringify(data)); } catch(_) {}
+  }
+
+  sock.ev.on('contacts.upsert', (contacts) => {
+    const existing = _leerContactos()
+    contacts.forEach(c => {
+      if (!c.id || c.id.includes('@g.us') || c.id.includes('broadcast')) return
+      existing[c.id] = {
+        name:         c.name         || existing[c.id]?.name         || '',
+        pushName:     c.pushName     || existing[c.id]?.pushName     || '',
+        verifiedName: c.verifiedName || existing[c.id]?.verifiedName || '',
+      }
+    })
+    _guardarContactos(existing)
+    console.log('[WA] Contactos guardados:', Object.keys(existing).length)
+  })
+
+  sock.ev.on('contacts.update', (updates) => {
+    const existing = _leerContactos()
+    updates.forEach(c => {
+      if (!c.id || c.id.includes('@g.us')) return
+      existing[c.id] = Object.assign({}, existing[c.id] || {}, {
+        name:     c.name     || existing[c.id]?.name     || '',
+        pushName: c.pushName || existing[c.id]?.pushName || '',
+      })
+    })
+    _guardarContactos(existing)
+  })
+
   sock.ev.on('connection.update', ({ connection, lastDisconnect, qr }) => {
     if (qr && onQR) onQR(qr)
 
