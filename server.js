@@ -1061,6 +1061,19 @@ app.get('/api/b2c/export.csv', requireAdmin, (req, res) => {
   res.send('﻿' + csv);
 });
 
+// Descarga de contactos importados de WA — cualquier usuario autenticado
+app.get('/api/b2c/download', requireAuth, (req, res) => {
+  const lista = leerB2C();
+  const fecha = new Date().toISOString().slice(0, 10);
+  const csv = 'Nombre,Telefono,Ciudad,Etapa,Fuente\n' +
+    lista.map(c =>
+      `"${(c.name || '').replace(/"/g, '""')}","${c.phone}","${(c.city || '').replace(/"/g, '""')}","${c.stage || 'pending'}","${c.source || 'whatsapp'}"`
+    ).join('\n');
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="contactos_${fecha}.csv"`);
+  res.send('﻿' + csv);
+});
+
 // ── Plantillas personalizadas ─────────────────────────────────────────
 app.get('/api/plantillas', requireAuth, (req, res) => {
   res.json({ ok: true, plantillas: leerPlantillas() });

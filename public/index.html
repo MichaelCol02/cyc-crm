@@ -1922,6 +1922,41 @@ function loadB2CContacts(cb) {
   }).catch(function(){ if (cb) cb(); });
 }
 
+function descargarContactosCSV() {
+  if (!_b2cContacts.length) { toast('Sin contactos para descargar','e'); return; }
+  var tok = sessionStorage.getItem('cyc_token') || '';
+  window.open('/api/b2c/download?_t=' + encodeURIComponent(tok), '_blank');
+}
+
+function _autoImportarContactosWA(intento) {
+  intento = intento || 1;
+  var hint = document.getElementById('waQrHint');
+  if (hint) hint.textContent = '⏳ Sincronizando contactos de WhatsApp... (' + intento + '/3)';
+  apiFetch('/api/wa-contacts').then(function(r){ return r.json(); }).then(function(d){
+    if (!d.contactos || !d.contactos.length) {
+      if (intento < 3) {
+        setTimeout(function(){ _autoImportarContactosWA(intento + 1); }, 5000);
+      } else {
+        if (hint) hint.innerHTML = '⚠️ No se encontraron contactos aún.'
+          + '<br><button onclick="_autoImportarContactosWA(1)" style="margin-top:6px;padding:5px 12px;background:#25d366;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px;">🔄 Reintentar</button>';
+      }
+      return;
+    }
+    return apiFetch('/api/b2c/importar', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ contactos: d.contactos })
+    }).then(function(r){ return r.json(); }).then(function(res){
+      loadB2CContacts(function(){ renderMasiva(); });
+      if (hint) hint.innerHTML = '✅ <b>' + res.importados + '</b> contactos nuevos importados · ' + res.total + ' en total'
+        + '<br><button onclick="descargarContactosCSV()" style="margin-top:8px;padding:7px 16px;background:#1565C0;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;">⬇️ Descargar base de datos (CSV)</button>';
+      toast('✅ ' + res.importados + ' contactos importados de WhatsApp', 's');
+    });
+  }).catch(function(){
+    if (hint) hint.innerHTML = '❌ Error al obtener contactos'
+      + '<br><button onclick="_autoImportarContactosWA(1)" style="margin-top:6px;padding:5px 12px;background:#333;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px;">🔄 Reintentar</button>';
+  });
+}
+
 function importarContactosWA() {
   var btn = document.getElementById('btn-import-wa');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Importando...'; }
@@ -1932,14 +1967,13 @@ function importarContactosWA() {
       return;
     }
     return apiFetch('/api/b2c/importar', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ contactos: d.contactos })
     }).then(function(r){ return r.json(); }).then(function(res){
       loadB2CContacts(function(){ renderMasiva(); });
-      toast('✅ '+res.importados+' contactos importados · '+res.total+' en total','s');
+      toast('✅ ' + res.importados + ' contactos importados · ' + res.total + ' en total', 's');
     });
-  }).catch(function(e){ toast('Error: '+e.message,'e'); })
+  }).catch(function(e){ toast('Error: ' + e.message, 'e'); })
   .finally(function(){
     if (btn) { btn.disabled = false; btn.textContent = '📥 Importar de WA'; }
   });
@@ -1972,10 +2006,7 @@ function handleB2CCSV(input) {
 }
 
 function exportarB2CCSV() {
-  if (!_isAdmin) { toast('Solo el administrador puede exportar bases de datos','e'); return; }
-  if (!_b2cContacts.length) { toast('Sin contactos para exportar','e'); return; }
-  var tok = sessionStorage.getItem('cyc_token')||'';
-  window.open('/api/b2c/export.csv?_t='+encodeURIComponent(tok), '_blank');
+  descargarContactosCSV();
 }
 
 function borrarTodosB2C() {
@@ -2003,12 +2034,18 @@ function _renderB2CSection() {
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;">'
     +'<button id="btn-import-wa" onclick="importarContactosWA()" style="padding:6px 11px;background:#25d366;color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">📥 Importar de WA</button>'
     +'<label style="padding:6px 11px;background:var(--w2);border:1px solid var(--br2);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;color:var(--ink2);">📊 CSV<input type="file" accept=".csv" onchange="handleB2CCSV(this)" style="display:none;"></label>'
-    +(_b2cContacts.length?'<button onclick="exportarB2CCSV()" style="padding:6px 11px;background:var(--w2);border:1px solid var(--br2);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;color:var(--ink2);">⬇️ Exportar</button>'
-    +'<button onclick="borrarTodosB2C()" style="padding:6px 11px;background:#ef444420;border:1px solid #ef4444;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;color:#ef4444;">🗑️ Limpiar</button>':'')
+    +(_b2cContacts.length
+      ?'<button onclick="descargarContactosCSV()" style="padding:6px 11px;background:#1565C0;color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">⬇️ Descargar CSV</button>'
+      +'<button onclick="borrarTodosB2C()" style="padding:6px 11px;background:#ef444420;border:1px solid #ef4444;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;color:#ef4444;font-family:inherit;">🗑️ Limpiar</button>'
+      :'')
     +'</div></div>';
 
   if (!_b2cContacts.length) {
-    html += '<p style="font-size:12px;color:var(--gr);text-align:center;padding:16px 0;">Sin contactos. Conecta WhatsApp y usa <b>Importar de WA</b>, o sube un CSV.</p>';
+    html += '<div style="text-align:center;padding:16px 0;">'
+      +'<p style="font-size:12px;color:var(--gr);margin:0 0 10px;">Sin contactos. Conecta WhatsApp para importarlos automáticamente, o sube un CSV.</p>'
+      +'<div style="font-size:11px;color:#aaa;background:var(--bg);border-radius:8px;padding:10px;display:inline-block;text-align:left;">'
+      +'<b>Pasos:</b><br>1. Toca <b>"📱 Conectar WhatsApp (QR)"</b> abajo<br>2. Escanea con tu celular<br>3. Los contactos se importan solos<br>4. Descarga la base como CSV'
+      +'</div></div>';
   } else {
     // Stage chips
     html += '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;">'
@@ -2329,11 +2366,13 @@ function mostrarQRInline(){
           apiFetch('/api/status').then(function(r){return r.json();}).then(function(s){
             if(s.whatsapp==='conectado'){
               clearInterval(_qrPollTimer);_qrPollTimer=null;
-              wrap.classList.remove('show');
               localStorage.setItem('cyc_wa_status','conectado');
               _waSetBadge('conectado');
               renderMasiva();
-              toast('✅ WhatsApp conectado exitosamente','s');
+              toast('✅ WhatsApp conectado — importando contactos...','s');
+              // Auto-importar: esperar 3s para que Baileys sincronice contactos
+              if(hint)hint.textContent='⏳ Sincronizando contactos...';
+              setTimeout(function(){ _autoImportarContactosWA(1); }, 3000);
             } else if(polls>=20){
               clearInterval(_qrPollTimer);_qrPollTimer=null;
               if(hint)hint.innerHTML='⚠️ QR expirado — generando uno nuevo...<br><button onclick="mostrarQRInline()" style="margin-top:6px;padding:5px 12px;background:#333;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px;">🔄 Generar QR</button>';
@@ -3514,11 +3553,13 @@ function conectarSSE() {
       if (d.tipo === 'wa_conectado') {
         cerrarQRModal();
         var wrap2=document.getElementById('waQrWrap');
-        if(wrap2)wrap2.classList.remove('show');
+        if(wrap2)wrap2.classList.add('show'); // mantener visible para mostrar progreso de importación
         localStorage.setItem('cyc_wa_status','conectado');
         _waSetBadge('conectado');
-        toast('✅ WhatsApp conectado');
+        toast('✅ WhatsApp conectado — importando contactos...');
         renderMasiva();
+        // Auto-importar contactos al conectar (esperar 3s para que Baileys sincronice)
+        setTimeout(function(){ _autoImportarContactosWA(1); }, 3000);
       }
       // Difusión: inicio → mostrar barra
       if (d.tipo === 'difusion_inicio') {
