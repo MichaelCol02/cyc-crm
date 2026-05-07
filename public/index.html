@@ -731,20 +731,14 @@ function _mostrarTabAdmin(show) {
   if (tab) tab.style.display = show ? '' : 'none';
 }
 
-// Restaurar sesión si ya había ingresado (survives F5)
+// Siempre pedir PIN al ingresar — limpiar sesión anterior
 (function(){
-  try {
-    var s = sessionStorage.getItem('cyc_session');
-    if (s) {
-      session   = JSON.parse(s);
-      _isAdmin  = sessionStorage.getItem('cyc_is_admin') === '1';
-      _userTabs = JSON.parse(sessionStorage.getItem('cyc_tabs') || 'null');
-      document.getElementById('login').style.display = 'none';
-      aplicarTabs(_userTabs);
-      initApp();
-      return;
-    }
-  } catch(_) {}
+  sessionStorage.removeItem('cyc_session');
+  sessionStorage.removeItem('cyc_token');
+  sessionStorage.removeItem('cyc_is_admin');
+  sessionStorage.removeItem('cyc_tabs');
+  // Resetear variables de sesión
+  session = null; _isAdmin = false; _apiToken = null; _userTabs = null;
 })();
 
 // ══════════════════════════════════════════════════════════════════════
