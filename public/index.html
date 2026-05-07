@@ -175,6 +175,14 @@ select option{background:var(--w2);}
 .wa-conectado{background:#4ADE80;box-shadow:0 0 6px #4ADE80;}
 .wa-qr{background:var(--or);}
 .wa-desconectado{background:#3A5070;}
+.wa-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;margin-left:auto;}
+.wa-badge.connected{background:#0a2e1a;color:#28C84E;}
+.wa-badge.connecting{background:#1a1a0a;color:#fbbf24;}
+.wa-badge.disconnected{background:#2e0a0a;color:#ef4444;}
+.wa-qr-wrap{display:none;text-align:center;padding:16px 8px 8px;}
+.wa-qr-wrap.show{display:block;}
+.wa-qr-img{max-width:220px;border-radius:12px;background:#fff;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+.wa-qr-hint{font-size:11px;color:#aaa;margin-top:8px;line-height:1.5;}
 
 /* ═══ AGENDA ═════════════════════════════════════════ */
 .pag-kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
@@ -2058,9 +2066,6 @@ function renderMasivaContent(pg) {
   var waStatus = localStorage.getItem('cyc_wa_status') || 'desconectado';
   var waOk  = (waStatus === 'conectado');
   var waQR  = (waStatus === 'qr_pendiente');
-  var waDotClass = waOk ? 'wa-conectado' : (waQR ? 'wa-qr' : 'wa-desconectado');
-  var waMsj = waOk ? '✅ Conectado' : (waQR ? '📱 QR pendiente — escanea el código' : '❌ Desconectado');
-  var waSub = waOk ? 'Listo para enviar mensajes' : (waQR ? 'Abre WhatsApp → Dispositivos vinculados → Vincular dispositivo' : 'Haz clic en Verificar para comprobar estado, o en Ver QR para vincular WhatsApp');
 
   var base = [];
   if (_masivaFuente === 'b2c') {
@@ -2089,18 +2094,21 @@ function renderMasivaContent(pg) {
     // Sección Contactos B2C
     +_renderB2CSection()
 
-    // Estado WA
+    // Estado WA — panel inline con QR
     +'<div class="masiva-box">'
-    +'<div class="masiva-title">📱 Estado WhatsApp</div>'
-    +'<div class="wa-status">'
-    +'<div class="wa-dot '+waDotClass+'"></div>'
-    +'<div><div style="font-weight:700;font-size:13px;">'+waMsj+'</div>'
-    +'<div style="font-size:11px;color:var(--gr);">'+waSub+'</div></div>'
-    +'<button onclick="verificarWA()" style="margin-left:auto;padding:6px 12px;background:'+(waOk?'var(--br2)':'var(--wa)')+';color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">'+(waOk?'🔄 Refrescar':'Verificar')+'</button>'
+    +'<div class="masiva-title">📱 WhatsApp'
+    +'<span id="waStatusBadge" class="wa-badge '+(waOk?'connected':waQR?'connecting':'disconnected')+'">'
+    +(waOk?'✅ Conectado':waQR?'⏳ Escanea QR':'❌ Desconectado')+'</span>'
     +'</div>'
-    +(waQR?'<button onclick="mostrarQR()" style="margin-top:8px;padding:8px 16px;background:#C62828;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;">📷 Ver código QR para escanear</button>':'')
-    +(!waOk&&!waQR?'<button onclick="mostrarQR()" style="margin-top:8px;padding:8px 16px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;">📷 Vincular WhatsApp — Ver código QR</button>':'')
-    +(waOk?'<button onclick="mostrarQR()" style="margin-top:6px;padding:5px 12px;background:var(--w2);border:1px solid var(--br2);border-radius:7px;font-size:11px;cursor:pointer;color:var(--gr);font-family:inherit;">📷 Ver QR</button>':'')
+    +'<div class="wa-qr-wrap" id="waQrWrap">'
+    +'<img id="waQrInlineImg" class="wa-qr-img" src="" alt="QR Code">'
+    +'<div class="wa-qr-hint" id="waQrHint"></div>'
+    +'</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">'
+    +'<button onclick="verificarWA()" style="padding:7px 14px;background:var(--br2);border:1px solid var(--br);border-radius:9px;color:var(--ink2);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">🔄 Estado</button>'
+    +'<button onclick="mostrarQRInline()" style="padding:7px 16px;background:var(--wa);color:#fff;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">📱 Conectar WhatsApp (QR)</button>'
+    +(waOk?'<button onclick="desconectarWA()" style="padding:7px 14px;background:#7F1D1D;color:#FCA5A5;border:1px solid #991B1B;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">🔌 Desconectar</button>':'')
+    +'</div>'
     +'</div>'
 
     // Paso 1: Plantilla
@@ -2247,84 +2255,173 @@ function renderMasivaContent(pg) {
     +'</div>';
 }
 
+function _waSetBadge(estado){
+  var b=document.getElementById('waStatusBadge'); if(!b)return;
+  if(estado==='conectado'){b.className='wa-badge connected';b.textContent='✅ Conectado';}
+  else if(estado==='qr_pendiente'){b.className='wa-badge connecting';b.textContent='⏳ Escanea QR';}
+  else if(estado==='verificando'){b.className='wa-badge connecting';b.textContent='⏳ Verificando...';}
+  else{b.className='wa-badge disconnected';b.textContent='❌ Desconectado';}
+}
+
 function verificarWA() {
+  _waSetBadge('verificando');
   apiFetch('/api/status')
     .then(function(r){ return r.json(); })
     .then(function(d){
       var ok = d.whatsapp === 'conectado';
-      localStorage.setItem('cyc_wa_status', ok ? 'conectado' : 'desconectado');
+      var estado = ok ? 'conectado' : 'desconectado';
+      localStorage.setItem('cyc_wa_status', estado);
+      _waSetBadge(estado);
+      if(ok){
+        var wrap=document.getElementById('waQrWrap');
+        if(wrap)wrap.classList.remove('show');
+      }
       renderMasiva();
-      toast(ok ? '✅ WhatsApp conectado' : '❌ Desconectado — usa "Ver QR" para vincular', ok ? 's' : 'e');
+      toast(ok ? '✅ WhatsApp conectado' : '❌ Desconectado — usa "Conectar WhatsApp (QR)" para vincular', ok ? 's' : 'e');
     })
-    .catch(function(){ toast('⚠️ Servidor no responde — intenta recargar la página', 'e'); });
+    .catch(function(){
+      _waSetBadge('desconectado');
+      toast('⚠️ Servidor no responde — intenta recargar la página', 'e');
+    });
+}
+
+function desconectarWA() {
+  if(!confirm('¿Desconectar WhatsApp? Deberás escanear el QR de nuevo para reconectar.'))return;
+  apiFetch('/api/status').then(function(){}).catch(function(){});
+  localStorage.setItem('cyc_wa_status','desconectado');
+  _waSetBadge('desconectado');
+  renderMasiva();
+  toast('🔌 WhatsApp desconectado. Escanea el QR para reconectar.','e');
 }
 
 var _qrPollTimer = null;
+var _qrRetryTimer = null;
 
 function cerrarQRModal() {
-  document.getElementById('qrModal').classList.remove('show');
+  var m=document.getElementById('qrModal');
+  if(m)m.classList.remove('show');
   if (_qrPollTimer) { clearInterval(_qrPollTimer); _qrPollTimer = null; }
 }
 
-function mostrarQR() {
-  var modal    = document.getElementById('qrModal');
-  var img      = document.getElementById('qrImg');
-  var spinner  = document.getElementById('qrSpinner');
-  var statusEl = document.getElementById('qrStatus');
+function mostrarQRInline(){
+  var wrap=document.getElementById('waQrWrap');
+  var img=document.getElementById('waQrInlineImg');
+  var hint=document.getElementById('waQrHint');
+  // Si no existe el wrap (el usuario está en otra pestaña), usa el modal
+  if(!wrap||!img){mostrarQR();return;}
+  if(_qrRetryTimer){clearTimeout(_qrRetryTimer);_qrRetryTimer=null;}
+  if(_qrPollTimer){clearInterval(_qrPollTimer);_qrPollTimer=null;}
+  wrap.classList.add('show');
+  img.src='';
+  if(hint)hint.textContent='⏳ Generando QR...';
 
-  modal.classList.add('show');
-  img.style.display = 'none';
-  img.src = '';
-  if (spinner)  spinner.style.display  = 'flex';
-  if (statusEl) statusEl.textContent   = 'Generando QR...';
-  if (_qrPollTimer) { clearInterval(_qrPollTimer); _qrPollTimer = null; }
-
-  function cargarQR() {
+  function _cargar(){
     apiFetch('/api/qr')
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if (d.ok) {
-          img.src = d.qr;
-          img.style.display = 'block';
-          if (spinner)  spinner.style.display = 'none';
-          if (statusEl) statusEl.innerHTML = 'Abre WhatsApp → <b>Dispositivos vinculados</b> → <b>Vincular dispositivo</b><br><span style="color:#fbbf24;">⚠️ El QR expira en ~60 seg</span>';
-          // Polling: verifica conexión cada 6s durante 2 min
-          var polls = 0;
-          _qrPollTimer = setInterval(function(){
-            polls++;
-            apiFetch('/api/status').then(function(r){ return r.json(); }).then(function(s){
-              if (s.whatsapp === 'conectado') {
-                clearInterval(_qrPollTimer); _qrPollTimer = null;
-                cerrarQRModal();
-                localStorage.setItem('cyc_wa_status','conectado');
-                renderMasiva();
-                toast('✅ WhatsApp conectado exitosamente','s');
-              } else if (polls >= 20) {
-                clearInterval(_qrPollTimer); _qrPollTimer = null;
-                if (statusEl) statusEl.textContent = 'QR expirado — cierra y vuelve a intentar';
-              }
-            }).catch(function(){});
-          }, 6000);
-        } else if (d.msg === 'ya_conectado') {
-          cerrarQRModal();
-          localStorage.setItem('cyc_wa_status','conectado');
-          renderMasiva();
-          toast('✅ WhatsApp ya está conectado','s');
-        } else {
-          if (statusEl) statusEl.textContent = 'Servidor generando QR… reintentando en 8 segundos';
-          if (spinner) spinner.style.display = 'flex';
-          setTimeout(cargarQR, 8000);
-        }
-      })
-      .catch(function(){ toast('⚠️ Servidor no responde','e'); });
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.ok){
+        img.src=d.qr;
+        if(hint)hint.innerHTML='Abre WhatsApp → <b>Dispositivos vinculados</b> → <b>Vincular dispositivo</b><br><span style="color:#fbbf24;">⚠️ QR expira en ~60 seg — se renueva automáticamente</span>';
+        // Poll conexión cada 6s por 2min
+        var polls=0;
+        _qrPollTimer=setInterval(function(){
+          polls++;
+          apiFetch('/api/status').then(function(r){return r.json();}).then(function(s){
+            if(s.whatsapp==='conectado'){
+              clearInterval(_qrPollTimer);_qrPollTimer=null;
+              wrap.classList.remove('show');
+              localStorage.setItem('cyc_wa_status','conectado');
+              _waSetBadge('conectado');
+              renderMasiva();
+              toast('✅ WhatsApp conectado exitosamente','s');
+            } else if(polls>=20){
+              clearInterval(_qrPollTimer);_qrPollTimer=null;
+              if(hint)hint.innerHTML='⚠️ QR expirado — generando uno nuevo...<br><button onclick="mostrarQRInline()" style="margin-top:6px;padding:5px 12px;background:#333;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px;">🔄 Generar QR</button>';
+              _qrRetryTimer=setTimeout(_cargar,2000);
+            }
+          }).catch(function(){});
+        },6000);
+      } else if(d.msg==='ya_conectado'){
+        wrap.classList.remove('show');
+        localStorage.setItem('cyc_wa_status','conectado');
+        _waSetBadge('conectado');
+        renderMasiva();
+        toast('✅ WhatsApp ya está conectado','s');
+      } else {
+        if(hint)hint.innerHTML='⏳ Servidor iniciando WhatsApp...<br><button onclick="mostrarQRInline()" style="margin-top:6px;padding:5px 12px;background:#333;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px;">🔄 Reintentar</button>';
+        _qrRetryTimer=setTimeout(_cargar,8000);
+      }
+    })
+    .catch(function(){
+      if(hint)hint.innerHTML='❌ Servidor no responde<br><button onclick="mostrarQRInline()" style="margin-top:6px;padding:5px 12px;background:#333;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px;">🔄 Reintentar</button>';
+    });
   }
+  _cargar();
+}
 
+function mostrarQR() {
+  var modal=document.getElementById('qrModal');
+  var img=document.getElementById('qrImg');
+  var spinner=document.getElementById('qrSpinner');
+  var statusEl=document.getElementById('qrStatus');
+  if(!modal)return;
+  modal.classList.add('show');
+  img.style.display='none'; img.src='';
+  if(spinner)spinner.style.display='flex';
+  if(statusEl)statusEl.textContent='Generando QR...';
+  if(_qrPollTimer){clearInterval(_qrPollTimer);_qrPollTimer=null;}
+
+  function cargarQR(){
+    apiFetch('/api/qr')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.ok){
+        img.src=d.qr; img.style.display='block';
+        if(spinner)spinner.style.display='none';
+        if(statusEl)statusEl.innerHTML='Abre WhatsApp → <b>Dispositivos vinculados</b> → <b>Vincular dispositivo</b><br><span style="color:#fbbf24;">⚠️ El QR expira en ~60 seg</span>';
+        var polls=0;
+        _qrPollTimer=setInterval(function(){
+          polls++;
+          apiFetch('/api/status').then(function(r){return r.json();}).then(function(s){
+            if(s.whatsapp==='conectado'){
+              clearInterval(_qrPollTimer);_qrPollTimer=null;
+              cerrarQRModal();
+              localStorage.setItem('cyc_wa_status','conectado');
+              _waSetBadge('conectado');
+              renderMasiva();
+              toast('✅ WhatsApp conectado','s');
+            } else if(polls>=20){
+              clearInterval(_qrPollTimer);_qrPollTimer=null;
+              if(statusEl)statusEl.textContent='QR expirado — cierra y vuelve a intentar';
+            }
+          }).catch(function(){});
+        },6000);
+      } else if(d.msg==='ya_conectado'){
+        cerrarQRModal();
+        localStorage.setItem('cyc_wa_status','conectado');
+        _waSetBadge('conectado');
+        renderMasiva(); toast('✅ WhatsApp ya está conectado','s');
+      } else {
+        if(statusEl)statusEl.textContent='Servidor generando QR… reintentando en 8 segundos';
+        if(spinner)spinner.style.display='flex';
+        setTimeout(cargarQR,8000);
+      }
+    })
+    .catch(function(){toast('⚠️ Servidor no responde','e');});
+  }
   cargarQR();
 }
 
 function iniciarMasiva() {
   var tpl = allTemplates().find(function(t){ return t.id===tplSel; });
-  if (!tpl) return toast('Elige una plantilla','e');
+  if (!tpl) return toast('Elige una plantilla primero','e');
+
+  var waStatus = localStorage.getItem('cyc_wa_status') || 'desconectado';
+  if (waStatus !== 'conectado') {
+    toast('❌ WhatsApp no conectado — usa "📱 Conectar WhatsApp (QR)" primero','e');
+    mostrarQRInline();
+    return;
+  }
 
   var contactos;
   if (_masivaFuente === 'b2c') {
@@ -2334,7 +2431,7 @@ function iniciarMasiva() {
       if (masivaFiltro !== 'todos') return c.stage === masivaFiltro;
       return true;
     });
-    if (!baseB2C.length) return toast('Sin contactos WA seleccionados. Importa contactos primero.','e');
+    if (!baseB2C.length) return toast('Sin contactos WA con teléfono válido. Importa contactos primero.','e');
     contactos = baseB2C.map(function(c){
       return { nombre: c.name || c.phone, whatsapp: c.phone.replace(/\D/g,'').replace(/^0/,'57'),
                producto:'', kg_ultimo:'', fecha_ultimo:'', ciudad:c.city||'', direccion:'' };
@@ -2344,7 +2441,7 @@ function iniciarMasiva() {
       if (masivaFiltro==='todos') return !!c.telefono;
       return stOf(c)===masivaFiltro && !!c.telefono;
     });
-    if (!baseH.length) return toast('Sin contactos','e');
+    if (!baseH.length) return toast('Sin contactos con teléfono en el segmento seleccionado','e');
     contactos = baseH.map(function(c){
       var car = fsCarnes[c.id] || {};
       return { nombre:c.nombre, whatsapp:c.telefono.replace(/\D/g,'').replace(/^0/,'57'),
@@ -2353,21 +2450,33 @@ function iniciarMasiva() {
     });
   }
 
-  document.getElementById('btn-send-masiva').style.display = 'none';
-  document.getElementById('btn-stop-masiva').style.display = 'block';
-  document.getElementById('masivaProgWrap').style.display = 'block';
-  var logEl = document.getElementById('masivaLog');
-  logEl.style.display = 'block';
-  logEl.innerHTML = '';
+  var btnS=document.getElementById('btn-send-masiva');
+  var btnX=document.getElementById('btn-stop-masiva');
+  var progWrap=document.getElementById('masivaProgWrap');
+  var logEl=document.getElementById('masivaLog');
+  if(btnS)btnS.style.display='none';
+  if(btnX)btnX.style.display='block';
+  if(progWrap)progWrap.style.display='block';
+  if(logEl){logEl.style.display='block';logEl.innerHTML='<div style="font-size:10px;color:#888;padding:4px 0;">📋 Plantilla: '+escH(tpl.nombre)+' · '+contactos.length+' contactos</div>';}
   masivaStop = false;
 
   apiFetch('/api/difusion', {
     method: 'POST',
     headers: { 'Content-Type':'application/json' },
-    body: JSON.stringify({ contactos: contactos, variaciones: [tpl.texto], delayMinSeg:MASIVA_DELAY_MIN, delayMaxSeg:MASIVA_DELAY_MAX, tamanoTanda:MASIVA_TANDA, pausaTandaMin:15 })
+    body: JSON.stringify({ contactos:contactos, variaciones:[tpl.texto], delayMinSeg:MASIVA_DELAY_MIN, delayMaxSeg:MASIVA_DELAY_MAX, tamanoTanda:MASIVA_TANDA, pausaTandaMin:15 })
   }).then(function(r){ return r.json(); }).then(function(d){
-    if (!d.ok) { toast('Error: '+d.error, 'e'); resetBotonesEnvio(); }
-  }).catch(function(){ toast('⚠️ Servidor no responde','e'); resetBotonesEnvio(); });
+    if (!d.ok) {
+      var msg = d.error || 'Error desconocido';
+      if(logEl)logEl.innerHTML+='<div class="log-err">❌ Error al iniciar: '+escH(msg)+(msg.includes('no conectado')||msg.includes('whatsapp')?'<br><small>→ Usa "Conectar WhatsApp (QR)" para vincular tu número</small>':'')+'</div>';
+      toast('❌ '+msg, 'e');
+      resetBotonesEnvio();
+    }
+  }).catch(function(e){
+    var msg=e.message||'Sin respuesta del servidor';
+    if(logEl)logEl.innerHTML+='<div class="log-err">❌ '+escH(msg)+'<br><small>→ Verifica que el servidor esté activo en Render</small></div>';
+    toast('⚠️ '+msg,'e');
+    resetBotonesEnvio();
+  });
 }
 
 function _guardarCfgMasiva() {
@@ -3380,16 +3489,34 @@ function conectarSSE() {
       var d;
       try { d = JSON.parse(e.data); } catch(_){ return; }
 
-      // WhatsApp QR
+      // WhatsApp QR via SSE
       if (d.tipo === 'qr') {
-        if (d.qr) { document.getElementById('qrImg').src = d.qr; document.getElementById('qrModal').classList.add('show'); }
         localStorage.setItem('cyc_wa_status','qr_pendiente');
+        _waSetBadge('qr_pendiente');
+        var inlineImg=document.getElementById('waQrInlineImg');
+        var inlineWrap=document.getElementById('waQrWrap');
+        var inlineHint=document.getElementById('waQrHint');
+        if(d.qr && inlineImg && inlineWrap){
+          // Actualiza QR inline si la sección Masiva está visible
+          inlineImg.src=d.qr;
+          inlineWrap.classList.add('show');
+          if(inlineHint)inlineHint.innerHTML='Abre WhatsApp → <b>Dispositivos vinculados</b> → <b>Vincular dispositivo</b>';
+        } else if(d.qr){
+          // Fallback: modal
+          var qrImg2=document.getElementById('qrImg');
+          if(qrImg2){qrImg2.src=d.qr; qrImg2.style.display='block';}
+          var qrModal2=document.getElementById('qrModal');
+          if(qrModal2)qrModal2.classList.add('show');
+        }
         renderMasiva();
       }
-      // WhatsApp conectado (nombre del evento alineado con server v2)
+      // WhatsApp conectado
       if (d.tipo === 'wa_conectado') {
-        document.getElementById('qrModal').classList.remove('show');
+        cerrarQRModal();
+        var wrap2=document.getElementById('waQrWrap');
+        if(wrap2)wrap2.classList.remove('show');
         localStorage.setItem('cyc_wa_status','conectado');
+        _waSetBadge('conectado');
         toast('✅ WhatsApp conectado');
         renderMasiva();
       }
@@ -3416,7 +3543,9 @@ function conectarSSE() {
         var log = document.getElementById('masivaLog');
         if (log) {
           var ok = d.estado==='enviado';
-          log.innerHTML += '<div class="'+(ok?'log-ok':'log-err')+'">'+(ok?'✅':'❌')+' '+escH(d.nombre||d.numero||'')+'</div>';
+          var numFmt = d.numero ? (' <span style="opacity:.6;font-size:10px;">'+String(d.numero).slice(-4)+'</span>') : '';
+          var errTxt = (!ok && d.error) ? ' <span style="opacity:.7;font-size:10px;">'+escH(String(d.error).slice(0,60))+'</span>' : '';
+          log.innerHTML += '<div class="'+(ok?'log-ok':'log-err')+'">'+(ok?'✅':'❌')+' '+escH(d.nombre||d.numero||'')+numFmt+errTxt+'</div>';
           log.scrollTop = log.scrollHeight;
         }
       }
