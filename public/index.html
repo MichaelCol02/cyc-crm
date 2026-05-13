@@ -4037,6 +4037,41 @@ async function cargarBaseDatos() {
     console.log('clientes.json no disponible, usando datos locales');
   }
 }
+
+// ══════════════════════════════════════════════════════════════════════
+//  AUTO-LOGIN COMO ADMIN  (modo "sin claves")
+//  Para volver a pedir PIN: ejecutar en consola:
+//      localStorage.setItem('DISABLE_AUTOLOGIN','1'); location.reload();
+//  Para reactivar:
+//      localStorage.removeItem('DISABLE_AUTOLOGIN'); location.reload();
+// ══════════════════════════════════════════════════════════════════════
+(function autoLogin(){
+  if (localStorage.getItem('DISABLE_AUTOLOGIN') === '1') return;
+  if (sessionStorage.getItem('cyc_token')) return; // ya hay sesión
+  var adminPin = (PERFILES && PERFILES.admin_mike && PERFILES.admin_mike.pin) || '2000';
+  fetch('/api/auth/login', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ pin: adminPin, perfil: 'admin_mike' })
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if (!d || !d.ok) { console.warn('[auto-login] server rechazó admin PIN — mostrando login normal'); return; }
+    _apiToken = d.token;
+    _isAdmin  = !!d.isAdmin;
+    _userTabs = d.tabs || null;
+    session   = Object.assign({ id: 'admin_mike' }, PERFILES.admin_mike);
+    sessionStorage.setItem('cyc_token',    d.token);
+    sessionStorage.setItem('cyc_is_admin', d.isAdmin ? '1' : '0');
+    sessionStorage.setItem('cyc_session',  JSON.stringify(session));
+    sessionStorage.setItem('cyc_tabs',     JSON.stringify(d.tabs || null));
+    if (typeof aplicarTabs === 'function') aplicarTabs(_userTabs);
+    var loginEl = document.getElementById('login');
+    if (loginEl) loginEl.style.display = 'none';
+    if (typeof actualizarUserChip === 'function') actualizarUserChip();
+    if (typeof initApp === 'function') initApp();
+  }).catch(function(err){
+    console.warn('[auto-login] error de red, mostrando login normal:', err);
+  });
+})();
 </script>
 </body>
 </html>
