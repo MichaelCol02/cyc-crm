@@ -1659,6 +1659,8 @@ function renderVentas() {
     + '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">'
     + '<div style="font-weight:900;font-size:18px;">💰 Ventas y Pedidos</div>'
     + '<input type="month" value="'+_vtaMes+'" onchange="_vtaMes=this.value;_statsKpis=null;cargarVentas();" style="margin-left:auto;background:var(--w);border:1.5px solid var(--br2);border-radius:8px;padding:6px 10px;color:var(--ink);font-family:inherit;font-size:13px;">'
+    + '<button class="btn-save" onclick="exportarVentasCSV()" style="background:#10B981;" title="Descargar mes actual como CSV">📊 CSV</button>'
+    + '<button class="btn-save" onclick="exportarVentasPDF()" style="background:#EF4444;" title="Descargar mes actual como PDF">📄 PDF</button>'
     + '<button class="btn-save" onclick="abrirFormVenta()">+ Nueva venta</button>'
     + '</div>'
     + '<div id="vta-kpis" style="margin-bottom:14px;"></div>'
@@ -1730,6 +1732,100 @@ function _renderVtaBody() {
         +'</tr>';
     }).join('')
     +'</tbody></table></div>';
+}
+
+// ── Exportar Ventas: CSV / PDF ────────────────────────────────────────
+function exportarVentasCSV(){
+  if (!_vtaList || !_vtaList.length) { toast('Sin ventas para exportar en '+_vtaMes,'e'); return; }
+  var headers = ['Fecha','Cliente','Asesor','Canal','Estado pago','Productos','Total','Notas'];
+  var rows = _vtaList.map(function(v){
+    var items = (v.items||[]).map(function(it){
+      return (it.nombre||'') + (it.qty>1 ? ' x'+it.qty : '');
+    }).join('; ');
+    return [v.fecha||'', v.clienteNombre||'', v.asesor||'', v.canal||'', v.estadoPago||'', items, v.total||0, (v.notas||'').replace(/[\r\n]+/g,' ')];
+  });
+  // BOM + ';' para que Excel ES abra bien el CSV
+  var csv = '﻿' + [headers].concat(rows).map(function(r){
+    return r.map(function(c){
+      var s = String(c==null?'':c);
+      if (/[",;\n\r]/.test(s)) s = '"'+s.replace(/"/g,'""')+'"';
+      return s;
+    }).join(';');
+  }).join('\r\n');
+  var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'ventas_'+(_vtaMes||'todas')+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('CSV exportado: '+_vtaList.length+' ventas','ok');
+}
+
+var _jspdfLoaded = false;
+function _cargarJsPDF(cb){
+  if (_jspdfLoaded && window.jspdf && window.jspdf.jsPDF) { cb(); return; }
+  var s1 = document.createElement('script');
+  s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+  s1.onload = function(){
+    var s2 = document.createElement('script');
+    s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.0/jspdf.plugin.autotable.min.js';
+    s2.onload = function(){ _jspdfLoaded = true; cb(); };
+    s2.onerror = function(){ toast('No se pudo cargar la librería PDF (revisar conexión)','e'); };
+    document.head.appendChild(s2);
+  };
+  s1.onerror = function(){ toast('No se pudo cargar la librería PDF (revisar conexión)','e'); };
+  document.head.appendChild(s1);
+}
+
+function exportarVentasPDF(){
+  if (!_vtaList || !_vtaList.length) { toast('Sin ventas para exportar en '+_vtaMes,'e'); return; }
+  toast('Generando PDF...','ok');
+  _cargarJsPDF(function(){
+    try {
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+      var total   = _vtaList.reduce(function(s,v){ return s+(Number(v.total)||0); }, 0);
+      var pagados = _vtaList.filter(function(v){return v.estadoPago==='pagado';}).reduce(function(s,v){return s+(Number(v.total)||0);},0);
+      var pend    = _vtaList.filter(function(v){return v.estadoPago==='pendiente';}).reduce(function(s,v){return s+(Number(v.total)||0);},0);
+      var cred    = _vtaList.filter(function(v){return v.estadoPago==='credito';}).reduce(function(s,v){return s+(Number(v.total)||0);},0);
+
+      doc.setFontSize(16); doc.setFont('helvetica','bold');
+      doc.setTextColor(11,17,32);
+      doc.text('CYC — Reporte de Ventas', 14, 14);
+      doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(80,80,80);
+      doc.text('Mes: '+(_vtaMes||'todas')+'    Generado: '+new Date().toLocaleString('es-CO'), 14, 20);
+      doc.setTextColor(11,17,32);
+      doc.text('Registros: '+_vtaList.length+'    Total: '+fmtCOP(total)+'    Pagado: '+fmtCOP(pagados)+'    Pendiente: '+fmtCOP(pend)+'    Crédito: '+fmtCOP(cred), 14, 26);
+
+      var canalLabel = {call_center:'Call Center',pagina_web:'Web',referido:'Referido',otro:'Otro'};
+      var body = _vtaList.map(function(v){
+        var items = (v.items||[]).map(function(it){
+          return (it.nombre||'') + (it.qty>1?' x'+it.qty:'');
+        }).join(', ');
+        return [v.fecha||'', v.clienteNombre||'—', v.asesor||'—', canalLabel[v.canal]||v.canal||'—', v.estadoPago||'—', items, fmtCOP(v.total)];
+      });
+      doc.autoTable({
+        head: [['Fecha','Cliente','Asesor','Canal','Pago','Productos','Total']],
+        body: body,
+        startY: 32,
+        styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
+        headStyles: { fillColor: [11,17,32], textColor: 255, fontStyle:'bold' },
+        columnStyles: { 0:{cellWidth:20}, 5:{cellWidth:80}, 6:{halign:'right',cellWidth:24} },
+        didDrawPage: function(data){
+          // pie de página con número
+          var str = 'Página '+doc.internal.getNumberOfPages();
+          doc.setFontSize(8); doc.setTextColor(120,120,120);
+          doc.text(str, doc.internal.pageSize.getWidth()-25, doc.internal.pageSize.getHeight()-8);
+        },
+      });
+
+      doc.save('ventas_'+(_vtaMes||'todas')+'.pdf');
+      toast('PDF descargado: '+_vtaList.length+' ventas','ok');
+    } catch(err){
+      console.error('PDF export error:', err);
+      toast('Error generando PDF: '+(err.message||err),'e');
+    }
+  });
 }
 
 function abrirFormVenta() {
